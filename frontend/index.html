@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dev Dashboard</title>
+    <link rel="stylesheet" href="style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"
+    />
+  </head>
+  <body>
+    <div class="layout">
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <div class="logo">D</div>
+        <nav class="nav">
+          <a href="#" class="nav-item active" title="Dashboard">
+            <i class="ti ti-home"></i>
+          </a>
+          <a href="#" class="nav-item" title="Projects">
+            <i class="ti ti-folders"></i>
+          </a>
+          <a href="#" class="nav-item" title="Tasks">
+            <i class="ti ti-circle-check"></i>
+          </a>
+          <a href="#" class="nav-item" title="Team">
+            <i class="ti ti-users"></i>
+          </a>
+          <a href="#" class="nav-item" title="Calendar">
+            <i class="ti ti-calendar"></i>
+          </a>
+          <a href="#" class="nav-item" title="Settings">
+            <i class="ti ti-settings"></i>
+          </a>
+        </nav>
+        <div class="avatar">J</div>
+      </aside>
+
+      <!-- Main -->
+      <main class="main">
+        <!-- Topbar -->
+        <div class="topbar">
+          <div class="greeting">
+            <h1>Good morning, Jordan 👋</h1>
+            <p>Here's what's happening with your projects today.</p>
+          </div>
+          <div class="topbar-actions">
+            <div class="search">
+              <i class="ti ti-search"></i>
+              <input type="text" placeholder="Search..." />
+            </div>
+            <button class="btn-bell"><i class="ti ti-bell"></i></button>
+            <button class="btn-new" id="btnNewProject">
+              <i class="ti ti-plus"></i> New Project
+            </button>
+          </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats">
+          <div class="stat-card">
+            <div class="stat-icon blue"><i class="ti ti-folders"></i></div>
+            <div class="stat-info">
+              <span class="stat-value" id="statProjects">—</span>
+              <span class="stat-label">Projects</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon green"><i class="ti ti-circle-check"></i></div>
+            <div class="stat-info">
+              <span class="stat-value" id="statTasks">—</span>
+              <span class="stat-label">Tasks</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon cyan"><i class="ti ti-users"></i></div>
+            <div class="stat-info">
+              <span class="stat-value" id="statTeam">—</span>
+              <span class="stat-label">Team Members</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon yellow"><i class="ti ti-currency-dollar"></i></div>
+            <div class="stat-info">
+              <span class="stat-value" id="statRevenue">—</span>
+              <span class="stat-label">Revenue</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bottom -->
+        <div class="bottom">
+          <!-- Chart -->
+          <div class="card">
+            <h2 class="card-title">Activity Overview</h2>
+            <canvas id="activityChart"></canvas>
+          </div>
+
+          <!-- Projects -->
+          <div class="card">
+            <h2 class="card-title">Recent Projects</h2>
+            <div id="projectsList" class="projects-list">
+              <div class="loading">Loading...</div>
+            </div>
+            <a href="#" class="view-all">View all projects <i class="ti ti-arrow-right"></i></a>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal-overlay" id="modalOverlay">
+      <div class="modal">
+        <div class="modal-header">
+          <h3>New Project</h3>
+          <button class="modal-close" id="modalClose"><i class="ti ti-x"></i></button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label>Project Name</label>
+            <input type="text" id="inputName" placeholder="e.g. Design System" />
+          </div>
+          <div class="form-group">
+            <label>Description</label>
+            <input type="text" id="inputDesc" placeholder="Short description..." />
+          </div>
+          <div class="form-group">
+            <label>Progress (%)</label>
+            <input type="number" id="inputProgress" placeholder="0" min="0" max="100" />
+          </div>
+          <div class="form-group">
+            <label>Status</label>
+            <select id="inputStatus">
+              <option value="active">Active</option>
+              <option value="completed">Completed</option>
+              <option value="paused">Paused</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-cancel" id="btnCancel">Cancel</button>
+          <button class="btn-submit" id="btnSubmit">Create Project</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="dashboard.js"></script>
+  </body>
+</html>
