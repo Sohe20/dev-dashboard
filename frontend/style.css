@@ -305,6 +305,13 @@ canvas#activityChart { width: 100%; height: 180px; }
 }
 .btn-submit:hover { background: var(--accent-hover); }
 
+
+ /* Pages */
+.page { display: none; }
+.page.active { display: block; }
+
+
+
 @media (max-width: 900px) {
   .stats { grid-template-columns: repeat(2, 1fr); }
   .bottom { grid-template-columns: 1fr; }

@@ -16,22 +16,19 @@
       <aside class="sidebar">
         <div class="logo">D</div>
         <nav class="nav">
-          <a href="#" class="nav-item active" title="Dashboard">
+          <a href="#" class="nav-item active" data-page="dashboard" title="Dashboard">
             <i class="ti ti-home"></i>
           </a>
-          <a href="#" class="nav-item" title="Projects">
+          <a href="#" class="nav-item" data-page="projects" title="Projects">
             <i class="ti ti-folders"></i>
           </a>
-          <a href="#" class="nav-item" title="Tasks">
+          <a href="#" class="nav-item" data-page="tasks" title="Tasks">
             <i class="ti ti-circle-check"></i>
           </a>
-          <a href="#" class="nav-item" title="Team">
+          <a href="#" class="nav-item" data-page="team" title="Team">
             <i class="ti ti-users"></i>
           </a>
-          <a href="#" class="nav-item" title="Calendar">
-            <i class="ti ti-calendar"></i>
-          </a>
-          <a href="#" class="nav-item" title="Settings">
+          <a href="#" class="nav-item" data-page="settings" title="Settings">
             <i class="ti ti-settings"></i>
           </a>
         </nav>
@@ -40,77 +37,143 @@
 
       <!-- Main -->
       <main class="main">
-        <!-- Topbar -->
-        <div class="topbar">
-          <div class="greeting">
-            <h1>Good morning, Jordan 👋</h1>
-            <p>Here's what's happening with your projects today.</p>
-          </div>
-          <div class="topbar-actions">
-            <div class="search">
-              <i class="ti ti-search"></i>
-              <input type="text" placeholder="Search..." />
+
+        <!-- PAGE: Dashboard -->
+        <div id="page-dashboard" class="page active">
+          <div class="topbar">
+            <div class="greeting">
+              <h1>Good morning, Jordan 👋</h1>
+              <p>Here's what's happening with your projects today.</p>
             </div>
-            <button class="btn-bell"><i class="ti ti-bell"></i></button>
-            <button class="btn-new" id="btnNewProject">
-              <i class="ti ti-plus"></i> New Project
-            </button>
+            <div class="topbar-actions">
+              <div class="search">
+                <i class="ti ti-search"></i>
+                <input type="text" placeholder="Search..." />
+              </div>
+              <button class="btn-bell"><i class="ti ti-bell"></i></button>
+            </div>
+          </div>
+
+          <div class="stats">
+            <div class="stat-card">
+              <div class="stat-icon blue"><i class="ti ti-folders"></i></div>
+              <div class="stat-info">
+                <span class="stat-value" id="statProjects">—</span>
+                <span class="stat-label">Projects</span>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon green"><i class="ti ti-circle-check"></i></div>
+              <div class="stat-info">
+                <span class="stat-value" id="statTasks">—</span>
+                <span class="stat-label">Tasks</span>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon cyan"><i class="ti ti-users"></i></div>
+              <div class="stat-info">
+                <span class="stat-value" id="statTeam">—</span>
+                <span class="stat-label">Team Members</span>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon yellow"><i class="ti ti-currency-dollar"></i></div>
+              <div class="stat-info">
+                <span class="stat-value" id="statRevenue">—</span>
+                <span class="stat-label">Revenue</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="bottom">
+            <div class="card">
+              <h2 class="card-title">Activity Overview</h2>
+              <canvas id="activityChart"></canvas>
+            </div>
+            <div class="card">
+              <h2 class="card-title">Recent Projects</h2>
+              <div id="projectsList" class="projects-list">
+                <div class="loading">Loading...</div>
+              </div>
+              <a href="#" class="view-all" id="viewAllProjects">
+                View all projects <i class="ti ti-arrow-right"></i>
+              </a>
+            </div>
           </div>
         </div>
 
-        <!-- Stats -->
-        <div class="stats">
-          <div class="stat-card">
-            <div class="stat-icon blue"><i class="ti ti-folders"></i></div>
-            <div class="stat-info">
-              <span class="stat-value" id="statProjects">—</span>
-              <span class="stat-label">Projects</span>
+        <!-- PAGE: Projects -->
+        <div id="page-projects" class="page">
+          <div class="topbar">
+            <div class="greeting">
+              <h1>Projects</h1>
+              <p>Manage all your projects.</p>
+            </div>
+            <div class="topbar-actions">
+              <button class="btn-new" id="btnNewProject">
+                <i class="ti ti-plus"></i> New Project
+              </button>
             </div>
           </div>
-          <div class="stat-card">
-            <div class="stat-icon green"><i class="ti ti-circle-check"></i></div>
-            <div class="stat-info">
-              <span class="stat-value" id="statTasks">—</span>
-              <span class="stat-label">Tasks</span>
-            </div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-icon cyan"><i class="ti ti-users"></i></div>
-            <div class="stat-info">
-              <span class="stat-value" id="statTeam">—</span>
-              <span class="stat-label">Team Members</span>
-            </div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-icon yellow"><i class="ti ti-currency-dollar"></i></div>
-            <div class="stat-info">
-              <span class="stat-value" id="statRevenue">—</span>
-              <span class="stat-label">Revenue</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Bottom -->
-        <div class="bottom">
-          <!-- Chart -->
           <div class="card">
-            <h2 class="card-title">Activity Overview</h2>
-            <canvas id="activityChart"></canvas>
-          </div>
-
-          <!-- Projects -->
-          <div class="card">
-            <h2 class="card-title">Recent Projects</h2>
-            <div id="projectsList" class="projects-list">
+            <div id="allProjectsList" class="projects-list">
               <div class="loading">Loading...</div>
             </div>
-            <a href="#" class="view-all">View all projects <i class="ti ti-arrow-right"></i></a>
           </div>
         </div>
+
+        <!-- PAGE: Tasks -->
+        <div id="page-tasks" class="page">
+          <div class="topbar">
+            <div class="greeting">
+              <h1>Tasks</h1>
+              <p>Track your tasks.</p>
+            </div>
+            <div class="topbar-actions">
+              <button class="btn-new" id="btnNewTask">
+                <i class="ti ti-plus"></i> New Task
+              </button>
+            </div>
+          </div>
+          <div class="card">
+            <div id="tasksList" class="projects-list">
+              <div class="loading">Coming soon...</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PAGE: Team -->
+        <div id="page-team" class="page">
+          <div class="topbar">
+            <div class="greeting">
+              <h1>Team</h1>
+              <p>Your team members.</p>
+            </div>
+          </div>
+          <div class="card">
+            <div id="teamList" class="projects-list">
+              <div class="loading">Coming soon...</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PAGE: Settings -->
+        <div id="page-settings" class="page">
+          <div class="topbar">
+            <div class="greeting">
+              <h1>Settings</h1>
+              <p>Manage your preferences.</p>
+            </div>
+          </div>
+          <div class="card">
+            <div class="loading">Coming soon...</div>
+          </div>
+        </div>
+
       </main>
     </div>
 
-    <!-- Modal -->
+    <!-- Modal: New Project -->
     <div class="modal-overlay" id="modalOverlay">
       <div class="modal">
         <div class="modal-header">

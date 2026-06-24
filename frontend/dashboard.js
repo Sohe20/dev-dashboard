@@ -2,6 +2,54 @@ const API = 'http://localhost:3000';
 
 const colors = ['#5c4fd6', '#40d080', '#40a0ff', '#d0a020', '#ff6080', '#a0ff80'];
 
+
+// --- Navigation ---
+function navigate(pageName) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+
+  document.getElementById(`page-${pageName}`).classList.add('active');
+  document.querySelector(`[data-page="${pageName}"]`).classList.add('active');
+
+  if (pageName === 'projects') loadAllProjects();
+  if (pageName === 'dashboard') loadProjects();
+}
+
+document.querySelectorAll('.nav-item').forEach(item => {
+  item.addEventListener('click', (e) => {
+    e.preventDefault();
+    navigate(item.dataset.page);
+  });
+});
+
+
+async function loadAllProjects() {
+  try {
+    const res = await fetch(`${API}/projects`);
+    const data = await res.json();
+    const list = document.getElementById('allProjectsList');
+    if (!data.length) {
+      list.innerHTML = '<div class="loading">No projects yet.</div>';
+      return;
+    }
+    list.innerHTML = data.map((p, i) => `
+      <div class="project-item">
+        <div class="project-dot" style="background:${colors[i % colors.length]}"></div>
+        <span class="project-name">${p.name}</span>
+        <div class="project-bar-wrap">
+          <div class="project-bar" style="width:${p.progress}%;background:${colors[i % colors.length]}"></div>
+        </div>
+        <span class="project-pct">${p.progress}%</span>
+      </div>
+    `).join('');
+  } catch {
+    document.getElementById('allProjectsList').innerHTML = '<div class="loading">Could not load.</div>';
+  }
+}
+
+
+
+
 // --- Chart ---
 function drawChart(canvas) {
   const ctx = canvas.getContext('2d');
