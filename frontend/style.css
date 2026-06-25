@@ -310,7 +310,14 @@ canvas#activityChart { width: 100%; height: 180px; }
 .page { display: none; }
 .page.active { display: block; }
 
-
+.project-item.clickable {
+  cursor: pointer;
+  transition: background 0.15s;
+  border-radius: 8px;
+  padding: 6px;
+  margin: -6px;
+}
+.project-item.clickable:hover { background: #1e1e3a; }
 
 @media (max-width: 900px) {
   .stats { grid-template-columns: repeat(2, 1fr); }

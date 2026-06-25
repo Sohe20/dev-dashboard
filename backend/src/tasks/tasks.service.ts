@@ -1,3 +1,4 @@
+
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -12,23 +13,42 @@ export class TasksService {
     private tasksRepository: Repository<Task>,
   ) {}
 
-  findAll(): Promise<Task[]> {
-    return this.tasksRepository.find();
+findAll(projectId?: number): Promise<Task[]> {
+  if (projectId) {
+    return this.tasksRepository.find({
+      where: { project: { id: projectId } },
+      relations: { project: true },
+    });
   }
+  return this.tasksRepository.find({ relations: { project: true } });
+}
 
   findOne(id: number): Promise<Task | null> {
     return this.tasksRepository.findOneBy({ id });
   }
 
-  create(data: CreateTaskDto): Promise<Task> {
-    const task = this.tasksRepository.create(data);
-    return this.tasksRepository.save(task);
-  }
+create(data: CreateTaskDto): Promise<Task> {
+  const task = this.tasksRepository.create({
+    title: data.title,
+    description: data.description,
+    status: data.status,
+    project: data.projectId ? { id: data.projectId } : undefined,
+  });
+  return this.tasksRepository.save(task);
+}
 
-  async update(id: number, data: UpdateTaskDto): Promise<Task | null> {
-    await this.tasksRepository.update(id, data);
-    return this.findOne(id);
+ async update(id: number, data: UpdateTaskDto): Promise<Task | null> {
+  const { projectId, ...rest } = data as any;
+  await this.tasksRepository.update(id, rest);
+  if (projectId) {
+    await this.tasksRepository
+      .createQueryBuilder()
+      .relation(Task, 'project')
+      .of(id)
+      .set(projectId);
   }
+  return this.findOne(id);
+}
 
   async remove(id: number): Promise<{ deleted: boolean }> {
     await this.tasksRepository.delete(id);
