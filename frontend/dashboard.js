@@ -14,6 +14,15 @@ if (!localStorage.getItem("token")) {
   window.location.href = "Auth/login.html";
 }
 
+// --- Auth Headers ---
+function authHeaders() {
+  const token = localStorage.getItem("token");
+  return {
+    "Content-Type": "application/json",
+    "Authorization": `Bearer ${token}`,
+  };
+}
+
 // --- Get User From Token ---
 function getUserFromToken() {
   const token = localStorage.getItem("token");
@@ -49,7 +58,7 @@ document.querySelectorAll(".nav-item").forEach((item) => {
 // --- Load All Projects (Projects page) ---
 async function loadAllProjects() {
   try {
-    const res = await fetch(`${API}/projects`);
+    const res = await fetch(`${API}/projects`, { headers: authHeaders() });
     const data = await res.json();
     const list = document.getElementById("allProjectsList");
     if (!data.length) {
@@ -86,7 +95,7 @@ async function showProjectTasks(projectId, projectName) {
     <div id="projectTasksList"><div class="loading">Loading...</div></div>
   `;
   try {
-    const res = await fetch(`${API}/tasks?projectId=${projectId}`);
+    const res = await fetch(`${API}/tasks?projectId=${projectId}`, { headers: authHeaders() });
     const tasks = await res.json();
     const taskList = document.getElementById("projectTasksList");
     if (!tasks.length) {
@@ -109,7 +118,7 @@ async function showProjectTasks(projectId, projectName) {
 // --- Load Tasks ---
 async function loadTasks() {
   try {
-    const res = await fetch(`${API}/tasks`);
+    const res = await fetch(`${API}/tasks`, { headers: authHeaders() });
     const data = await res.json();
     const statEl = document.getElementById("statTasks");
     if (statEl) statEl.textContent = data.length;
@@ -147,7 +156,7 @@ async function createTask() {
   try {
     await fetch(`${API}/tasks`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: authHeaders(),
       body: JSON.stringify({
         title,
         description,
@@ -166,7 +175,7 @@ async function createTask() {
 async function deleteTask(id) {
   if (!confirm("Delete this task?")) return;
   try {
-    await fetch(`${API}/tasks/${id}`, { method: "DELETE" });
+    await fetch(`${API}/tasks/${id}`, { method: "DELETE", headers: authHeaders() });
     loadTasks();
     loadTaskCount();
   } catch {
@@ -192,7 +201,7 @@ function editTask(id, title, description, status) {
     try {
       await fetch(`${API}/tasks/${id}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: authHeaders(),
         body: JSON.stringify({
           title: newTitle,
           description: newDesc,
@@ -213,7 +222,7 @@ function editTask(id, title, description, status) {
 async function openTaskModal() {
   document.getElementById("modalTaskOverlay").classList.add("open");
   try {
-    const res = await fetch(`${API}/projects`);
+    const res = await fetch(`${API}/projects`, { headers: authHeaders() });
     const projects = await res.json();
     const select = document.getElementById("inputTaskProject");
     select.innerHTML = '<option value="">-- Select Project --</option>';
@@ -316,7 +325,7 @@ function renderProjects(projects) {
 // --- Load Projects (Dashboard) ---
 async function loadProjects() {
   try {
-    const res = await fetch(`${API}/projects`);
+    const res = await fetch(`${API}/projects`, { headers: authHeaders() });
     const data = await res.json();
     document.getElementById("statProjects").textContent = data.length;
     renderProjects(data);
@@ -338,7 +347,7 @@ async function createProject() {
   try {
     await fetch(`${API}/projects`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: authHeaders(),
       body: JSON.stringify({ name, description, progress, status }),
     });
     closeModal();
@@ -362,7 +371,7 @@ function closeModal() {
 // --- Load Task Count ---
 async function loadTaskCount() {
   try {
-    const res = await fetch(`${API}/tasks`);
+    const res = await fetch(`${API}/tasks`, { headers: authHeaders() });
     const data = await res.json();
     document.getElementById("statTasks").textContent = data.length;
   } catch {
@@ -378,10 +387,10 @@ document.addEventListener("DOMContentLoaded", () => {
     document.querySelector(".avatar").textContent = user.name.charAt(0).toUpperCase();
   }
 
-  document.getElementById('btnLogout').addEventListener('click', () => {
-  localStorage.clear();
-  window.location.href = 'Auth/login.html';
-});
+  document.getElementById("btnLogout").addEventListener("click", () => {
+    localStorage.clear();
+    window.location.href = "Auth/login.html";
+  });
 
   const canvas = document.getElementById("activityChart");
   drawChart(canvas);
