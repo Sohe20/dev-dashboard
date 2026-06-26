@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dev Dashboard — Login</title>
+    <link rel="stylesheet" href="../style.css" />
+    <link rel="stylesheet" href="auth.css">
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"
+    />
+  </head>
+  <body>
+    <div class="login-page">
+      <div class="login-box">
+        <div class="login-logo">D</div>
+        <h1 class="login-title">Welcome 👋</h1>
+        <p class="login-sub">Sign in or create your account</p>
+
+        <!-- Tabs -->
+        <div class="toggle-tabs">
+          <div class="toggle-tab active" id="tabLogin" onclick="switchTab('login')">Sign In</div>
+          <div class="toggle-tab" id="tabRegister" onclick="switchTab('register')">Register</div>
+        </div>
+
+        <!-- Form -->
+        <div class="login-form">
+          <div class="form-field show" id="fieldName">
+            <label>Full Name</label>
+            <input type="text" id="inputName" placeholder="Jordan Smith" />
+          </div>
+          <div>
+            <label>Email</label>
+            <input type="email" id="inputEmail" placeholder="you@example.com" />
+          </div>
+          <div>
+            <label>Password</label>
+            <input type="password" id="inputPassword" placeholder="••••••••" />
+          </div>
+
+          <p class="login-error" id="loginError"></p>
+          <p class="login-success" id="loginSuccess"></p>
+
+          <button class="btn-login" id="btnSubmit">Sign In</button>
+        </div>
+
+        <p class="login-divider">Dev Dashboard v1.0</p>
+      </div>
+    </div>
+
+    <script src="login.js"></script>
+  </body>
+</html>
