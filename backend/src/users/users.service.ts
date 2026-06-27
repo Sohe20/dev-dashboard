@@ -1,3 +1,4 @@
+
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -9,6 +10,12 @@ export class UsersService {
     @InjectRepository(User)
     private usersRepository: Repository<User>,
   ) {}
+
+ async findAll(): Promise<Omit<User, 'password'>[]> {
+  const users = await this.usersRepository.find();
+  return users.map(({ password, ...rest }) => rest);
+}
+
 
   findByEmail(email: string): Promise<User | null> {
     return this.usersRepository.findOneBy({ email });

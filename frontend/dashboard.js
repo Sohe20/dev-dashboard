@@ -447,13 +447,18 @@ async function loadTeam() {
   }
 }
 
+
+
 // --- Create Team Member ---
 async function createMember() {
-  const name = document.getElementById("inputMemberName").value.trim();
-  const email = document.getElementById("inputMemberEmail").value.trim();
+  const select = document.getElementById("inputMemberUser");
+  const selectedOption = select.options[select.selectedIndex];
   const role = document.getElementById("inputMemberRole").value.trim();
 
-  if (!name || !email || !role) return alert("All fields are required.");
+  if (!select.value || !role) return alert("Please select a user and enter a role.");
+
+  const name = selectedOption.dataset.name;
+  const email = selectedOption.dataset.email;
 
   try {
     await fetch(`${API}/team`, {
@@ -480,16 +485,25 @@ async function deleteMember(id) {
 }
 
 // --- Member Modal ---
-function openMemberModal() {
+async function openMemberModal() {
   document.getElementById("modalMemberOverlay").classList.add("open");
+  try {
+    const res = await fetch(`${API}/users`, { headers: authHeaders() });
+    const users = await res.json();
+    const select = document.getElementById("inputMemberUser");
+    select.innerHTML = '<option value="">-- Select User --</option>';
+    users.forEach((u) => {
+      select.innerHTML += `<option value="${u.id}" data-name="${u.name}" data-email="${u.email}">${u.name} (${u.email})</option>`;
+    });
+  } catch {
+    console.error("Could not load users.");
+  }
 }
 function closeMemberModal() {
   document.getElementById("modalMemberOverlay").classList.remove("open");
-  document.getElementById("inputMemberName").value = "";
-  document.getElementById("inputMemberEmail").value = "";
+  document.getElementById("inputMemberUser").value = "";
   document.getElementById("inputMemberRole").value = "";
 }
-
 // --- Init ---
 document.addEventListener("DOMContentLoaded", () => {
   const user = getUserFromToken();

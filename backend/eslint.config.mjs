@@ -31,7 +31,8 @@ export default tseslint.config(
       '@typescript-eslint/no-unsafe-argument': 'off',
       "prettier/prettier": ["off", { endOfLine: "auto" }],
       'eslint-disable prettier/prettier':'off',
-      "@typescript-eslint/no-unsafe-assignment":'off'
+      "@typescript-eslint/no-unsafe-assignment":'off',
+      "eslint-disable @typescript-eslint/no-unused-vars":"off"
      
     },
   },
