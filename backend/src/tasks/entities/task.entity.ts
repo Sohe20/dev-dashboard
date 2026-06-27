@@ -6,6 +6,7 @@ import {
   ManyToOne,
 } from 'typeorm';
 import { Project } from '../../projects/entities/project.entity';
+import { User } from '../../users/entities/user.entity';
 
 @Entity()
 export class Task {
@@ -23,6 +24,9 @@ export class Task {
 
   @ManyToOne(() => Project, { nullable: true, onDelete: 'CASCADE' })
   project!: Project;
+
+  @ManyToOne(() => User, { nullable: true, onDelete: 'SET NULL' })
+  assignee!: User;
 
   @CreateDateColumn()
   createdAt!: Date;

@@ -3,4 +3,5 @@ export class UpdateTaskDto {
   description?: string;
   status?: string;
   projectId?: number;
+  assigneeId?: number;
 }
