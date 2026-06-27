@@ -37,12 +37,8 @@ function getUserFromToken() {
 
 // --- Navigation ---
 function navigate(pageName) {
-  document
-    .querySelectorAll(".page")
-    .forEach((p) => p.classList.remove("active"));
-  document
-    .querySelectorAll(".nav-item")
-    .forEach((n) => n.classList.remove("active"));
+  document.querySelectorAll(".page").forEach((p) => p.classList.remove("active"));
+  document.querySelectorAll(".nav-item").forEach((n) => n.classList.remove("active"));
 
   document.getElementById(`page-${pageName}`).classList.add("active");
   document.querySelector(`[data-page="${pageName}"]`).classList.add("active");
@@ -50,6 +46,7 @@ function navigate(pageName) {
   if (pageName === "projects") loadAllProjects();
   if (pageName === "dashboard") loadProjects();
   if (pageName === "tasks") loadTasks();
+  if (pageName === "team") loadTeam();
 }
 
 document.querySelectorAll(".nav-item").forEach((item) => {
@@ -69,37 +66,31 @@ async function loadAllProjects() {
       list.innerHTML = '<div class="loading">No projects yet.</div>';
       return;
     }
-    list.innerHTML = data
-      .map(
-        (p, i) => `
-  <div class="project-item clickable">
-    <div class="project-dot" style="background:${colors[i % colors.length]}"></div>
-    <span class="project-name" onclick="showProjectTasks(${p.id}, '${p.name}')" style="cursor:pointer;flex:1">${p.name}</span>
-    <div class="project-bar-wrap">
-      <div class="project-bar" style="width:${p.progress}%;background:${colors[i % colors.length]}"></div>
-    </div>
-    <span class="project-pct">${p.progress}%</span>
-    <div style="display:flex;gap:6px;margin-left:8px">
-      <button onclick="editProject(${p.id}, '${p.name}', '${p.description}', ${p.progress}, '${p.status}')" style="background:none;border:none;color:#6060a0;cursor:pointer;font-size:16px"><i class="ti ti-pencil"></i></button>
-      <button onclick="deleteProject(${p.id})" style="background:none;border:none;color:#6060a0;cursor:pointer;font-size:16px"><i class="ti ti-trash"></i></button>
-    </div>
-  </div>
-`,
-      )
-      .join("");
+    list.innerHTML = data.map((p, i) => `
+      <div class="project-item clickable">
+        <div class="project-dot" style="background:${colors[i % colors.length]}"></div>
+        <span class="project-name" onclick="showProjectTasks(${p.id}, '${p.name}')" style="cursor:pointer;flex:1">${p.name}</span>
+        <div class="project-bar-wrap">
+          <div class="project-bar" style="width:${p.progress}%;background:${colors[i % colors.length]}"></div>
+        </div>
+        <span class="project-pct">${p.progress}%</span>
+        <div style="display:flex;gap:6px;margin-left:8px">
+          <button onclick="editProject(${p.id}, '${p.name}', '${p.description}', ${p.progress}, '${p.status}')" style="background:none;border:none;color:#6060a0;cursor:pointer;font-size:16px"><i class="ti ti-pencil"></i></button>
+          <button onclick="deleteProject(${p.id})" style="background:none;border:none;color:#6060a0;cursor:pointer;font-size:16px"><i class="ti ti-trash"></i></button>
+        </div>
+      </div>
+    `).join("");
   } catch {
     document.getElementById("allProjectsList").innerHTML =
       '<div class="loading">Could not load.</div>';
   }
 }
 
+// --- Delete Project ---
 async function deleteProject(id) {
   if (!confirm("Delete this project?")) return;
   try {
-    await fetch(`${API}/projects/${id}`, {
-      method: "DELETE",
-      headers: authHeaders(),
-    });
+    await fetch(`${API}/projects/${id}`, { method: "DELETE", headers: authHeaders() });
     loadAllProjects();
     loadProjects();
   } catch {
@@ -107,6 +98,7 @@ async function deleteProject(id) {
   }
 }
 
+// --- Edit Project ---
 function editProject(id, name, description, progress, status) {
   document.getElementById("inputName").value = name;
   document.getElementById("inputDesc").value = description;
@@ -119,26 +111,18 @@ function editProject(id, name, description, progress, status) {
   btn.onclick = async () => {
     const newName = document.getElementById("inputName").value.trim();
     const newDesc = document.getElementById("inputDesc").value.trim();
-    const newProgress =
-      parseInt(document.getElementById("inputProgress").value) || 0;
+    const newProgress = parseInt(document.getElementById("inputProgress").value) || 0;
     const newStatus = document.getElementById("inputStatus").value;
 
     try {
       await fetch(`${API}/projects/${id}`, {
         method: "PUT",
         headers: authHeaders(),
-        body: JSON.stringify({
-          name: newName,
-          description: newDesc,
-          progress: newProgress,
-          status: newStatus,
-        }),
+        body: JSON.stringify({ name: newName, description: newDesc, progress: newProgress, status: newStatus }),
       });
       closeModal();
       loadAllProjects();
       loadProjects();
-      btn.textContent = "Create Project";
-      btn.onclick = createProject;
     } catch {
       alert("Failed to update project.");
     }
@@ -158,27 +142,20 @@ async function showProjectTasks(projectId, projectName) {
     <div id="projectTasksList"><div class="loading">Loading...</div></div>
   `;
   try {
-    const res = await fetch(`${API}/tasks?projectId=${projectId}`, {
-      headers: authHeaders(),
-    });
+    const res = await fetch(`${API}/tasks?projectId=${projectId}`, { headers: authHeaders() });
     const tasks = await res.json();
     const taskList = document.getElementById("projectTasksList");
     if (!tasks.length) {
-      taskList.innerHTML =
-        '<div class="loading">No tasks for this project.</div>';
+      taskList.innerHTML = '<div class="loading">No tasks for this project.</div>';
       return;
     }
-    taskList.innerHTML = tasks
-      .map(
-        (t) => `
+    taskList.innerHTML = tasks.map((t) => `
       <div class="project-item">
         <div class="project-dot" style="background:${t.status === "done" ? "#40d080" : t.status === "inprogress" ? "#40a0ff" : "#6060a0"}"></div>
         <span class="project-name">${t.title}</span>
         <span class="project-pct" style="background:${t.status === "done" ? "#1a3a20" : "#1a1a30"};padding:2px 8px;border-radius:6px;font-size:11px">${t.status}</span>
       </div>
-    `,
-      )
-      .join("");
+    `).join("");
   } catch {
     document.getElementById("projectTasksList").innerHTML =
       '<div class="loading">Could not load tasks.</div>';
@@ -197,9 +174,7 @@ async function loadTasks() {
       list.innerHTML = '<div class="loading">No tasks yet.</div>';
       return;
     }
-    list.innerHTML = data
-      .map(
-        (t) => `
+    list.innerHTML = data.map((t) => `
       <div class="project-item">
         <div class="project-dot" style="background:${t.status === "done" ? "#40d080" : t.status === "inprogress" ? "#40a0ff" : "#6060a0"}"></div>
         <span class="project-name">${t.title}</span>
@@ -209,9 +184,7 @@ async function loadTasks() {
           <button onclick="deleteTask(${t.id})" style="background:none;border:none;color:#6060a0;cursor:pointer;font-size:16px"><i class="ti ti-trash"></i></button>
         </div>
       </div>
-    `,
-      )
-      .join("");
+    `).join("");
   } catch {
     document.getElementById("tasksList").innerHTML =
       '<div class="loading">Could not load tasks.</div>';
@@ -231,12 +204,7 @@ async function createTask() {
     await fetch(`${API}/tasks`, {
       method: "POST",
       headers: authHeaders(),
-      body: JSON.stringify({
-        title,
-        description,
-        status,
-        projectId: projectId ? +projectId : null,
-      }),
+      body: JSON.stringify({ title, description, status, projectId: projectId ? +projectId : null }),
     });
     closeTaskModal();
     loadTasks();
@@ -249,10 +217,7 @@ async function createTask() {
 async function deleteTask(id) {
   if (!confirm("Delete this task?")) return;
   try {
-    await fetch(`${API}/tasks/${id}`, {
-      method: "DELETE",
-      headers: authHeaders(),
-    });
+    await fetch(`${API}/tasks/${id}`, { method: "DELETE", headers: authHeaders() });
     loadTasks();
     loadTaskCount();
   } catch {
@@ -279,12 +244,7 @@ function editTask(id, title, description, status) {
       await fetch(`${API}/tasks/${id}`, {
         method: "PUT",
         headers: authHeaders(),
-        body: JSON.stringify({
-          title: newTitle,
-          description: newDesc,
-          status: newStatus,
-          projectId: projectId ? +projectId : null,
-        }),
+        body: JSON.stringify({ title: newTitle, description: newDesc, status: newStatus, projectId: projectId ? +projectId : null }),
       });
       closeTaskModal();
       loadTasks();
@@ -331,8 +291,7 @@ function drawChart(canvas) {
   const pad = { left: 30, right: 10, top: 10, bottom: 20 };
   const max = 100;
 
-  const px = (i) =>
-    pad.left + (i / (data.length - 1)) * (w - pad.left - pad.right);
+  const px = (i) => pad.left + (i / (data.length - 1)) * (w - pad.left - pad.right);
   const py = (v) => pad.top + (1 - v / max) * (h - pad.top - pad.bottom);
 
   ctx.clearRect(0, 0, w, h);
@@ -362,9 +321,7 @@ function drawChart(canvas) {
   grad.addColorStop(0, "rgba(92,79,214,0.35)");
   grad.addColorStop(1, "rgba(92,79,214,0)");
   ctx.beginPath();
-  data.forEach((v, i) =>
-    i === 0 ? ctx.moveTo(px(i), py(v)) : ctx.lineTo(px(i), py(v)),
-  );
+  data.forEach((v, i) => i === 0 ? ctx.moveTo(px(i), py(v)) : ctx.lineTo(px(i), py(v)));
   ctx.lineTo(px(data.length - 1), h - pad.bottom);
   ctx.lineTo(px(0), h - pad.bottom);
   ctx.closePath();
@@ -375,9 +332,7 @@ function drawChart(canvas) {
   ctx.strokeStyle = "#7c6fff";
   ctx.lineWidth = 2;
   ctx.lineJoin = "round";
-  data.forEach((v, i) =>
-    i === 0 ? ctx.moveTo(px(i), py(v)) : ctx.lineTo(px(i), py(v)),
-  );
+  data.forEach((v, i) => i === 0 ? ctx.moveTo(px(i), py(v)) : ctx.lineTo(px(i), py(v)));
   ctx.stroke();
 }
 
@@ -388,10 +343,7 @@ function renderProjects(projects) {
     list.innerHTML = '<div class="loading">No projects yet.</div>';
     return;
   }
-  list.innerHTML = projects
-    .slice(0, 4)
-    .map(
-      (p, i) => `
+  list.innerHTML = projects.slice(0, 4).map((p, i) => `
     <div class="project-item">
       <div class="project-dot" style="background:${colors[i % colors.length]}"></div>
       <span class="project-name">${p.name}</span>
@@ -400,9 +352,7 @@ function renderProjects(projects) {
       </div>
       <span class="project-pct">${p.progress}%</span>
     </div>
-  `,
-    )
-    .join("");
+  `).join("");
 }
 
 // --- Load Projects (Dashboard) ---
@@ -422,8 +372,7 @@ async function loadProjects() {
 async function createProject() {
   const name = document.getElementById("inputName").value.trim();
   const description = document.getElementById("inputDesc").value.trim();
-  const progress =
-    parseInt(document.getElementById("inputProgress").value) || 0;
+  const progress = parseInt(document.getElementById("inputProgress").value) || 0;
   const status = document.getElementById("inputStatus").value;
 
   if (!name || !description) return alert("Name and description are required.");
@@ -450,8 +399,8 @@ function closeModal() {
   document.getElementById("inputName").value = "";
   document.getElementById("inputDesc").value = "";
   document.getElementById("inputProgress").value = "";
-  const btn = document.getElementById('btnSubmit');
-  btn.textContent = 'Create Project';
+  const btn = document.getElementById("btnSubmit");
+  btn.textContent = "Create Project";
   btn.onclick = createProject;
 }
 
@@ -466,15 +415,87 @@ async function loadTaskCount() {
   }
 }
 
+// --- Load Team ---
+async function loadTeam() {
+  try {
+    const res = await fetch(`${API}/team`, { headers: authHeaders() });
+    const data = await res.json();
+    document.getElementById("statTeam").textContent = data.length;
+    const list = document.getElementById("teamList");
+    if (!data.length) {
+      list.innerHTML = '<div class="loading">No team members yet.</div>';
+      return;
+    }
+    list.innerHTML = data.map((m) => `
+      <div class="project-item">
+        <div class="stat-icon blue" style="width:36px;height:36px;border-radius:50%;font-size:14px;font-weight:600;flex-shrink:0">
+          ${m.name.charAt(0).toUpperCase()}
+        </div>
+        <div style="flex:1">
+          <div style="font-size:13px;color:#e0e0ff">${m.name}</div>
+          <div style="font-size:11px;color:#6060a0">${m.role}</div>
+        </div>
+        <span style="font-size:11px;color:#6060a0">${m.email}</span>
+        <div style="display:flex;gap:6px;margin-left:8px">
+          <button onclick="deleteMember(${m.id})" style="background:none;border:none;color:#6060a0;cursor:pointer;font-size:16px"><i class="ti ti-trash"></i></button>
+        </div>
+      </div>
+    `).join("");
+  } catch {
+    document.getElementById("teamList").innerHTML =
+      '<div class="loading">Could not load team.</div>';
+  }
+}
+
+// --- Create Team Member ---
+async function createMember() {
+  const name = document.getElementById("inputMemberName").value.trim();
+  const email = document.getElementById("inputMemberEmail").value.trim();
+  const role = document.getElementById("inputMemberRole").value.trim();
+
+  if (!name || !email || !role) return alert("All fields are required.");
+
+  try {
+    await fetch(`${API}/team`, {
+      method: "POST",
+      headers: authHeaders(),
+      body: JSON.stringify({ name, email, role }),
+    });
+    closeMemberModal();
+    loadTeam();
+  } catch {
+    alert("Failed to add member.");
+  }
+}
+
+// --- Delete Member ---
+async function deleteMember(id) {
+  if (!confirm("Remove this member?")) return;
+  try {
+    await fetch(`${API}/team/${id}`, { method: "DELETE", headers: authHeaders() });
+    loadTeam();
+  } catch {
+    alert("Failed to delete member.");
+  }
+}
+
+// --- Member Modal ---
+function openMemberModal() {
+  document.getElementById("modalMemberOverlay").classList.add("open");
+}
+function closeMemberModal() {
+  document.getElementById("modalMemberOverlay").classList.remove("open");
+  document.getElementById("inputMemberName").value = "";
+  document.getElementById("inputMemberEmail").value = "";
+  document.getElementById("inputMemberRole").value = "";
+}
+
 // --- Init ---
 document.addEventListener("DOMContentLoaded", () => {
   const user = getUserFromToken();
   if (user) {
-    document.querySelector("#page-dashboard .greeting h1").textContent =
-      `Good morning, ${user.name} 👋`;
-    document.querySelector(".avatar").textContent = user.name
-      .charAt(0)
-      .toUpperCase();
+    document.querySelector("#page-dashboard .greeting h1").textContent = `Good morning, ${user.name} 👋`;
+    document.querySelector(".avatar").textContent = user.name.charAt(0).toUpperCase();
   }
 
   document.getElementById("btnLogout").addEventListener("click", () => {
@@ -488,8 +509,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   loadProjects();
   loadTaskCount();
+  loadTeam();
 
-  document.getElementById("statTeam").textContent = "12";
   document.getElementById("statRevenue").textContent = "$42,430";
 
   document.getElementById("btnNewProject").addEventListener("click", openModal);
@@ -500,18 +521,20 @@ document.addEventListener("DOMContentLoaded", () => {
     if (e.target === e.currentTarget) closeModal();
   });
 
-  document
-    .getElementById("btnNewTask")
-    .addEventListener("click", openTaskModal);
-  document
-    .getElementById("modalTaskClose")
-    .addEventListener("click", closeTaskModal);
-  document
-    .getElementById("btnTaskCancel")
-    .addEventListener("click", closeTaskModal);
+  document.getElementById("btnNewTask").addEventListener("click", openTaskModal);
+  document.getElementById("modalTaskClose").addEventListener("click", closeTaskModal);
+  document.getElementById("btnTaskCancel").addEventListener("click", closeTaskModal);
   document.getElementById("btnTaskSubmit").onclick = createTask;
   document.getElementById("modalTaskOverlay").addEventListener("click", (e) => {
     if (e.target === e.currentTarget) closeTaskModal();
+  });
+
+  document.getElementById("btnNewMember").addEventListener("click", openMemberModal);
+  document.getElementById("modalMemberClose").addEventListener("click", closeMemberModal);
+  document.getElementById("btnMemberCancel").addEventListener("click", closeMemberModal);
+  document.getElementById("btnMemberSubmit").onclick = createMember;
+  document.getElementById("modalMemberOverlay").addEventListener("click", (e) => {
+    if (e.target === e.currentTarget) closeMemberModal();
   });
 
   document.getElementById("viewAllProjects").addEventListener("click", (e) => {

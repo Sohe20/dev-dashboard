@@ -160,10 +160,15 @@
               <h1>Team</h1>
               <p>Your team members.</p>
             </div>
+            <div class="topbar-actions">
+              <button class="btn-new" id="btnNewMember">
+                <i class="ti ti-plus"></i> New Member
+              </button>
+            </div>
           </div>
           <div class="card">
             <div id="teamList" class="projects-list">
-              <div class="loading">Coming soon...</div>
+              <div class="loading">Loading...</div>
             </div>
           </div>
         </div>
@@ -280,6 +285,48 @@
         <div class="modal-footer">
           <button class="btn-cancel" id="btnTaskCancel">Cancel</button>
           <button class="btn-submit" id="btnTaskSubmit">Create Task</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: New Member -->
+    <div class="modal-overlay" id="modalMemberOverlay">
+      <div class="modal">
+        <div class="modal-header">
+          <h3>New Member</h3>
+          <button class="modal-close" id="modalMemberClose">
+            <i class="ti ti-x"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label>Full Name</label>
+            <input
+              type="text"
+              id="inputMemberName"
+              placeholder="e.g. John Doe"
+            />
+          </div>
+          <div class="form-group">
+            <label>Email</label>
+            <input
+              type="email"
+              id="inputMemberEmail"
+              placeholder="john@example.com"
+            />
+          </div>
+          <div class="form-group">
+            <label>Role</label>
+            <input
+              type="text"
+              id="inputMemberRole"
+              placeholder="e.g. Frontend Developer"
+            />
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-cancel" id="btnMemberCancel">Cancel</button>
+          <button class="btn-submit" id="btnMemberSubmit">Add Member</button>
         </div>
       </div>
     </div>
