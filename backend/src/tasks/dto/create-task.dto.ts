@@ -4,4 +4,5 @@ export class CreateTaskDto {
   status!: string;
   projectId?: number;
   assigneeId?: number;
+  assignedById?: number;
 }

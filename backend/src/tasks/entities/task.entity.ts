@@ -28,6 +28,9 @@ export class Task {
   @ManyToOne(() => User, { nullable: true, onDelete: 'SET NULL' })
   assignee!: User;
 
+  @ManyToOne(() => User, { nullable: true, onDelete: 'SET NULL' })
+  assignedBy!: User;
+
   @CreateDateColumn()
   createdAt!: Date;
 }

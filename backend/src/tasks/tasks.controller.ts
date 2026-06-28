@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Delete, Param, Body, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Param, Body, Query, UseGuards, Request } from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
@@ -20,7 +20,8 @@ export class TasksController {
   }
 
   @Post()
-  create(@Body() data: CreateTaskDto) {
+  create(@Body() data: CreateTaskDto, @Request() req: any) {
+    data.assignedById = req.user.sub;
     return this.tasksService.create(data);
   }
 
