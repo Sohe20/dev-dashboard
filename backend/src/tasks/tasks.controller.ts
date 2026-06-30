@@ -25,10 +25,7 @@ export class TasksController {
     return this.tasksService.findAll(projectId ? +projectId : undefined);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.tasksService.findOne(+id);
-  }
+  
 
   @Get('my-tasks')
   myTasks(@Request() req: any) {
@@ -38,6 +35,11 @@ export class TasksController {
   @Get('user/:id')
   findByUser(@Param('id') id: string) {
     return this.tasksService.findByUser(+id);
+  }
+
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.tasksService.findOne(+id);
   }
 
   
