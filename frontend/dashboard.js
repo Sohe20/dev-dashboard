@@ -9,6 +9,20 @@ const colors = [
   "#a0ff80",
 ];
 
+function toggleTheme() {
+  document.body.classList.toggle("light");
+  const isLight = document.body.classList.contains("light");
+  localStorage.setItem("theme", isLight ? "light" : "dark");
+  document.getElementById("btnTheme").innerHTML = isLight
+    ? '<i class="ti ti-sun"></i>'
+    : '<i class="ti ti-moon"></i>';
+}
+
+// Apply saved theme on load
+if (localStorage.getItem("theme") === "light") {
+  document.body.classList.add("light");
+}
+
 // Redirect to login if not authenticated
 if (!localStorage.getItem("token")) {
   window.location.href = "Auth/login.html";
@@ -61,7 +75,6 @@ document.querySelectorAll(".nav-item").forEach((item) => {
   });
 });
 
-
 async function getMyRole() {
   try {
     const res = await fetch(`${API}/team/my-role`, { headers: authHeaders() });
@@ -76,16 +89,22 @@ async function getMyRole() {
 async function loadAllProjects() {
   try {
     const role = await getMyRole();
-    const isTeamLead = role === 'Team Lead';
+    const isTeamLead = role === "Team Lead";
     let data;
 
     if (isTeamLead) {
       const res = await fetch(`${API}/projects`, { headers: authHeaders() });
       data = await res.json();
     } else {
-      const res = await fetch(`${API}/tasks/my-tasks`, { headers: authHeaders() });
+      const res = await fetch(`${API}/tasks/my-tasks`, {
+        headers: authHeaders(),
+      });
       const tasks = await res.json();
-      data = [...new Map(tasks.filter(t => t.project).map(t => [t.project.id, t.project])).values()];
+      data = [
+        ...new Map(
+          tasks.filter((t) => t.project).map((t) => [t.project.id, t.project]),
+        ).values(),
+      ];
     }
 
     const list = document.getElementById("allProjectsList");
@@ -94,7 +113,9 @@ async function loadAllProjects() {
       return;
     }
 
-    list.innerHTML = data.map((p, i) => `
+    list.innerHTML = data
+      .map(
+        (p, i) => `
       <div class="project-item clickable">
         <div class="project-dot" style="background:${colors[i % colors.length]}"></div>
         <span class="project-name" onclick="showProjectTasks(${p.id}, '${p.name}')" style="cursor:pointer;flex:1">${p.name}</span>
@@ -102,14 +123,20 @@ async function loadAllProjects() {
           <div class="project-bar" style="width:${p.progress}%;background:${colors[i % colors.length]}"></div>
         </div>
         <span class="project-pct">${p.progress}%</span>
-        ${isTeamLead ? `
+        ${
+          isTeamLead
+            ? `
         <div style="display:flex;gap:6px;margin-left:8px">
           <button onclick="editProject(${p.id}, '${p.name}', '${p.description}', ${p.progress}, '${p.status}')" style="background:none;border:none;color:#6060a0;cursor:pointer;font-size:16px"><i class="ti ti-pencil"></i></button>
           <button onclick="deleteProject(${p.id})" style="background:none;border:none;color:#6060a0;cursor:pointer;font-size:16px"><i class="ti ti-trash"></i></button>
         </div>
-        ` : ''}
+        `
+            : ""
+        }
       </div>
-    `).join("");
+    `,
+      )
+      .join("");
   } catch {
     document.getElementById("allProjectsList").innerHTML =
       '<div class="loading">Could not load.</div>';
@@ -367,7 +394,8 @@ function drawChart(canvas, chartData, chartLabels) {
   const pad = { left: 30, right: 10, top: 10, bottom: 20 };
   const max = Math.max(...data, 10);
 
-  const px = (i) => pad.left + (i / Math.max(data.length - 1, 1)) * (w - pad.left - pad.right);
+  const px = (i) =>
+    pad.left + (i / Math.max(data.length - 1, 1)) * (w - pad.left - pad.right);
   const py = (v) => pad.top + (1 - v / max) * (h - pad.top - pad.bottom);
 
   ctx.clearRect(0, 0, w, h);
@@ -398,7 +426,9 @@ function drawChart(canvas, chartData, chartLabels) {
     grad.addColorStop(0, "rgba(92,79,214,0.35)");
     grad.addColorStop(1, "rgba(92,79,214,0)");
     ctx.beginPath();
-    data.forEach((v, i) => i === 0 ? ctx.moveTo(px(i), py(v)) : ctx.lineTo(px(i), py(v)));
+    data.forEach((v, i) =>
+      i === 0 ? ctx.moveTo(px(i), py(v)) : ctx.lineTo(px(i), py(v)),
+    );
     ctx.lineTo(px(data.length - 1), h - pad.bottom);
     ctx.lineTo(px(0), h - pad.bottom);
     ctx.closePath();
@@ -409,7 +439,9 @@ function drawChart(canvas, chartData, chartLabels) {
     ctx.strokeStyle = "#7c6fff";
     ctx.lineWidth = 2;
     ctx.lineJoin = "round";
-    data.forEach((v, i) => i === 0 ? ctx.moveTo(px(i), py(v)) : ctx.lineTo(px(i), py(v)));
+    data.forEach((v, i) =>
+      i === 0 ? ctx.moveTo(px(i), py(v)) : ctx.lineTo(px(i), py(v)),
+    );
     ctx.stroke();
   }
 }
@@ -442,7 +474,7 @@ function renderProjects(projects) {
 async function loadProjects() {
   try {
     const role = await getMyRole();
-    const isTeamLead = role === 'Team Lead';
+    const isTeamLead = role === "Team Lead";
 
     if (isTeamLead) {
       const res = await fetch(`${API}/projects`, { headers: authHeaders() });
@@ -450,9 +482,15 @@ async function loadProjects() {
       document.getElementById("statProjects").textContent = data.length;
       renderProjects(data);
     } else {
-      const res = await fetch(`${API}/tasks/my-tasks`, { headers: authHeaders() });
+      const res = await fetch(`${API}/tasks/my-tasks`, {
+        headers: authHeaders(),
+      });
       const tasks = await res.json();
-      const projects = [...new Map(tasks.filter(t => t.project).map(t => [t.project.id, t.project])).values()];
+      const projects = [
+        ...new Map(
+          tasks.filter((t) => t.project).map((t) => [t.project.id, t.project]),
+        ).values(),
+      ];
       document.getElementById("statProjects").textContent = projects.length;
       renderProjects(projects);
     }
@@ -529,13 +567,13 @@ async function loadTeam() {
       ${m.name.charAt(0).toUpperCase()}
     </div>
     <div style="flex:1">
-      <div style="font-size:13px;color:#e0e0ff">${m.name}</div>
-      <div style="font-size:11px;color:#6060a0">${m.role}</div>
+      <div style="font-size:13px;color:var(--text)">${m.name}</div>
+      <div style="font-size:11px;color:var(--muted)">${m.role}</div>
     </div>
-    <span style="font-size:11px;color:#6060a0">${m.email}</span>
-    <i class="ti ti-chevron-right" style="color:#6060a0;margin-left:8px"></i>
+    <span style="font-size:11px;color:var(--muted)">${m.email}</span>
+    <i class="ti ti-chevron-right" style="color:var(--muted);margin-left:8px"></i>
     <div style="display:flex;gap:6px;margin-left:8px">
-      <button onclick="event.stopPropagation();deleteMember(${m.id})" style="background:none;border:none;color:#6060a0;cursor:pointer;font-size:16px"><i class="ti ti-trash"></i></button>
+      <button onclick="event.stopPropagation();deleteMember(${m.id})" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px"><i class="ti ti-trash"></i></button>
     </div>
   </div>
 `,
@@ -618,8 +656,8 @@ async function loadProfile() {
         ${user.name.charAt(0).toUpperCase()}
       </div>
       <div style="flex:1">
-        <div style="font-size:15px;font-weight:600;color:#e0e0ff">${user.name}</div>
-        <div style="font-size:12px;color:#6060a0">${user.email}</div>
+        <div style="font-size:15px;font-weight:600;color:var(--text)">${user.name}</div>
+        <div style="font-size:12px;color:var(--muted)">${user.email}</div>
       </div>
     </div>
   `;
@@ -640,11 +678,11 @@ async function loadProfile() {
       <div class="project-item">
         <div class="project-dot" style="background:${t.status === "done" ? "#40d080" : t.status === "inprogress" ? "#40a0ff" : "#6060a0"}"></div>
         <div style="flex:1">
-          <div style="font-size:13px;color:#e0e0ff">${t.title}</div>
-          ${t.assignedBy ? `<div style="font-size:11px;color:#6060a0">Assigned by: ${t.assignedBy.name}</div>` : ""}
-          ${t.project ? `<div style="font-size:11px;color:#6060a0">Project: ${t.project.name}</div>` : ""}
+          <div style="font-size:13px;color:var(--text)">${t.title}</div>
+          ${t.assignedBy ? `<div style="font-size:11px;color:var(--muted)">Assigned by: ${t.assignedBy.name}</div>` : ""}
+          ${t.project ? `<div style="font-size:11px;color:var(--muted)">Project: ${t.project.name}</div>` : ""}
         </div>
-        <span style="background:#1a1a30;padding:2px 8px;border-radius:6px;font-size:11px;color:#a0a0d0">${t.status}</span>
+        <span style="background:var(--border);padding:2px 8px;border-radius:6px;font-size:11px;color:var(--text)">${t.status}</span>
       </div>
     `,
       )
@@ -656,73 +694,92 @@ async function loadProfile() {
 }
 
 async function showMemberProfile(memberId, name, email, role) {
-  const list = document.getElementById('teamList');
+  const list = document.getElementById("teamList");
   list.innerHTML = `
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px">
       <button onclick="loadTeam()" style="background:none;border:none;color:#a08cff;cursor:pointer;font-size:13px">
         <i class="ti ti-arrow-left"></i> Back
       </button>
-      <span style="font-size:14px;font-weight:600;color:#e0e0ff">${name}</span>
+      <span style="font-size:14px;font-weight:600;color:var(--text)">${name}</span>
     </div>
-    <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px;padding:16px;background:#1a1a30;border-radius:12px">
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px;padding:16px;background:var(--surface);border:1px solid var(--border);border-radius:12px">
       <div class="stat-icon blue" style="width:48px;height:48px;border-radius:50%;font-size:20px;font-weight:700;flex-shrink:0">
         ${name.charAt(0).toUpperCase()}
       </div>
       <div>
-        <div style="font-size:15px;font-weight:600;color:#e0e0ff">${name}</div>
-        <div style="font-size:12px;color:#6060a0">${email}</div>
+        <div style="font-size:15px;font-weight:600;color:var(--text)">${name}</div>
+        <div style="font-size:12px;color:var(--muted)">${email}</div>
         <div style="font-size:12px;color:#a08cff;margin-top:4px">${role}</div>
       </div>
     </div>
-    <h3 style="font-size:13px;font-weight:600;color:#b0b0e0;margin-bottom:12px">Assigned Tasks</h3>
+    <h3 style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:12px">Assigned Tasks</h3>
     <div id="memberTasksList"><div class="loading">Loading...</div></div>
   `;
 
   try {
-    const res = await fetch(`${API}/tasks/user/${memberId}`, { headers: authHeaders() });
+    const res = await fetch(`${API}/tasks/user/${memberId}`, {
+      headers: authHeaders(),
+    });
     const tasks = await res.json();
-    const taskList = document.getElementById('memberTasksList');
+    const taskList = document.getElementById("memberTasksList");
 
     if (!tasks.length) {
       taskList.innerHTML = '<div class="loading">No tasks assigned.</div>';
       return;
     }
 
-    const projects = [...new Set(tasks.filter(t => t.project).map(t => t.project.name))];
+    const projects = [
+      ...new Set(tasks.filter((t) => t.project).map((t) => t.project.name)),
+    ];
 
     taskList.innerHTML = `
-      ${projects.length ? `
+      ${
+        projects.length
+          ? `
         <div style="margin-bottom:16px">
-          <div style="font-size:11px;color:#6060a0;margin-bottom:8px">PROJECTS</div>
-          ${projects.map(p => `
-            <span style="background:#1e1e3a;color:#a08cff;padding:3px 10px;border-radius:20px;font-size:11px;margin-right:6px">${p}</span>
-          `).join('')}
+          <div style="font-size:11px;color:var(--muted);margin-bottom:8px">PROJECTS</div>
+          ${projects
+            .map(
+              (p) => `
+            <span style="background:var(--border);color:#a08cff;padding:3px 10px;border-radius:20px;font-size:11px;margin-right:6px">${p}</span>
+          `,
+            )
+            .join("")}
         </div>
-      ` : ''}
-      ${tasks.map(t => `
+      `
+          : ""
+      }
+      ${tasks
+        .map(
+          (t) => `
         <div class="project-item">
-          <div class="project-dot" style="background:${t.status === 'done' ? '#40d080' : t.status === 'inprogress' ? '#40a0ff' : '#6060a0'}"></div>
+          <div class="project-dot" style="background:${t.status === "done" ? "#40d080" : t.status === "inprogress" ? "#40a0ff" : "#6060a0"}"></div>
           <div style="flex:1">
-            <div style="font-size:13px;color:#e0e0ff">${t.title}</div>
-            ${t.project ? `<div style="font-size:11px;color:#6060a0">${t.project.name}</div>` : ''}
-            ${t.assignedBy ? `<div style="font-size:11px;color:#6060a0">From: ${t.assignedBy.name}</div>` : ''}
+            <div style="font-size:13px;color:var(--text)">${t.title}</div>
+            ${t.project ? `<div style="font-size:11px;color:var(--muted)">${t.project.name}</div>` : ""}
+            ${t.assignedBy ? `<div style="font-size:11px;color:var(--muted)">From: ${t.assignedBy.name}</div>` : ""}
           </div>
-          <span style="background:#1a1a30;padding:2px 8px;border-radius:6px;font-size:11px;color:#a0a0d0">${t.status}</span>
+          <span style="background:var(--border);padding:2px 8px;border-radius:6px;font-size:11px;color:var(--text)">${t.status}</span>
         </div>
-      `).join('')}
+      `,
+        )
+        .join("")}
     `;
   } catch {
-    document.getElementById('memberTasksList').innerHTML = '<div class="loading">Could not load tasks.</div>';
+    document.getElementById("memberTasksList").innerHTML =
+      '<div class="loading">Could not load tasks.</div>';
   }
 }
 
 async function loadActivityChart(canvas) {
   try {
-    const res = await fetch(`${API}/tasks/activity`, { headers: authHeaders() });
+    const res = await fetch(`${API}/tasks/activity`, {
+      headers: authHeaders(),
+    });
     const { labels, data } = await res.json();
     drawChart(canvas, data, labels);
   } catch {
-    drawChart(canvas, [0,0,0,0,0], ['', '', '', '', '']);
+    drawChart(canvas, [0, 0, 0, 0, 0], ["", "", "", "", ""]);
   }
 }
 
@@ -735,6 +792,12 @@ document.addEventListener("DOMContentLoaded", () => {
     document.querySelector(".avatar").textContent = user.name
       .charAt(0)
       .toUpperCase();
+  }
+
+  document.getElementById("btnTheme").addEventListener("click", toggleTheme);
+
+  if (localStorage.getItem("theme") === "light") {
+    document.getElementById("btnTheme").innerHTML = '<i class="ti ti-sun"></i>';
   }
 
   document.getElementById("btnLogout").addEventListener("click", () => {
