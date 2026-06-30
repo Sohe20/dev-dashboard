@@ -20,6 +20,10 @@ export class TeamService {
     return this.teamRepository.findOneBy({ id });
   }
 
+  findByUserId(userId:number): Promise<TeamMember | null>{
+     return this.teamRepository.findOne({where: {userId}})
+  }
+
   create(data: CreateTeamMemberDto): Promise<TeamMember> {
     const member = this.teamRepository.create(data);
     return this.teamRepository.save(member);

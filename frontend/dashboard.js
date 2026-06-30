@@ -61,19 +61,40 @@ document.querySelectorAll(".nav-item").forEach((item) => {
   });
 });
 
+
+async function getMyRole() {
+  try {
+    const res = await fetch(`${API}/team/my-role`, { headers: authHeaders() });
+    const member = await res.json();
+    return member ? member.role : null;
+  } catch {
+    return null;
+  }
+}
+
 // --- Load All Projects (Projects page) ---
 async function loadAllProjects() {
   try {
-    const res = await fetch(`${API}/projects`, { headers: authHeaders() });
-    const data = await res.json();
+    const role = await getMyRole();
+    const isTeamLead = role === 'Team Lead';
+    let data;
+
+    if (isTeamLead) {
+      const res = await fetch(`${API}/projects`, { headers: authHeaders() });
+      data = await res.json();
+    } else {
+      const res = await fetch(`${API}/tasks/my-tasks`, { headers: authHeaders() });
+      const tasks = await res.json();
+      data = [...new Map(tasks.filter(t => t.project).map(t => [t.project.id, t.project])).values()];
+    }
+
     const list = document.getElementById("allProjectsList");
     if (!data.length) {
       list.innerHTML = '<div class="loading">No projects yet.</div>';
       return;
     }
-    list.innerHTML = data
-      .map(
-        (p, i) => `
+
+    list.innerHTML = data.map((p, i) => `
       <div class="project-item clickable">
         <div class="project-dot" style="background:${colors[i % colors.length]}"></div>
         <span class="project-name" onclick="showProjectTasks(${p.id}, '${p.name}')" style="cursor:pointer;flex:1">${p.name}</span>
@@ -81,14 +102,14 @@ async function loadAllProjects() {
           <div class="project-bar" style="width:${p.progress}%;background:${colors[i % colors.length]}"></div>
         </div>
         <span class="project-pct">${p.progress}%</span>
+        ${isTeamLead ? `
         <div style="display:flex;gap:6px;margin-left:8px">
           <button onclick="editProject(${p.id}, '${p.name}', '${p.description}', ${p.progress}, '${p.status}')" style="background:none;border:none;color:#6060a0;cursor:pointer;font-size:16px"><i class="ti ti-pencil"></i></button>
           <button onclick="deleteProject(${p.id})" style="background:none;border:none;color:#6060a0;cursor:pointer;font-size:16px"><i class="ti ti-trash"></i></button>
         </div>
+        ` : ''}
       </div>
-    `,
-      )
-      .join("");
+    `).join("");
   } catch {
     document.getElementById("allProjectsList").innerHTML =
       '<div class="loading">Could not load.</div>';
@@ -423,10 +444,21 @@ function renderProjects(projects) {
 // --- Load Projects (Dashboard) ---
 async function loadProjects() {
   try {
-    const res = await fetch(`${API}/projects`, { headers: authHeaders() });
-    const data = await res.json();
-    document.getElementById("statProjects").textContent = data.length;
-    renderProjects(data);
+    const role = await getMyRole();
+    const isTeamLead = role === 'Team Lead';
+
+    if (isTeamLead) {
+      const res = await fetch(`${API}/projects`, { headers: authHeaders() });
+      const data = await res.json();
+      document.getElementById("statProjects").textContent = data.length;
+      renderProjects(data);
+    } else {
+      const res = await fetch(`${API}/tasks/my-tasks`, { headers: authHeaders() });
+      const tasks = await res.json();
+      const projects = [...new Map(tasks.filter(t => t.project).map(t => [t.project.id, t.project])).values()];
+      document.getElementById("statProjects").textContent = projects.length;
+      renderProjects(projects);
+    }
   } catch {
     document.getElementById("projectsList").innerHTML =
       '<div class="loading">Could not load projects.</div>';
