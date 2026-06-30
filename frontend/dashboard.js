@@ -358,22 +358,22 @@ function closeTaskModal() {
   btn.onclick = createTask;
 }
 // --- Chart ---
-function drawChart(canvas) {
+function drawChart(canvas, chartData, chartLabels) {
   const ctx = canvas.getContext("2d");
   const w = (canvas.width = canvas.offsetWidth);
   const h = (canvas.height = 180);
-  const data = [15, 25, 20, 35, 30, 45, 40, 55, 50, 65, 60, 80, 75, 90, 100];
-  const labels = ["May 1", "May 8", "May 15", "May 22", "May 29"];
+  const data = chartData && chartData.length ? chartData : [0];
+  const labels = chartLabels && chartLabels.length ? chartLabels : ["No data"];
   const pad = { left: 30, right: 10, top: 10, bottom: 20 };
-  const max = 100;
+  const max = Math.max(...data, 10);
 
-  const px = (i) =>
-    pad.left + (i / (data.length - 1)) * (w - pad.left - pad.right);
+  const px = (i) => pad.left + (i / Math.max(data.length - 1, 1)) * (w - pad.left - pad.right);
   const py = (v) => pad.top + (1 - v / max) * (h - pad.top - pad.bottom);
 
   ctx.clearRect(0, 0, w, h);
 
-  [0, 25, 50, 75, 100].forEach((v) => {
+  const steps = [0, max / 4, max / 2, (max * 3) / 4, max].map(Math.round);
+  steps.forEach((v) => {
     ctx.beginPath();
     ctx.strokeStyle = "#1e1e3a";
     ctx.lineWidth = 0.5;
@@ -387,34 +387,31 @@ function drawChart(canvas) {
   });
 
   labels.forEach((l, i) => {
-    const xi = Math.round((i * (data.length - 1)) / 4);
     ctx.fillStyle = "#44447a";
     ctx.font = "10px Inter";
     ctx.textAlign = "center";
-    ctx.fillText(l, px(xi), h - 4);
+    ctx.fillText(l, px(i), h - 4);
   });
 
-  const grad = ctx.createLinearGradient(0, 0, 0, h);
-  grad.addColorStop(0, "rgba(92,79,214,0.35)");
-  grad.addColorStop(1, "rgba(92,79,214,0)");
-  ctx.beginPath();
-  data.forEach((v, i) =>
-    i === 0 ? ctx.moveTo(px(i), py(v)) : ctx.lineTo(px(i), py(v)),
-  );
-  ctx.lineTo(px(data.length - 1), h - pad.bottom);
-  ctx.lineTo(px(0), h - pad.bottom);
-  ctx.closePath();
-  ctx.fillStyle = grad;
-  ctx.fill();
+  if (data.length > 1) {
+    const grad = ctx.createLinearGradient(0, 0, 0, h);
+    grad.addColorStop(0, "rgba(92,79,214,0.35)");
+    grad.addColorStop(1, "rgba(92,79,214,0)");
+    ctx.beginPath();
+    data.forEach((v, i) => i === 0 ? ctx.moveTo(px(i), py(v)) : ctx.lineTo(px(i), py(v)));
+    ctx.lineTo(px(data.length - 1), h - pad.bottom);
+    ctx.lineTo(px(0), h - pad.bottom);
+    ctx.closePath();
+    ctx.fillStyle = grad;
+    ctx.fill();
 
-  ctx.beginPath();
-  ctx.strokeStyle = "#7c6fff";
-  ctx.lineWidth = 2;
-  ctx.lineJoin = "round";
-  data.forEach((v, i) =>
-    i === 0 ? ctx.moveTo(px(i), py(v)) : ctx.lineTo(px(i), py(v)),
-  );
-  ctx.stroke();
+    ctx.beginPath();
+    ctx.strokeStyle = "#7c6fff";
+    ctx.lineWidth = 2;
+    ctx.lineJoin = "round";
+    data.forEach((v, i) => i === 0 ? ctx.moveTo(px(i), py(v)) : ctx.lineTo(px(i), py(v)));
+    ctx.stroke();
+  }
 }
 
 // --- Render Projects (Dashboard) ---
@@ -719,6 +716,16 @@ async function showMemberProfile(memberId, name, email, role) {
   }
 }
 
+async function loadActivityChart(canvas) {
+  try {
+    const res = await fetch(`${API}/tasks/activity`, { headers: authHeaders() });
+    const { labels, data } = await res.json();
+    drawChart(canvas, data, labels);
+  } catch {
+    drawChart(canvas, [0,0,0,0,0], ['', '', '', '', '']);
+  }
+}
+
 // --- Init ---
 document.addEventListener("DOMContentLoaded", () => {
   const user = getUserFromToken();
@@ -736,7 +743,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   const canvas = document.getElementById("activityChart");
-  drawChart(canvas);
+  loadActivityChart(canvas);
   window.addEventListener("resize", () => drawChart(canvas));
 
   loadProjects();

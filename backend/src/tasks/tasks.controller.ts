@@ -37,6 +37,11 @@ export class TasksController {
     return this.tasksService.findByUser(+id);
   }
 
+  @Get('activity')
+  getActivity(){
+    return this.tasksService.getActivityData();
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.tasksService.findOne(+id);

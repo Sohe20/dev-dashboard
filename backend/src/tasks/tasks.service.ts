@@ -39,12 +39,40 @@ export class TasksService {
   }
 
   findByUser(userId: number): Promise<Task[]> {
-  return this.tasksRepository.find({
-    where: { assignee: { id: userId } },
-    relations: { project: true, assignee: true, assignedBy: true },
-  });
-}
+    return this.tasksRepository.find({
+      where: { assignee: { id: userId } },
+      relations: { project: true, assignee: true, assignedBy: true },
+    });
+  }
 
+  async getActivityData(): Promise<{ labels: string[]; data: number[] }> {
+    const tasks = await this.tasksRepository.find();
+
+    const now = new Date();
+    const weeks: { label: string; count: number }[] = [];
+
+    for (let i = 4; i >= 0; i--) {
+      const weekStart = new Date(now);
+      weekStart.setDate(now.getDate() - i * 7 - 6);
+      const weekEnd = new Date(now);
+      weekEnd.setDate(now.getDate() - i * 7);
+
+      const count = tasks.filter((t) => {
+        const created = new Date(t.createdAt);
+        return created >= weekStart && created <= weekEnd;
+      }).length;
+
+      weeks.push({
+        label: `${weekStart.getMonth() + 1}/${weekStart.getDate()}`,
+        count,
+      });
+    }
+
+    return {
+      labels: weeks.map((w) => w.label),
+      data: weeks.map((w) => w.count),
+    };
+  }
 
   create(data: CreateTaskDto): Promise<Task> {
     const task = this.tasksRepository.create({
