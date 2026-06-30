@@ -31,10 +31,10 @@
             <i class="ti ti-circle-check"></i>
           </a>
           <a href="#" class="nav-item" data-page="team" title="Team">
-            <i class="ti ti-users"></i>
+            <i class="ti ti-users-group"></i>
           </a>
-          <a href="#" class="nav-item" data-page="settings" title="Settings">
-            <i class="ti ti-settings"></i>
+          <a href="#" class="nav-item" data-page="settings" title="Profile">
+            <i class="ti ti-user"></i>
           </a>
         </nav>
         <div class="avatar">J</div>
@@ -173,16 +173,27 @@
           </div>
         </div>
 
-        <!-- PAGE: Settings -->
+        <!-- PAGE: Profile -->
         <div id="page-settings" class="page">
           <div class="topbar">
             <div class="greeting">
-              <h1>Settings</h1>
-              <p>Manage your preferences.</p>
+              <h1>My Profile</h1>
+              <p>Your tasks and information.</p>
             </div>
           </div>
-          <div class="card">
-            <div class="loading">Coming soon...</div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px">
+            <div class="card">
+              <h2 class="card-title">Profile Info</h2>
+              <div id="profileInfo" class="projects-list">
+                <div class="loading">Loading...</div>
+              </div>
+            </div>
+            <div class="card">
+              <h2 class="card-title">My Tasks</h2>
+              <div id="myTasksList" class="projects-list">
+                <div class="loading">Loading...</div>
+              </div>
+            </div>
           </div>
         </div>
       </main>

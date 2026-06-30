@@ -12,36 +12,51 @@ export class TasksService {
     private tasksRepository: Repository<Task>,
   ) {}
 
- findAll(projectId?: number): Promise<Task[]> {
-  if (projectId) {
+  findAll(projectId?: number): Promise<Task[]> {
+    if (projectId) {
+      return this.tasksRepository.find({
+        where: { project: { id: projectId } },
+        relations: { project: true, assignee: true, assignedBy: true },
+      });
+    }
     return this.tasksRepository.find({
-      where: { project: { id: projectId } },
       relations: { project: true, assignee: true, assignedBy: true },
     });
   }
-  return this.tasksRepository.find({ 
-    relations: { project: true, assignee: true, assignedBy: true } 
+
+  findOne(id: number): Promise<Task | null> {
+    return this.tasksRepository.findOne({
+      where: { id },
+      relations: { project: true, assignee: true, assignedBy: true },
+    });
+  }
+
+  findByAssignee(userId: number): Promise<Task[]> {
+    return this.tasksRepository.find({
+      where: { assignee: { id: userId } },
+      relations: { project: true, assignee: true, assignedBy: true },
+    });
+  }
+
+  findByUser(userId: number): Promise<Task[]> {
+  return this.tasksRepository.find({
+    where: { assignee: { id: userId } },
+    relations: { project: true, assignee: true, assignedBy: true },
   });
 }
 
-findOne(id: number): Promise<Task | null> {
-  return this.tasksRepository.findOne({ 
-    where: { id }, 
-    relations: { project: true, assignee: true, assignedBy: true } 
-  });
-}
 
   create(data: CreateTaskDto): Promise<Task> {
-  const task = this.tasksRepository.create({
-    title: data.title,
-    description: data.description,
-    status: data.status,
-    project: data.projectId ? { id: data.projectId } : undefined,
-    assignee: data.assigneeId ? { id: data.assigneeId } : undefined,
-    assignedBy: data.assignedById ? { id: data.assignedById } : undefined,
-  });
-  return this.tasksRepository.save(task);
-}
+    const task = this.tasksRepository.create({
+      title: data.title,
+      description: data.description,
+      status: data.status,
+      project: data.projectId ? { id: data.projectId } : undefined,
+      assignee: data.assigneeId ? { id: data.assigneeId } : undefined,
+      assignedBy: data.assignedById ? { id: data.assignedById } : undefined,
+    });
+    return this.tasksRepository.save(task);
+  }
 
   async update(id: number, data: UpdateTaskDto): Promise<Task | null> {
     const { projectId, assigneeId, ...rest } = data as any;

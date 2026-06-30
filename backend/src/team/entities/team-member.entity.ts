@@ -15,7 +15,7 @@ export class TeamMember {
   role!: string;
 
   @Column({ nullable: true })
-  avatar!: string;
+  userId!: number;
 
   @CreateDateColumn()
   createdAt!: Date;

@@ -51,6 +51,7 @@ function navigate(pageName) {
   if (pageName === "dashboard") loadProjects();
   if (pageName === "tasks") loadTasks();
   if (pageName === "team") loadTeam();
+  if (pageName === "settings") loadProfile();
 }
 
 document.querySelectorAll(".nav-item").forEach((item) => {
@@ -494,20 +495,21 @@ async function loadTeam() {
     list.innerHTML = data
       .map(
         (m) => `
-      <div class="project-item">
-        <div class="stat-icon blue" style="width:36px;height:36px;border-radius:50%;font-size:14px;font-weight:600;flex-shrink:0">
-          ${m.name.charAt(0).toUpperCase()}
-        </div>
-        <div style="flex:1">
-          <div style="font-size:13px;color:#e0e0ff">${m.name}</div>
-          <div style="font-size:11px;color:#6060a0">${m.role}</div>
-        </div>
-        <span style="font-size:11px;color:#6060a0">${m.email}</span>
-        <div style="display:flex;gap:6px;margin-left:8px">
-          <button onclick="deleteMember(${m.id})" style="background:none;border:none;color:#6060a0;cursor:pointer;font-size:16px"><i class="ti ti-trash"></i></button>
-        </div>
-      </div>
-    `,
+  <div class="project-item clickable" onclick="showMemberProfile(${m.id}, '${m.name}', '${m.email}', '${m.role}')">
+    <div class="stat-icon blue" style="width:36px;height:36px;border-radius:50%;font-size:14px;font-weight:600;flex-shrink:0">
+      ${m.name.charAt(0).toUpperCase()}
+    </div>
+    <div style="flex:1">
+      <div style="font-size:13px;color:#e0e0ff">${m.name}</div>
+      <div style="font-size:11px;color:#6060a0">${m.role}</div>
+    </div>
+    <span style="font-size:11px;color:#6060a0">${m.email}</span>
+    <i class="ti ti-chevron-right" style="color:#6060a0;margin-left:8px"></i>
+    <div style="display:flex;gap:6px;margin-left:8px">
+      <button onclick="event.stopPropagation();deleteMember(${m.id})" style="background:none;border:none;color:#6060a0;cursor:pointer;font-size:16px"><i class="ti ti-trash"></i></button>
+    </div>
+  </div>
+`,
       )
       .join("");
   } catch {
@@ -527,12 +529,13 @@ async function createMember() {
 
   const name = selectedOption.dataset.name;
   const email = selectedOption.dataset.email;
+  const userId = select.value;
 
   try {
     await fetch(`${API}/team`, {
       method: "POST",
       headers: authHeaders(),
-      body: JSON.stringify({ name, email, role }),
+      body: JSON.stringify({ name, email, role, userId: +userId }),
     });
     closeMemberModal();
     loadTeam();
@@ -575,6 +578,115 @@ function closeMemberModal() {
   document.getElementById("inputMemberUser").value = "";
   document.getElementById("inputMemberRole").value = "";
 }
+
+async function loadProfile() {
+  const user = getUserFromToken();
+  if (!user) return;
+
+  document.getElementById("profileInfo").innerHTML = `
+    <div class="project-item">
+      <div class="stat-icon blue" style="width:48px;height:48px;border-radius:50%;font-size:20px;font-weight:700">
+        ${user.name.charAt(0).toUpperCase()}
+      </div>
+      <div style="flex:1">
+        <div style="font-size:15px;font-weight:600;color:#e0e0ff">${user.name}</div>
+        <div style="font-size:12px;color:#6060a0">${user.email}</div>
+      </div>
+    </div>
+  `;
+
+  try {
+    const res = await fetch(`${API}/tasks/my-tasks`, {
+      headers: authHeaders(),
+    });
+    const tasks = await res.json();
+    const list = document.getElementById("myTasksList");
+    if (!tasks.length) {
+      list.innerHTML = '<div class="loading">No tasks assigned to you.</div>';
+      return;
+    }
+    list.innerHTML = tasks
+      .map(
+        (t) => `
+      <div class="project-item">
+        <div class="project-dot" style="background:${t.status === "done" ? "#40d080" : t.status === "inprogress" ? "#40a0ff" : "#6060a0"}"></div>
+        <div style="flex:1">
+          <div style="font-size:13px;color:#e0e0ff">${t.title}</div>
+          ${t.assignedBy ? `<div style="font-size:11px;color:#6060a0">Assigned by: ${t.assignedBy.name}</div>` : ""}
+          ${t.project ? `<div style="font-size:11px;color:#6060a0">Project: ${t.project.name}</div>` : ""}
+        </div>
+        <span style="background:#1a1a30;padding:2px 8px;border-radius:6px;font-size:11px;color:#a0a0d0">${t.status}</span>
+      </div>
+    `,
+      )
+      .join("");
+  } catch {
+    document.getElementById("myTasksList").innerHTML =
+      '<div class="loading">Could not load tasks.</div>';
+  }
+}
+
+async function showMemberProfile(memberId, name, email, role) {
+  const list = document.getElementById('teamList');
+  list.innerHTML = `
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px">
+      <button onclick="loadTeam()" style="background:none;border:none;color:#a08cff;cursor:pointer;font-size:13px">
+        <i class="ti ti-arrow-left"></i> Back
+      </button>
+      <span style="font-size:14px;font-weight:600;color:#e0e0ff">${name}</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px;padding:16px;background:#1a1a30;border-radius:12px">
+      <div class="stat-icon blue" style="width:48px;height:48px;border-radius:50%;font-size:20px;font-weight:700;flex-shrink:0">
+        ${name.charAt(0).toUpperCase()}
+      </div>
+      <div>
+        <div style="font-size:15px;font-weight:600;color:#e0e0ff">${name}</div>
+        <div style="font-size:12px;color:#6060a0">${email}</div>
+        <div style="font-size:12px;color:#a08cff;margin-top:4px">${role}</div>
+      </div>
+    </div>
+    <h3 style="font-size:13px;font-weight:600;color:#b0b0e0;margin-bottom:12px">Assigned Tasks</h3>
+    <div id="memberTasksList"><div class="loading">Loading...</div></div>
+  `;
+
+  try {
+    const res = await fetch(`${API}/tasks/user/${memberId}`, { headers: authHeaders() });
+    const tasks = await res.json();
+    const taskList = document.getElementById('memberTasksList');
+
+    if (!tasks.length) {
+      taskList.innerHTML = '<div class="loading">No tasks assigned.</div>';
+      return;
+    }
+
+    const projects = [...new Set(tasks.filter(t => t.project).map(t => t.project.name))];
+
+    taskList.innerHTML = `
+      ${projects.length ? `
+        <div style="margin-bottom:16px">
+          <div style="font-size:11px;color:#6060a0;margin-bottom:8px">PROJECTS</div>
+          ${projects.map(p => `
+            <span style="background:#1e1e3a;color:#a08cff;padding:3px 10px;border-radius:20px;font-size:11px;margin-right:6px">${p}</span>
+          `).join('')}
+        </div>
+      ` : ''}
+      ${tasks.map(t => `
+        <div class="project-item">
+          <div class="project-dot" style="background:${t.status === 'done' ? '#40d080' : t.status === 'inprogress' ? '#40a0ff' : '#6060a0'}"></div>
+          <div style="flex:1">
+            <div style="font-size:13px;color:#e0e0ff">${t.title}</div>
+            ${t.project ? `<div style="font-size:11px;color:#6060a0">${t.project.name}</div>` : ''}
+            ${t.assignedBy ? `<div style="font-size:11px;color:#6060a0">From: ${t.assignedBy.name}</div>` : ''}
+          </div>
+          <span style="background:#1a1a30;padding:2px 8px;border-radius:6px;font-size:11px;color:#a0a0d0">${t.status}</span>
+        </div>
+      `).join('')}
+    `;
+  } catch {
+    document.getElementById('memberTasksList').innerHTML = '<div class="loading">Could not load tasks.</div>';
+  }
+}
+
 // --- Init ---
 document.addEventListener("DOMContentLoaded", () => {
   const user = getUserFromToken();

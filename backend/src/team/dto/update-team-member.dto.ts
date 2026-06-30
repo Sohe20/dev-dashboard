@@ -3,4 +3,5 @@ export class UpdateTeamMemberDto {
   email?: string;
   role?: string;
   avatar?: string;
+  userId?: number;
 }

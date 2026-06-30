@@ -1,4 +1,15 @@
-import { Controller, Get, Post, Put, Delete, Param, Body, Query, UseGuards, Request } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Param,
+  Body,
+  Query,
+  UseGuards,
+  Request,
+} from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
@@ -19,6 +30,17 @@ export class TasksController {
     return this.tasksService.findOne(+id);
   }
 
+  @Get('my-tasks')
+  myTasks(@Request() req: any) {
+    return this.tasksService.findByAssignee(req.user.sub);
+  }
+
+  @Get('user/:id')
+  findByUser(@Param('id') id: string) {
+    return this.tasksService.findByUser(+id);
+  }
+
+  
   @Post()
   create(@Body() data: CreateTaskDto, @Request() req: any) {
     data.assignedById = req.user.sub;

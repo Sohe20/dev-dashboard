@@ -3,4 +3,5 @@ export class CreateTeamMemberDto {
   email!: string;
   role!: string;
   avatar?: string;
+  userId?: number;
 }
