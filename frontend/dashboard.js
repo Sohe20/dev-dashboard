@@ -96,15 +96,11 @@ async function loadAllProjects() {
       const res = await fetch(`${API}/projects`, { headers: authHeaders() });
       data = await res.json();
     } else {
-      const res = await fetch(`${API}/tasks/my-tasks`, {
-        headers: authHeaders(),
-      });
+      const res = await fetch(`${API}/tasks/my-tasks`, { headers: authHeaders() });
       const tasks = await res.json();
-      data = [
-        ...new Map(
-          tasks.filter((t) => t.project).map((t) => [t.project.id, t.project]),
-        ).values(),
-      ];
+      data = [...new Map(
+        tasks.filter((t) => t.project).map((t) => [t.project.id, t.project])
+      ).values()];
     }
 
     const list = document.getElementById("allProjectsList");
@@ -113,36 +109,27 @@ async function loadAllProjects() {
       return;
     }
 
-    list.innerHTML = data
-      .map(
-        (p, i) => `
+    list.innerHTML = data.map((p, i) => `
       <div class="project-item clickable">
         <div class="project-dot" style="background:${colors[i % colors.length]}"></div>
-        <span class="project-name" onclick="showProjectTasks(${p.id}, '${p.name}')" style="cursor:pointer;flex:1">${p.name}</span>
+        <span class="project-name" onclick="showProjectDetail(${p.id}, '${p.name}')" style="cursor:pointer;flex:1">${p.name}</span>
         <div class="project-bar-wrap">
           <div class="project-bar" style="width:${p.progress}%;background:${colors[i % colors.length]}"></div>
         </div>
         <span class="project-pct">${p.progress}%</span>
-        ${
-          isTeamLead
-            ? `
+        ${isTeamLead ? `
         <div style="display:flex;gap:6px;margin-left:8px">
-          <button onclick="editProject(${p.id}, '${p.name}', '${p.description}', ${p.progress}, '${p.status}')" style="background:none;border:none;color:#6060a0;cursor:pointer;font-size:16px"><i class="ti ti-pencil"></i></button>
+          <button onclick="editProject(${p.id}, '${p.name}', '${p.description}', ${p.progress}, '${p.status}', ${p.budget || 0})" style="background:none;border:none;color:#6060a0;cursor:pointer;font-size:16px"><i class="ti ti-pencil"></i></button>
           <button onclick="deleteProject(${p.id})" style="background:none;border:none;color:#6060a0;cursor:pointer;font-size:16px"><i class="ti ti-trash"></i></button>
         </div>
-        `
-            : ""
-        }
+        ` : ''}
       </div>
-    `,
-      )
-      .join("");
+    `).join("");
   } catch {
     document.getElementById("allProjectsList").innerHTML =
       '<div class="loading">Could not load.</div>';
   }
 }
-
 // --- Delete Project ---
 async function deleteProject(id) {
   if (!confirm("Delete this project?")) return;
@@ -797,6 +784,88 @@ async function loadRevenue() {
     document.getElementById("statRevenue").textContent = "$0";
   }
 }
+
+async function showProjectDetail(projectId, projectName) {
+  const list = document.getElementById("allProjectsList");
+  list.innerHTML = `
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px">
+      <button onclick="loadAllProjects()" style="background:none;border:none;color:#a08cff;cursor:pointer;font-size:13px">
+        <i class="ti ti-arrow-left"></i> Back
+      </button>
+      <span style="font-size:14px;font-weight:600;color:var(--text)">${projectName}</span>
+    </div>
+    <div id="projectDetail"><div class="loading">Loading...</div></div>
+  `;
+
+  try {
+    const [projectRes, tasksRes] = await Promise.all([
+      fetch(`${API}/projects/${projectId}`, { headers: authHeaders() }),
+      fetch(`${API}/tasks?projectId=${projectId}`, { headers: authHeaders() }),
+    ]);
+    const project = await projectRes.json();
+    const tasks = await tasksRes.json();
+
+    const members = [...new Map(
+      tasks.filter(t => t.assignee).map(t => [t.assignee.id, t.assignee])
+    ).values()];
+
+    document.getElementById("projectDetail").innerHTML = `
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px">
+          <div style="font-size:11px;color:var(--muted);margin-bottom:12px">PROJECT INFO</div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <div style="display:flex;justify-content:space-between">
+              <span style="font-size:12px;color:var(--muted)">Status</span>
+              <span style="font-size:12px;color:var(--text)">${project.status}</span>
+            </div>
+            <div style="display:flex;justify-content:space-between">
+              <span style="font-size:12px;color:var(--muted)">Budget</span>
+              <span style="font-size:12px;color:#40d080;font-weight:600">$${(project.budget || 0).toLocaleString()}</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <span style="font-size:12px;color:var(--muted)">Progress</span>
+              <span style="font-size:12px;color:var(--text)">${project.progress}%</span>
+            </div>
+            <div class="project-bar-wrap" style="width:100%">
+              <div class="project-bar" style="width:${project.progress}%;background:#5c4fd6"></div>
+            </div>
+            <div style="font-size:12px;color:var(--muted);margin-top:4px">${project.description}</div>
+          </div>
+        </div>
+
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px">
+          <div style="font-size:11px;color:var(--muted);margin-bottom:12px">TEAM MEMBERS</div>
+          ${members.length ? members.map(m => `
+            <div class="project-item" style="margin-bottom:8px">
+              <div class="stat-icon blue" style="width:30px;height:30px;border-radius:50%;font-size:12px;font-weight:600;flex-shrink:0">
+                ${m.name.charAt(0).toUpperCase()}
+              </div>
+              <span style="font-size:13px;color:var(--text)">${m.name}</span>
+            </div>
+          `).join('') : '<div class="loading">No members.</div>'}
+        </div>
+      </div>
+
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px">
+        <div style="font-size:11px;color:var(--muted);margin-bottom:12px">TASKS</div>
+        ${tasks.length ? tasks.map(t => `
+          <div class="project-item" style="margin-bottom:10px">
+            <div class="project-dot" style="background:${t.status === 'done' ? '#40d080' : t.status === 'inprogress' ? '#40a0ff' : '#6060a0'}"></div>
+            <div style="flex:1">
+              <div style="font-size:13px;color:var(--text)">${t.title}</div>
+              ${t.assignee ? `<div style="font-size:11px;color:var(--muted)"><i class="ti ti-user"></i> ${t.assignee.name}</div>` : ''}
+            </div>
+            <span style="background:var(--border);padding:2px 8px;border-radius:6px;font-size:11px;color:var(--text)">${t.status}</span>
+          </div>
+        `).join('') : '<div class="loading">No tasks.</div>'}
+      </div>
+    `;
+  } catch {
+    document.getElementById("projectDetail").innerHTML = '<div class="loading">Could not load project.</div>';
+  }
+}
+
+
 
 
 // --- Init ---
