@@ -1,5 +1,7 @@
 const API = "http://localhost:3000";
 
+let lastChartData = { data: [], labels: [] };
+
 const colors = [
   "#5c4fd6",
   "#40d080",
@@ -16,6 +18,9 @@ function toggleTheme() {
   document.getElementById("btnTheme").innerHTML = isLight
     ? '<i class="ti ti-sun"></i>'
     : '<i class="ti ti-moon"></i>';
+
+  const canvas = document.getElementById("activityChart");
+  drawChart(canvas, lastChartData.data, lastChartData.labels);
 }
 
 // Apply saved theme on load
@@ -422,6 +427,10 @@ function drawChart(canvas, chartData, chartLabels) {
   const pad = { left: 30, right: 10, top: 10, bottom: 20 };
   const max = Math.max(...data, 10);
 
+  const isLight = document.body.classList.contains("light");
+  const gridColor = isLight ? "#e0e0ec" : "#1e1e3a";
+  const labelColor = isLight ? "#8080a0" : "#44447a";
+
   const px = (i) =>
     pad.left + (i / Math.max(data.length - 1, 1)) * (w - pad.left - pad.right);
   const py = (v) => pad.top + (1 - v / max) * (h - pad.top - pad.bottom);
@@ -431,19 +440,19 @@ function drawChart(canvas, chartData, chartLabels) {
   const steps = [0, max / 4, max / 2, (max * 3) / 4, max].map(Math.round);
   steps.forEach((v) => {
     ctx.beginPath();
-    ctx.strokeStyle = "#1e1e3a";
+    ctx.strokeStyle = gridColor;
     ctx.lineWidth = 0.5;
     ctx.moveTo(pad.left, py(v));
     ctx.lineTo(w - pad.right, py(v));
     ctx.stroke();
-    ctx.fillStyle = "#44447a";
+    ctx.fillStyle = labelColor;
     ctx.font = "10px Inter";
     ctx.textAlign = "right";
     ctx.fillText(v, pad.left - 6, py(v) + 4);
   });
 
   labels.forEach((l, i) => {
-    ctx.fillStyle = "#44447a";
+    ctx.fillStyle = labelColor;
     ctx.font = "10px Inter";
     ctx.textAlign = "center";
     ctx.fillText(l, px(i), h - 4);
@@ -802,16 +811,15 @@ async function showMemberProfile(memberId, name, email, role) {
 
 async function loadActivityChart(canvas) {
   try {
-
     if (!canvas.offsetWidth) {
       setTimeout(() => loadActivityChart(canvas), 100);
       return;
     }
-
     const res = await fetch(`${API}/tasks/activity`, {
       headers: authHeaders(),
     });
     const { labels, data } = await res.json();
+    lastChartData = { data, labels };
     drawChart(canvas, data, labels);
   } catch {
     drawChart(canvas, [0, 0, 0, 0, 0], ["", "", "", "", ""]);
