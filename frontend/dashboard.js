@@ -802,6 +802,12 @@ async function showMemberProfile(memberId, name, email, role) {
 
 async function loadActivityChart(canvas) {
   try {
+
+    if (!canvas.offsetWidth) {
+      setTimeout(() => loadActivityChart(canvas), 100);
+      return;
+    }
+
     const res = await fetch(`${API}/tasks/activity`, {
       headers: authHeaders(),
     });
