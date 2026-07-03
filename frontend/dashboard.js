@@ -31,10 +31,34 @@ if (!localStorage.getItem("token")) {
 // --- Auth Headers ---
 function authHeaders() {
   const token = localStorage.getItem("token");
+  if (token) {
+    try {
+      const payload = JSON.parse(atob(token.split(".")[1]));
+      if (payload.exp * 1000 < Date.now()) {
+        localStorage.clear();
+        window.location.href = "Auth/login.html";
+        return {};
+      }
+    } catch {
+      localStorage.clear();
+      window.location.href = "Auth/login.html";
+      return {};
+    }
+  }
   return {
     "Content-Type": "application/json",
     Authorization: `Bearer ${token}`,
   };
+}
+
+async function apiFetch(url, options = {}) {
+  const res = await fetch(url, { ...options, headers: authHeaders() });
+  if (res.status === 401) {
+    localStorage.clear();
+    window.location.href = "Auth/login.html";
+    return null;
+  }
+  return res;
 }
 
 // --- Get User From Token ---
