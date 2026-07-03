@@ -25,6 +25,12 @@ export class ProjectsService {
     return this.projectsRepository.save(project);
   }
 
+  async getTotalRevenue(): Promise<{ total: number }> {
+  const projects = await this.projectsRepository.find();
+  const total = projects.reduce((sum, p) => sum + (p.budget || 0), 0);
+  return { total };
+}
+
   async update(id: number, data: UpdateProjectDto): Promise<Project | null> {
     await this.projectsRepository.update(id, data);
     return this.findOne(id);

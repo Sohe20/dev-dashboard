@@ -159,11 +159,12 @@ async function deleteProject(id) {
 }
 
 // --- Edit Project ---
-function editProject(id, name, description, progress, status) {
+function editProject(id, name, description, progress, status, budget) {
   document.getElementById("inputName").value = name;
   document.getElementById("inputDesc").value = description;
   document.getElementById("inputProgress").value = progress;
   document.getElementById("inputStatus").value = status;
+  document.getElementById("inputBudget").value = budget || 0;
   openModal();
 
   const btn = document.getElementById("btnSubmit");
@@ -171,9 +172,9 @@ function editProject(id, name, description, progress, status) {
   btn.onclick = async () => {
     const newName = document.getElementById("inputName").value.trim();
     const newDesc = document.getElementById("inputDesc").value.trim();
-    const newProgress =
-      parseInt(document.getElementById("inputProgress").value) || 0;
+    const newProgress = parseInt(document.getElementById("inputProgress").value) || 0;
     const newStatus = document.getElementById("inputStatus").value;
+    const newBudget = parseInt(document.getElementById("inputBudget").value) || 0;
 
     try {
       await fetch(`${API}/projects/${id}`, {
@@ -184,11 +185,13 @@ function editProject(id, name, description, progress, status) {
           description: newDesc,
           progress: newProgress,
           status: newStatus,
+          budget: newBudget,
         }),
       });
       closeModal();
       loadAllProjects();
       loadProjects();
+      loadRevenue();
     } catch {
       alert("Failed to update project.");
     }
@@ -504,9 +507,9 @@ async function loadProjects() {
 async function createProject() {
   const name = document.getElementById("inputName").value.trim();
   const description = document.getElementById("inputDesc").value.trim();
-  const progress =
-    parseInt(document.getElementById("inputProgress").value) || 0;
+  const progress = parseInt(document.getElementById("inputProgress").value) || 0;
   const status = document.getElementById("inputStatus").value;
+  const budget = parseInt(document.getElementById("inputBudget").value) || 0;
 
   if (!name || !description) return alert("Name and description are required.");
 
@@ -514,7 +517,7 @@ async function createProject() {
     await fetch(`${API}/projects`, {
       method: "POST",
       headers: authHeaders(),
-      body: JSON.stringify({ name, description, progress, status }),
+      body: JSON.stringify({ name, description, progress, status, budget }),
     });
     closeModal();
     loadProjects();
@@ -783,6 +786,19 @@ async function loadActivityChart(canvas) {
   }
 }
 
+
+
+async function loadRevenue() {
+  try {
+    const res = await fetch(`${API}/projects/revenue`, { headers: authHeaders() });
+    const { total } = await res.json();
+    document.getElementById("statRevenue").textContent = `$${total.toLocaleString()}`;
+  } catch {
+    document.getElementById("statRevenue").textContent = "$0";
+  }
+}
+
+
 // --- Init ---
 document.addEventListener("DOMContentLoaded", () => {
   const user = getUserFromToken();
@@ -812,8 +828,7 @@ document.addEventListener("DOMContentLoaded", () => {
   loadProjects();
   loadTaskCount();
   loadTeam();
-
-  document.getElementById("statRevenue").textContent = "$42,430";
+  loadRevenue();
 
   document.getElementById("btnNewProject").addEventListener("click", openModal);
   document.getElementById("modalClose").addEventListener("click", closeModal);

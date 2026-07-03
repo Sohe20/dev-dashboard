@@ -13,6 +13,9 @@ export class Project {
   @Column()
   name!: string;
 
+  @Column({ default: 0 })
+  budget!: number;
+
   @Column({ nullable: true })
   description!: string;
 

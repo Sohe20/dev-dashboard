@@ -3,4 +3,5 @@ export class CreateProjectDto {
   description!: string;
   progress!: number;
   status!: string;
+  budget?: number;
 }
