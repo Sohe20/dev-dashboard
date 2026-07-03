@@ -1048,9 +1048,17 @@ async function loadNotifications() {
     const projects = await projectsRes.json();
     const team = await teamRes.json();
 
-    const todoTasks = tasks.filter((t) => t.status === "todo");
-    const inprogressTasks = tasks.filter((t) => t.status === "inprogress");
-    const activeProjects = projects.filter((p) => p.status === "active");
+    const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+
+    const todoTasks = tasks.filter(
+      (t) => t.status === "todo" && new Date(t.createdAt) > oneDayAgo,
+    );
+    const inprogressTasks = tasks.filter(
+      (t) => t.status === "inprogress" && new Date(t.createdAt) > oneDayAgo,
+    );
+    const activeProjects = projects.filter(
+      (p) => p.status === "active" && new Date(p.createdAt) > oneDayAgo,
+    );
 
     todoTasks.forEach((t) =>
       notifs.push({
