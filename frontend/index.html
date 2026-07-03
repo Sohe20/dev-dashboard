@@ -53,9 +53,28 @@
               <p>Here's what's happening with your projects today.</p>
             </div>
             <div class="topbar-actions">
-              <div class="search">
-                <i class="ti ti-search"></i>
-                <input type="text" placeholder="Search..." />
+              <div style="position: relative">
+                <div class="search">
+                  <i class="ti ti-search"></i>
+                  <input type="text" id="searchInput" placeholder="Search..." />
+                </div>
+                <div
+                  id="searchResults"
+                  style="
+                    display: none;
+                    position: absolute;
+                    top: 44px;
+                    left: 0;
+                    right: 0;
+                    background: var(--surface);
+                    border: 1px solid var(--border);
+                    border-radius: 10px;
+                    z-index: 200;
+                    max-height: 300px;
+                    overflow-y: auto;
+                    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+                  "
+                ></div>
               </div>
               <button class="btn-bell" id="btnTheme">
                 <i class="ti ti-moon"></i>

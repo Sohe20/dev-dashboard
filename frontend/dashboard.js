@@ -866,6 +866,89 @@ async function showProjectDetail(projectId, projectName) {
 }
 
 
+async function globalSearch(query) {
+  if (!query || query.length < 1) {
+    document.getElementById("searchResults").style.display = "none";
+    return;
+  }
+
+  try {
+    const [projectsRes, tasksRes, teamRes] = await Promise.all([
+      fetch(`${API}/projects`, { headers: authHeaders() }),
+      fetch(`${API}/tasks`, { headers: authHeaders() }),
+      fetch(`${API}/team`, { headers: authHeaders() }),
+    ]);
+    const projects = await projectsRes.json();
+    const tasks = await tasksRes.json();
+    const team = await teamRes.json();
+
+    const q = query.toLowerCase();
+
+    const matchedProjects = projects.filter(p =>
+      p.name.toLowerCase().includes(q) || p.description?.toLowerCase().includes(q)
+    );
+    const matchedTasks = tasks.filter(t =>
+      t.title.toLowerCase().includes(q) || t.description?.toLowerCase().includes(q)
+    );
+    const matchedTeam = team.filter(m =>
+      m.name.toLowerCase().includes(q) || m.role?.toLowerCase().includes(q)
+    );
+
+    const results = document.getElementById("searchResults");
+
+    if (!matchedProjects.length && !matchedTasks.length && !matchedTeam.length) {
+      results.style.display = "block";
+      results.innerHTML = `<div style="padding:12px 16px;font-size:13px;color:var(--muted)">No results found.</div>`;
+      return;
+    }
+
+    let html = "";
+
+    if (matchedProjects.length) {
+      html += `<div style="padding:8px 16px;font-size:11px;color:var(--muted);border-bottom:1px solid var(--border)">PROJECTS</div>`;
+      html += matchedProjects.map(p => `
+        <div onclick="navigate('projects');setTimeout(()=>showProjectDetail(${p.id},'${p.name}'),100)" style="padding:10px 16px;cursor:pointer;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border)" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='transparent'">
+          <i class="ti ti-folders" style="color:#5c4fd6"></i>
+          <div>
+            <div style="font-size:13px;color:var(--text)">${p.name}</div>
+            <div style="font-size:11px;color:var(--muted)">${p.status} · ${p.progress}%</div>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    if (matchedTasks.length) {
+      html += `<div style="padding:8px 16px;font-size:11px;color:var(--muted);border-bottom:1px solid var(--border)">TASKS</div>`;
+      html += matchedTasks.map(t => `
+        <div onclick="navigate('tasks')" style="padding:10px 16px;cursor:pointer;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border)" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='transparent'">
+          <i class="ti ti-circle-check" style="color:${t.status === 'done' ? '#40d080' : t.status === 'inprogress' ? '#40a0ff' : '#6060a0'}"></i>
+          <div>
+            <div style="font-size:13px;color:var(--text)">${t.title}</div>
+            <div style="font-size:11px;color:var(--muted)">${t.status}${t.assignee ? ' · ' + t.assignee.name : ''}</div>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    if (matchedTeam.length) {
+      html += `<div style="padding:8px 16px;font-size:11px;color:var(--muted);border-bottom:1px solid var(--border)">TEAM</div>`;
+      html += matchedTeam.map(m => `
+        <div onclick="navigate('team')" style="padding:10px 16px;cursor:pointer;display:flex;align-items:center;gap:10px" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='transparent'">
+          <i class="ti ti-user" style="color:#a08cff"></i>
+          <div>
+            <div style="font-size:13px;color:var(--text)">${m.name}</div>
+            <div style="font-size:11px;color:var(--muted)">${m.role}</div>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    results.style.display = "block";
+    results.innerHTML = html;
+  } catch {
+    document.getElementById("searchResults").style.display = "none";
+  }
+}
 
 
 // --- Init ---
@@ -936,6 +1019,16 @@ document.addEventListener("DOMContentLoaded", () => {
     .addEventListener("click", (e) => {
       if (e.target === e.currentTarget) closeMemberModal();
     });
+
+    document.getElementById("searchInput").addEventListener("input", (e) => {
+  globalSearch(e.target.value);
+});
+
+document.addEventListener("click", (e) => {
+  if (!e.target.closest(".search") && !e.target.closest("#searchResults")) {
+    document.getElementById("searchResults").style.display = "none";
+  }
+});
 
   document.getElementById("viewAllProjects").addEventListener("click", (e) => {
     e.preventDefault();
