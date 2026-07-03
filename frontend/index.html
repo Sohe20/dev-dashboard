@@ -79,7 +79,63 @@
               <button class="btn-bell" id="btnTheme">
                 <i class="ti ti-moon"></i>
               </button>
-              <button class="btn-bell"><i class="ti ti-bell"></i></button>
+              <div style="position: relative">
+                <button
+                  class="btn-bell"
+                  id="btnNotif"
+                  style="position: relative"
+                >
+                  <i class="ti ti-bell"></i>
+                  <span
+                    id="notifBadge"
+                    style="
+                      position: absolute;
+                      top: -4px;
+                      right: -4px;
+                      background: #ff6080;
+                      color: #fff;
+                      font-size: 9px;
+                      font-weight: 700;
+                      width: 16px;
+                      height: 16px;
+                      border-radius: 50%;
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                    "
+                    >0</span
+                  >
+                </button>
+                <div
+                  id="notifPanel"
+                  style="
+                    display: none;
+                    position: absolute;
+                    top: 44px;
+                    right: 0;
+                    width: 300px;
+                    background: var(--surface);
+                    border: 1px solid var(--border);
+                    border-radius: 10px;
+                    z-index: 200;
+                    max-height: 350px;
+                    overflow-y: auto;
+                    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+                  "
+                >
+                  <div
+                    style="
+                      padding: 12px 16px;
+                      font-size: 12px;
+                      font-weight: 600;
+                      color: var(--muted);
+                      border-bottom: 1px solid var(--border);
+                    "
+                  >
+                    NOTIFICATIONS
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 

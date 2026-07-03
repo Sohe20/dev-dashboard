@@ -96,11 +96,15 @@ async function loadAllProjects() {
       const res = await fetch(`${API}/projects`, { headers: authHeaders() });
       data = await res.json();
     } else {
-      const res = await fetch(`${API}/tasks/my-tasks`, { headers: authHeaders() });
+      const res = await fetch(`${API}/tasks/my-tasks`, {
+        headers: authHeaders(),
+      });
       const tasks = await res.json();
-      data = [...new Map(
-        tasks.filter((t) => t.project).map((t) => [t.project.id, t.project])
-      ).values()];
+      data = [
+        ...new Map(
+          tasks.filter((t) => t.project).map((t) => [t.project.id, t.project]),
+        ).values(),
+      ];
     }
 
     const list = document.getElementById("allProjectsList");
@@ -109,7 +113,9 @@ async function loadAllProjects() {
       return;
     }
 
-    list.innerHTML = data.map((p, i) => `
+    list.innerHTML = data
+      .map(
+        (p, i) => `
       <div class="project-item clickable">
         <div class="project-dot" style="background:${colors[i % colors.length]}"></div>
         <span class="project-name" onclick="showProjectDetail(${p.id}, '${p.name}')" style="cursor:pointer;flex:1">${p.name}</span>
@@ -117,14 +123,20 @@ async function loadAllProjects() {
           <div class="project-bar" style="width:${p.progress}%;background:${colors[i % colors.length]}"></div>
         </div>
         <span class="project-pct">${p.progress}%</span>
-        ${isTeamLead ? `
+        ${
+          isTeamLead
+            ? `
         <div style="display:flex;gap:6px;margin-left:8px">
           <button onclick="editProject(${p.id}, '${p.name}', '${p.description}', ${p.progress}, '${p.status}', ${p.budget || 0})" style="background:none;border:none;color:#6060a0;cursor:pointer;font-size:16px"><i class="ti ti-pencil"></i></button>
           <button onclick="deleteProject(${p.id})" style="background:none;border:none;color:#6060a0;cursor:pointer;font-size:16px"><i class="ti ti-trash"></i></button>
         </div>
-        ` : ''}
+        `
+            : ""
+        }
       </div>
-    `).join("");
+    `,
+      )
+      .join("");
   } catch {
     document.getElementById("allProjectsList").innerHTML =
       '<div class="loading">Could not load.</div>';
@@ -159,9 +171,11 @@ function editProject(id, name, description, progress, status, budget) {
   btn.onclick = async () => {
     const newName = document.getElementById("inputName").value.trim();
     const newDesc = document.getElementById("inputDesc").value.trim();
-    const newProgress = parseInt(document.getElementById("inputProgress").value) || 0;
+    const newProgress =
+      parseInt(document.getElementById("inputProgress").value) || 0;
     const newStatus = document.getElementById("inputStatus").value;
-    const newBudget = parseInt(document.getElementById("inputBudget").value) || 0;
+    const newBudget =
+      parseInt(document.getElementById("inputBudget").value) || 0;
 
     try {
       await fetch(`${API}/projects/${id}`, {
@@ -494,7 +508,8 @@ async function loadProjects() {
 async function createProject() {
   const name = document.getElementById("inputName").value.trim();
   const description = document.getElementById("inputDesc").value.trim();
-  const progress = parseInt(document.getElementById("inputProgress").value) || 0;
+  const progress =
+    parseInt(document.getElementById("inputProgress").value) || 0;
   const status = document.getElementById("inputStatus").value;
   const budget = parseInt(document.getElementById("inputBudget").value) || 0;
 
@@ -773,13 +788,14 @@ async function loadActivityChart(canvas) {
   }
 }
 
-
-
 async function loadRevenue() {
   try {
-    const res = await fetch(`${API}/projects/revenue`, { headers: authHeaders() });
+    const res = await fetch(`${API}/projects/revenue`, {
+      headers: authHeaders(),
+    });
     const { total } = await res.json();
-    document.getElementById("statRevenue").textContent = `$${total.toLocaleString()}`;
+    document.getElementById("statRevenue").textContent =
+      `$${total.toLocaleString()}`;
   } catch {
     document.getElementById("statRevenue").textContent = "$0";
   }
@@ -805,9 +821,11 @@ async function showProjectDetail(projectId, projectName) {
     const project = await projectRes.json();
     const tasks = await tasksRes.json();
 
-    const members = [...new Map(
-      tasks.filter(t => t.assignee).map(t => [t.assignee.id, t.assignee])
-    ).values()];
+    const members = [
+      ...new Map(
+        tasks.filter((t) => t.assignee).map((t) => [t.assignee.id, t.assignee]),
+      ).values(),
+    ];
 
     document.getElementById("projectDetail").innerHTML = `
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">
@@ -835,36 +853,52 @@ async function showProjectDetail(projectId, projectName) {
 
         <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px">
           <div style="font-size:11px;color:var(--muted);margin-bottom:12px">TEAM MEMBERS</div>
-          ${members.length ? members.map(m => `
+          ${
+            members.length
+              ? members
+                  .map(
+                    (m) => `
             <div class="project-item" style="margin-bottom:8px">
               <div class="stat-icon blue" style="width:30px;height:30px;border-radius:50%;font-size:12px;font-weight:600;flex-shrink:0">
                 ${m.name.charAt(0).toUpperCase()}
               </div>
               <span style="font-size:13px;color:var(--text)">${m.name}</span>
             </div>
-          `).join('') : '<div class="loading">No members.</div>'}
+          `,
+                  )
+                  .join("")
+              : '<div class="loading">No members.</div>'
+          }
         </div>
       </div>
 
       <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px">
         <div style="font-size:11px;color:var(--muted);margin-bottom:12px">TASKS</div>
-        ${tasks.length ? tasks.map(t => `
+        ${
+          tasks.length
+            ? tasks
+                .map(
+                  (t) => `
           <div class="project-item" style="margin-bottom:10px">
-            <div class="project-dot" style="background:${t.status === 'done' ? '#40d080' : t.status === 'inprogress' ? '#40a0ff' : '#6060a0'}"></div>
+            <div class="project-dot" style="background:${t.status === "done" ? "#40d080" : t.status === "inprogress" ? "#40a0ff" : "#6060a0"}"></div>
             <div style="flex:1">
               <div style="font-size:13px;color:var(--text)">${t.title}</div>
-              ${t.assignee ? `<div style="font-size:11px;color:var(--muted)"><i class="ti ti-user"></i> ${t.assignee.name}</div>` : ''}
+              ${t.assignee ? `<div style="font-size:11px;color:var(--muted)"><i class="ti ti-user"></i> ${t.assignee.name}</div>` : ""}
             </div>
             <span style="background:var(--border);padding:2px 8px;border-radius:6px;font-size:11px;color:var(--text)">${t.status}</span>
           </div>
-        `).join('') : '<div class="loading">No tasks.</div>'}
+        `,
+                )
+                .join("")
+            : '<div class="loading">No tasks.</div>'
+        }
       </div>
     `;
   } catch {
-    document.getElementById("projectDetail").innerHTML = '<div class="loading">Could not load project.</div>';
+    document.getElementById("projectDetail").innerHTML =
+      '<div class="loading">Could not load project.</div>';
   }
 }
-
 
 async function globalSearch(query) {
   if (!query || query.length < 1) {
@@ -884,19 +918,28 @@ async function globalSearch(query) {
 
     const q = query.toLowerCase();
 
-    const matchedProjects = projects.filter(p =>
-      p.name.toLowerCase().includes(q) || p.description?.toLowerCase().includes(q)
+    const matchedProjects = projects.filter(
+      (p) =>
+        p.name.toLowerCase().includes(q) ||
+        p.description?.toLowerCase().includes(q),
     );
-    const matchedTasks = tasks.filter(t =>
-      t.title.toLowerCase().includes(q) || t.description?.toLowerCase().includes(q)
+    const matchedTasks = tasks.filter(
+      (t) =>
+        t.title.toLowerCase().includes(q) ||
+        t.description?.toLowerCase().includes(q),
     );
-    const matchedTeam = team.filter(m =>
-      m.name.toLowerCase().includes(q) || m.role?.toLowerCase().includes(q)
+    const matchedTeam = team.filter(
+      (m) =>
+        m.name.toLowerCase().includes(q) || m.role?.toLowerCase().includes(q),
     );
 
     const results = document.getElementById("searchResults");
 
-    if (!matchedProjects.length && !matchedTasks.length && !matchedTeam.length) {
+    if (
+      !matchedProjects.length &&
+      !matchedTasks.length &&
+      !matchedTeam.length
+    ) {
       results.style.display = "block";
       results.innerHTML = `<div style="padding:12px 16px;font-size:13px;color:var(--muted)">No results found.</div>`;
       return;
@@ -906,7 +949,9 @@ async function globalSearch(query) {
 
     if (matchedProjects.length) {
       html += `<div style="padding:8px 16px;font-size:11px;color:var(--muted);border-bottom:1px solid var(--border)">PROJECTS</div>`;
-      html += matchedProjects.map(p => `
+      html += matchedProjects
+        .map(
+          (p) => `
         <div onclick="navigate('projects');setTimeout(()=>showProjectDetail(${p.id},'${p.name}'),100)" style="padding:10px 16px;cursor:pointer;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border)" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='transparent'">
           <i class="ti ti-folders" style="color:#5c4fd6"></i>
           <div>
@@ -914,25 +959,33 @@ async function globalSearch(query) {
             <div style="font-size:11px;color:var(--muted)">${p.status} · ${p.progress}%</div>
           </div>
         </div>
-      `).join("");
+      `,
+        )
+        .join("");
     }
 
     if (matchedTasks.length) {
       html += `<div style="padding:8px 16px;font-size:11px;color:var(--muted);border-bottom:1px solid var(--border)">TASKS</div>`;
-      html += matchedTasks.map(t => `
+      html += matchedTasks
+        .map(
+          (t) => `
         <div onclick="navigate('tasks')" style="padding:10px 16px;cursor:pointer;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border)" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='transparent'">
-          <i class="ti ti-circle-check" style="color:${t.status === 'done' ? '#40d080' : t.status === 'inprogress' ? '#40a0ff' : '#6060a0'}"></i>
+          <i class="ti ti-circle-check" style="color:${t.status === "done" ? "#40d080" : t.status === "inprogress" ? "#40a0ff" : "#6060a0"}"></i>
           <div>
             <div style="font-size:13px;color:var(--text)">${t.title}</div>
-            <div style="font-size:11px;color:var(--muted)">${t.status}${t.assignee ? ' · ' + t.assignee.name : ''}</div>
+            <div style="font-size:11px;color:var(--muted)">${t.status}${t.assignee ? " · " + t.assignee.name : ""}</div>
           </div>
         </div>
-      `).join("");
+      `,
+        )
+        .join("");
     }
 
     if (matchedTeam.length) {
       html += `<div style="padding:8px 16px;font-size:11px;color:var(--muted);border-bottom:1px solid var(--border)">TEAM</div>`;
-      html += matchedTeam.map(m => `
+      html += matchedTeam
+        .map(
+          (m) => `
         <div onclick="navigate('team')" style="padding:10px 16px;cursor:pointer;display:flex;align-items:center;gap:10px" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='transparent'">
           <i class="ti ti-user" style="color:#a08cff"></i>
           <div>
@@ -940,7 +993,9 @@ async function globalSearch(query) {
             <div style="font-size:11px;color:var(--muted)">${m.role}</div>
           </div>
         </div>
-      `).join("");
+      `,
+        )
+        .join("");
     }
 
     results.style.display = "block";
@@ -950,6 +1005,96 @@ async function globalSearch(query) {
   }
 }
 
+async function loadNotifications() {
+  const panel = document.getElementById("notifPanel");
+  const header = `<div style="padding:12px 16px;font-size:12px;font-weight:600;color:var(--muted);border-bottom:1px solid var(--border)">NOTIFICATIONS</div>`;
+  panel.innerHTML =
+    header +
+    `<div style="padding:12px 16px;font-size:13px;color:var(--muted)">Loading...</div>`;
+
+  let notifs = [];
+
+  try {
+    const [tasksRes, projectsRes, teamRes] = await Promise.all([
+      fetch(`${API}/tasks/my-tasks`, { headers: authHeaders() }),
+      fetch(`${API}/projects`, { headers: authHeaders() }),
+      fetch(`${API}/team`, { headers: authHeaders() }),
+    ]);
+    const tasks = await tasksRes.json();
+    const projects = await projectsRes.json();
+    const team = await teamRes.json();
+
+    const todoTasks = tasks.filter((t) => t.status === "todo");
+    const inprogressTasks = tasks.filter((t) => t.status === "inprogress");
+    const activeProjects = projects.filter((p) => p.status === "active");
+
+    todoTasks.forEach((t) =>
+      notifs.push({
+        icon: "ti-circle-check",
+        color: "#6060a0",
+        title: `Task pending: ${t.title}`,
+        sub: t.project ? t.project.name : "No project",
+      }),
+    );
+
+    inprogressTasks.forEach((t) =>
+      notifs.push({
+        icon: "ti-loader",
+        color: "#40a0ff",
+        title: `In progress: ${t.title}`,
+        sub: t.project ? t.project.name : "No project",
+      }),
+    );
+
+    activeProjects.forEach((p) =>
+      notifs.push({
+        icon: "ti-folders",
+        color: "#5c4fd6",
+        title: `Active project: ${p.name}`,
+        sub: `${p.progress}% complete`,
+      }),
+    );
+
+    if (team.length) {
+      const last = team[team.length - 1];
+      notifs.push({
+        icon: "ti-user-plus",
+        color: "#40d080",
+        title: `Team member: ${last.name}`,
+        sub: last.role,
+      });
+    }
+
+    if (!notifs.length) {
+      panel.innerHTML =
+        header +
+        `<div style="padding:12px 16px;font-size:13px;color:var(--muted)">No notifications.</div>`;
+    } else {
+      panel.innerHTML =
+        header +
+        notifs
+          .map(
+            (n) => `
+        <div style="padding:10px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border)">
+          <i class="ti ${n.icon}" style="color:${n.color};font-size:18px;flex-shrink:0"></i>
+          <div>
+            <div style="font-size:13px;color:var(--text)">${n.title}</div>
+            <div style="font-size:11px;color:var(--muted)">${n.sub}</div>
+          </div>
+        </div>
+      `,
+          )
+          .join("");
+    }
+  } catch {
+    panel.innerHTML =
+      header +
+      `<div style="padding:12px 16px;font-size:13px;color:var(--muted)">Could not load.</div>`;
+  }
+
+  const badge = document.getElementById("notifBadge");
+  if (badge) badge.textContent = notifs.length;
+}
 
 // --- Init ---
 document.addEventListener("DOMContentLoaded", () => {
@@ -981,6 +1126,7 @@ document.addEventListener("DOMContentLoaded", () => {
   loadTaskCount();
   loadTeam();
   loadRevenue();
+  loadNotifications();
 
   document.getElementById("btnNewProject").addEventListener("click", openModal);
   document.getElementById("modalClose").addEventListener("click", closeModal);
@@ -1020,15 +1166,33 @@ document.addEventListener("DOMContentLoaded", () => {
       if (e.target === e.currentTarget) closeMemberModal();
     });
 
-    document.getElementById("searchInput").addEventListener("input", (e) => {
-  globalSearch(e.target.value);
-});
+  document.getElementById("searchInput").addEventListener("input", (e) => {
+    globalSearch(e.target.value);
+  });
 
-document.addEventListener("click", (e) => {
-  if (!e.target.closest(".search") && !e.target.closest("#searchResults")) {
-    document.getElementById("searchResults").style.display = "none";
-  }
-});
+  document.getElementById("btnNotif").addEventListener("click", (e) => {
+    e.stopPropagation();
+    const panel = document.getElementById("notifPanel");
+    const isOpen = panel.style.display === "block";
+    panel.style.display = isOpen ? "none" : "block";
+    if (!isOpen) {
+      loadNotifications();
+
+      setTimeout(() => {
+        const badge = document.getElementById("notifBadge");
+        if (badge) badge.textContent = "0";
+      }, 500);
+    }
+  });
+
+  document.addEventListener("click", (e) => {
+    if (!e.target.closest(".search") && !e.target.closest("#searchResults")) {
+      document.getElementById("searchResults").style.display = "none";
+    }
+    if (!e.target.closest("#btnNotif") && !e.target.closest("#notifPanel")) {
+      document.getElementById("notifPanel").style.display = "none";
+    }
+  });
 
   document.getElementById("viewAllProjects").addEventListener("click", (e) => {
     e.preventDefault();
