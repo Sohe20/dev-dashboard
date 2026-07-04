@@ -513,7 +513,7 @@ async function loadProjects() {
     const role = await getMyRole();
     const isTeamLead = role === "Team Lead";
 
-    if (isTeamLead) {
+    if (isTeamLead || !role) {
       const res = await fetch(`${API}/projects`, { headers: authHeaders() });
       const data = await res.json();
       document.getElementById("statProjects").textContent = data.length;
