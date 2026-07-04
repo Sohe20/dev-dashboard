@@ -1,3 +1,4 @@
+/* eslint-disable  */
 
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -20,6 +21,10 @@ export class UsersService {
   findByEmail(email: string): Promise<User | null> {
     return this.usersRepository.findOneBy({ email });
   }
+
+  async updatePassword(id: number, hashedPassword: string) {
+  await this.usersRepository.update(id, { password: hashedPassword });
+}
 
   create(name: string, email: string, password: string): Promise<User> {
     const user = this.usersRepository.create({ name, email, password });

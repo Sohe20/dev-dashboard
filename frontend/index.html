@@ -259,7 +259,14 @@
               <p>Your tasks and information.</p>
             </div>
           </div>
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px">
+          <div
+            style="
+              display: grid;
+              grid-template-columns: 1fr 1fr;
+              gap: 20px;
+              margin-bottom: 20px;
+            "
+          >
             <div class="card">
               <h2 class="card-title">Profile Info</h2>
               <div id="profileInfo" class="projects-list">
@@ -271,6 +278,46 @@
               <div id="myTasksList" class="projects-list">
                 <div class="loading">Loading...</div>
               </div>
+            </div>
+          </div>
+          <div class="card" style="max-width: 440px">
+            <h2 class="card-title">Change Password</h2>
+            <div style="display: flex; flex-direction: column; gap: 12px">
+              <div class="form-group">
+                <label>Current Password</label>
+                <input
+                  type="password"
+                  id="inputCurrentPass"
+                  placeholder="••••••••"
+                />
+              </div>
+              <div class="form-group">
+                <label>New Password</label>
+                <input
+                  type="password"
+                  id="inputNewPass"
+                  placeholder="••••••••"
+                />
+              </div>
+              <div class="form-group">
+                <label>Confirm New Password</label>
+                <input
+                  type="password"
+                  id="inputConfirmPass"
+                  placeholder="••••••••"
+                />
+              </div>
+              <div
+                id="passMessage"
+                style="font-size: 12px; display: none"
+              ></div>
+              <button
+                onclick="changePassword()"
+                class="btn-submit"
+                style="width: fit-content"
+              >
+                Change Password
+              </button>
             </div>
           </div>
         </div>

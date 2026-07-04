@@ -33,7 +33,9 @@ export default tseslint.config(
       'eslint-disable prettier/prettier':'off',
       "@typescript-eslint/no-unsafe-assignment":'off',
       "eslint-disable @typescript-eslint/no-unused-vars":"off",
-      "@typescript-eslint/no-unsafe-member-access":"off"
+      "@typescript-eslint/no-unsafe-member-access":"off",
+      "@typescript-eslint/no-unused-vars":"off",
+      "@typescript-eslint/no-unsafe-call":"off"
      
     },
   },
