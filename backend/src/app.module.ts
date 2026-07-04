@@ -12,11 +12,11 @@ import { TeamModule } from './team/team.module';
   imports: [
     TypeOrmModule.forRoot({
       type: 'mysql',
-      host: 'localhost',
-      port: 3306,
-      username: 'root',
-      password: '',
-      database: 'dev_dashboard',
+      host: process.env.MYSQLHOST || 'localhost',
+      port: parseInt(process.env.MYSQLPORT || '3306'),
+      username: process.env.MYSQLUSER || 'root',
+      password: process.env.MYSQLPASSWORD || '',
+      database: process.env.MYSQL_DATABASE || 'dev_dashboard',
       entities: [__dirname + '/**/entities/*.entity{.ts,.js}'],
       synchronize: true,
     }),
