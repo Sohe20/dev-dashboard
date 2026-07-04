@@ -20,10 +20,10 @@ import { AuthGuard } from '../auth/auth.guard';
 export class TasksController {
   constructor(private readonly tasksService: TasksService) {}
 
-  @Get()
-  findAll(@Query('projectId') projectId?: string) {
-    return this.tasksService.findAll(projectId ? +projectId : undefined);
-  }
+@Get()
+findAll(@Request() req: any, @Query('projectId') projectId?: string) {
+  return this.tasksService.findAll(projectId ? +projectId : undefined, req.user.sub);
+}
 
   
 

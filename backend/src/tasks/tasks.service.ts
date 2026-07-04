@@ -12,17 +12,29 @@ export class TasksService {
     private tasksRepository: Repository<Task>,
   ) {}
 
-  findAll(projectId?: number): Promise<Task[]> {
-    if (projectId) {
-      return this.tasksRepository.find({
-        where: { project: { id: projectId } },
-        relations: { project: true, assignee: true, assignedBy: true },
-      });
-    }
+  findAll(projectId?: number, userId?: number): Promise<Task[]> {
+  if (projectId) {
     return this.tasksRepository.find({
+      where: { 
+        project: { id: projectId },
+        assignedBy: userId ? { id: userId } : undefined,
+      },
       relations: { project: true, assignee: true, assignedBy: true },
     });
   }
+  if (userId) {
+    return this.tasksRepository.find({
+      where: [
+        { assignedBy: { id: userId } },
+        { assignee: { id: userId } },
+      ],
+      relations: { project: true, assignee: true, assignedBy: true },
+    });
+  }
+  return this.tasksRepository.find({
+    relations: { project: true, assignee: true, assignedBy: true },
+  });
+}
 
   findOne(id: number): Promise<Task | null> {
     return this.tasksRepository.findOne({
