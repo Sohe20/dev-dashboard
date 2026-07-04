@@ -1,11 +1,11 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Dev Dashboard — Login</title>
     <link rel="stylesheet" href="../style.css" />
-    <link rel="stylesheet" href="auth.css">
+    <link rel="stylesheet" href="auth.css" />
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"
@@ -20,8 +20,20 @@
 
         <!-- Tabs -->
         <div class="toggle-tabs">
-          <div class="toggle-tab active" id="tabLogin" onclick="switchTab('login')">Sign In</div>
-          <div class="toggle-tab" id="tabRegister" onclick="switchTab('register')">Register</div>
+          <div
+            class="toggle-tab active"
+            id="tabLogin"
+            onclick="switchTab('login')"
+          >
+            Sign In
+          </div>
+          <div
+            class="toggle-tab"
+            id="tabRegister"
+            onclick="switchTab('register')"
+          >
+            Register
+          </div>
         </div>
 
         <!-- Form -->
@@ -34,9 +46,15 @@
             <label>Email</label>
             <input type="email" id="inputEmail" placeholder="you@example.com" />
           </div>
-          <div>
-            <label>Password</label>
+          <div class="password-wrap">
             <input type="password" id="inputPassword" placeholder="••••••••" />
+            <button
+              class="eye-btn"
+              type="button"
+              onclick="togglePass('inputPassword', this)"
+            >
+              <i class="ti ti-eye"></i>
+            </button>
           </div>
 
           <p class="login-error" id="loginError"></p>

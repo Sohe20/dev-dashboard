@@ -48,3 +48,10 @@ async function resetPassword() {
     errorEl.classList.add('show');
   }
 }
+
+function togglePass(inputId, btn) {
+  const input = document.getElementById(inputId);
+  const isPass = input.type === 'password';
+  input.type = isPass ? 'text' : 'password';
+  btn.innerHTML = isPass ? '<i class="ti ti-eye-off"></i>' : '<i class="ti ti-eye"></i>';
+}
