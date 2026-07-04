@@ -121,7 +121,7 @@ async function loadAllProjects() {
     const isTeamLead = role === "Team Lead";
     let data;
 
-    if (isTeamLead) {
+    if (isTeamLead || !role) {
       const res = await fetch(`${API}/projects`, { headers: authHeaders() });
       data = await res.json();
     } else {
