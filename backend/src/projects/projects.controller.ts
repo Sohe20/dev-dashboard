@@ -7,6 +7,7 @@ import {
   Param,
   Body,
   UseGuards,
+  Request,
 } from '@nestjs/common';
 import { ProjectsService } from './projects.service';
 import { CreateProjectDto } from './dto/create-project.dto';
@@ -19,8 +20,8 @@ export class ProjectsController {
   constructor(private readonly projectsService: ProjectsService) {}
 
   @Get()
-  findAll() {
-    return this.projectsService.findAll();
+  findAll(@Request() req: any) {
+    return this.projectsService.findAll(req.user.sub);
   }
 
   @Get('revenue')
@@ -34,8 +35,8 @@ export class ProjectsController {
   }
 
   @Post()
-  create(@Body() data: CreateProjectDto) {
-    return this.projectsService.create(data);
+  create(@Body() data: CreateProjectDto, @Request() req: any) {
+    return this.projectsService.create(data, req.user.sub);
   }
 
   @Put(':id')

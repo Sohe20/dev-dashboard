@@ -12,18 +12,27 @@ export class ProjectsService {
     private projectsRepository: Repository<Project>,
   ) {}
 
-  findAll(): Promise<Project[]> {
-    return this.projectsRepository.find();
+findAll(userId?: number): Promise<Project[]> {
+  if (userId) {
+    return this.projectsRepository.find({
+      where: { createdBy: { id: userId } },
+      relations: { createdBy: true },
+    });
   }
+  return this.projectsRepository.find({ relations: { createdBy: true } });
+}
 
   findOne(id: number): Promise<Project | null> {
     return this.projectsRepository.findOneBy({ id });
   }
 
-  create(data: CreateProjectDto): Promise<Project> {
-    const project = this.projectsRepository.create(data);
-    return this.projectsRepository.save(project);
-  }
+  create(data: CreateProjectDto, userId: number): Promise<Project> {
+  const project = this.projectsRepository.create({
+    ...data,
+    createdBy: { id: userId } as any,
+  });
+  return this.projectsRepository.save(project);
+}
 
   async getTotalRevenue(): Promise<{ total: number }> {
   const projects = await this.projectsRepository.find();

@@ -3,7 +3,10 @@ import {
   PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
+  ManyToOne,
+  JoinColumn,
 } from 'typeorm';
+import { User } from '../../users/entities/user.entity';
 
 @Entity()
 export class Project {
@@ -24,6 +27,10 @@ export class Project {
 
   @Column({ default: 'active' })
   status!: string;
+
+  @ManyToOne(() => User, { nullable: true, eager: false })
+  @JoinColumn()
+  createdBy!: User;
 
   @CreateDateColumn()
   createdAt!: Date;
