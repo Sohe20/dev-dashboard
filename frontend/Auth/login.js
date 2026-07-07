@@ -1,4 +1,7 @@
-const API = "https://dev-dashboard-production-a2de.up.railway.app";
+// const API = "https://dev-dashboard-production-a2de.up.railway.app";پ
+
+
+const API = "http://localhost:3000";
 let currentTab = "login";
 
 function switchTab(tab) {

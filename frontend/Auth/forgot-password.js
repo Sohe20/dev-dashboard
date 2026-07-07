@@ -1,4 +1,6 @@
-const API = "https://dev-dashboard-production-a2de.up.railway.app";
+// const API = "https://dev-dashboard-production-a2de.up.railway.app";
+
+const API = "http://localhost:3000";
 
 async function resetPassword() {
   const email = document.getElementById('resetEmail').value.trim();

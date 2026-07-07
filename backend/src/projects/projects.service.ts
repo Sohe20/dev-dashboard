@@ -15,7 +15,10 @@ export class ProjectsService {
 findAll(userId?: number): Promise<Project[]> {
   if (userId) {
     return this.projectsRepository.find({
-      where: { createdBy: { id: userId } },
+      where: [
+        { createdBy: { id: userId } },
+        { createdBy: { id: undefined } },
+      ],
       relations: { createdBy: true },
     });
   }
