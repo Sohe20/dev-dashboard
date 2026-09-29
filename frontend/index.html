@@ -38,6 +38,7 @@
           </a>
         </nav>
         <div class="avatar">J</div>
+        <button class="nav-item" id="btnLang" onclick="toggleLang()">FA</button>
         <button class="nav-item" id="btnLogout" title="Logout">
           <i class="ti ti-logout"></i>
         </button>
@@ -144,7 +145,7 @@
               <div class="stat-icon blue"><i class="ti ti-folders"></i></div>
               <div class="stat-info">
                 <span class="stat-value" id="statProjects">—</span>
-                <span class="stat-label">Projects</span>
+                <span class="stat-label" data-key="projects">Projects</span>
               </div>
             </div>
             <div class="stat-card">
@@ -153,14 +154,16 @@
               </div>
               <div class="stat-info">
                 <span class="stat-value" id="statTasks">—</span>
-                <span class="stat-label">Tasks</span>
+                <span class="stat-label" data-key="tasks">Tasks</span>
               </div>
             </div>
             <div class="stat-card">
               <div class="stat-icon cyan"><i class="ti ti-users"></i></div>
               <div class="stat-info">
                 <span class="stat-value" id="statTeam">—</span>
-                <span class="stat-label">Team Members</span>
+                <span class="stat-label" data-key="teamMembers"
+                  >Team Members</span
+                >
               </div>
             </div>
             <div class="stat-card">
@@ -169,7 +172,7 @@
               </div>
               <div class="stat-info">
                 <span class="stat-value" id="statRevenue">—</span>
-                <span class="stat-label">Revenue</span>
+                <span class="stat-label" data-key="revenue">Revenue</span>
               </div>
             </div>
           </div>
@@ -427,6 +430,7 @@
       </div>
     </div>
 
+    <script src="translations.js"></script>
     <script src="dashboard.js"></script>
   </body>
 </html>

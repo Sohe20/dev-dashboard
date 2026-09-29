@@ -1,8 +1,6 @@
 // const API = "https://dev-dashboard-production-a2de.up.railway.app";
 const API = "http://localhost:3000";
 
-
-
 let lastChartData = { data: [], labels: [] };
 
 const colors = [
@@ -1247,4 +1245,10 @@ document.addEventListener("DOMContentLoaded", () => {
     e.preventDefault();
     navigate("projects");
   });
+
+  applyTranslations();
+  if (localStorage.getItem("lang") === "fa") {
+    const btnLang = document.getElementById("btnLang");
+    if (btnLang) btnLang.textContent = "EN";
+  }
 });
