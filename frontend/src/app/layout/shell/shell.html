@@ -1,0 +1,23 @@
+<div class="layout">
+  <aside class="sidebar">
+    <div class="logo">D</div>
+    <nav class="nav">
+      @for (item of nav; track item.path) {
+        <a class="nav-item" [routerLink]="item.path" routerLinkActive="active" [title]="item.title">
+          <i [class]="'ti ' + item.icon"></i>
+        </a>
+      }
+    </nav>
+    <div class="avatar">{{ initial }}</div>
+    <button class="nav-item" type="button" (click)="theme.toggle()" title="Theme">
+      <i [class]="theme.isLight() ? 'ti ti-sun' : 'ti ti-moon'"></i>
+    </button>
+    <button class="nav-item" type="button" (click)="auth.logout()" title="Logout">
+      <i class="ti ti-logout"></i>
+    </button>
+  </aside>
+
+  <main class="main">
+    <router-outlet />
+  </main>
+</div>
