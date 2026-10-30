@@ -1,17 +1,17 @@
 .actions {
-  display: flex;
-  gap: 6px;
-  margin-left: 8px;
-}
+    display: flex;
+    gap: 6px;
+    margin-left: 8px;
+  }
 
-.icon-btn {
-  background: none;
-  border: none;
-  color: var(--muted);
-  cursor: pointer;
-  font-size: 16px;
-}
+  .icon-btn {
+    background: none;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 16px;
+  }
 
-.icon-btn:hover {
-  color: var(--text);
-}
+  .icon-btn:hover {
+    color: var(--text);
+  }

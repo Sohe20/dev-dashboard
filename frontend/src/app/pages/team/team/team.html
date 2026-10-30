@@ -1,0 +1,47 @@
+<div class="topbar">
+  <div class="greeting">
+    <h1>Team</h1>
+    <p>Your team members.</p>
+  </div>
+  <div class="topbar-actions">
+    <button class="btn-new" type="button" (click)="showForm.set(true)">
+      <i class="ti ti-plus"></i> New Member
+    </button>
+  </div>
+</div>
+
+<div class="card">
+  <div class="projects-list">
+    @if (loading()) {
+      <div class="loading">Loading...</div>
+    } @else if (error()) {
+      <div class="loading">{{ error() }}</div>
+    } @else if (!members().length) {
+      <div class="loading">No team members yet.</div>
+    } @else {
+      @for (m of members(); track m.id) {
+        <div class="project-item">
+          <div class="member-avatar">{{ m.name.charAt(0).toUpperCase() }}</div>
+          <div class="member-info">
+            <span class="member-name">{{ m.name }}</span>
+            <span class="member-role">{{ m.role }}</span>
+          </div>
+          <span class="member-email">{{ m.email }}</span>
+          <div class="actions">
+            <button type="button" class="icon-btn" title="Remove" (click)="remove(m)">
+              <i class="ti ti-trash"></i>
+            </button>
+          </div>
+        </div>
+      }
+    }
+  </div>
+</div>
+
+@if (showForm()) {
+  <app-member-form-modal
+    [takenUserIds]="takenUserIds()"
+    (saved)="onSaved()"
+    (closed)="showForm.set(false)"
+  />
+}

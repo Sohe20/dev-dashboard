@@ -1,0 +1,36 @@
+<div class="modal-overlay open" (click)="closed.emit()">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>New Member</h3>
+      <button class="modal-close" type="button" (click)="closed.emit()">
+        <i class="ti ti-x"></i>
+      </button>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="muser">Select User</label>
+          <select id="muser" formControlName="userId">
+            <option [ngValue]="null">-- Select User --</option>
+            @for (u of users(); track u.id) {
+              <option [ngValue]="u.id">{{ u.name }} ({{ u.email }})</option>
+            }
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="mrole">Role</label>
+          <input id="mrole" type="text" formControlName="role" placeholder="e.g. Frontend Developer" />
+        </div>
+        @if (error()) {
+          <p class="form-error">{{ error() }}</p>
+        }
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-cancel" type="button" (click)="closed.emit()">Cancel</button>
+        <button class="btn-submit" type="submit" [disabled]="saving()">Add Member</button>
+      </div>
+    </form>
+  </div>
+</div>
