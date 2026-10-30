@@ -1,0 +1,38 @@
+<div class="topbar">
+  <div class="greeting">
+    <h1>Projects</h1>
+    <p>Manage all your projects.</p>
+  </div>
+  <div class="topbar-actions">
+    <button class="btn-new" type="button">
+      <i class="ti ti-plus"></i> New Project
+    </button>
+  </div>
+</div>
+
+<div class="card">
+  <div class="projects-list">
+    @if (loading()) {
+      <div class="loading">Loading...</div>
+    } @else if (error()) {
+      <div class="loading">{{ error() }}</div>
+    } @else if (!projects().length) {
+      <div class="loading">No projects yet.</div>
+    } @else {
+      @for (p of projects(); track p.id; let i = $index) {
+        <div class="project-item">
+          <div class="project-dot" [style.background]="colors[i % colors.length]"></div>
+          <span class="project-name">{{ p.name }}</span>
+          <div class="project-bar-wrap">
+            <div class="project-bar" [style.width.%]="p.progress" [style.background]="colors[i % colors.length]"></div>
+          </div>
+          <span class="project-pct">{{ p.progress }}%</span>
+          <div class="actions">
+            <button type="button" class="icon-btn" title="Edit"><i class="ti ti-pencil"></i></button>
+            <button type="button" class="icon-btn" title="Delete" (click)="remove(p)"><i class="ti ti-trash"></i></button>
+          </div>
+        </div>
+      }
+    }
+  </div>
+</div>
