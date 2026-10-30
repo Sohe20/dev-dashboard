@@ -1,12 +1,15 @@
-import { inject, Injectable } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { Project, ProjectPayload } from '../models/project.model';
+
 
 @Injectable({ providedIn: 'root' })
 export class ProjectService {
   private http = inject(HttpClient);
   private url = `${environment.apiBaseUrl}/projects`;
+  showForm = signal(false);
+  editing = signal<Project | null>(null);
 
   getAll() {
     return this.http.get<Project[]>(this.url);
@@ -31,4 +34,8 @@ export class ProjectService {
   revenue() {
     return this.http.get<{ total: number }>(`${this.url}/revenue`);
   }
+
+
+
+
 }

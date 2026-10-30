@@ -4,7 +4,7 @@
     <p>Manage all your projects.</p>
   </div>
   <div class="topbar-actions">
-    <button class="btn-new" type="button">
+    <button class="btn-new" type="button" (click)="openNew()">
       <i class="ti ti-plus"></i> New Project
     </button>
   </div>
@@ -28,11 +28,23 @@
           </div>
           <span class="project-pct">{{ p.progress }}%</span>
           <div class="actions">
-            <button type="button" class="icon-btn" title="Edit"><i class="ti ti-pencil"></i></button>
-            <button type="button" class="icon-btn" title="Delete" (click)="remove(p)"><i class="ti ti-trash"></i></button>
+            <button type="button" class="icon-btn" title="Edit" (click)="openEdit(p)">
+              <i class="ti ti-pencil"></i>
+            </button>
+            <button type="button" class="icon-btn" title="Delete" (click)="remove(p)">
+              <i class="ti ti-trash"></i>
+            </button>
           </div>
         </div>
       }
     }
   </div>
 </div>
+
+@if (showForm()) {
+  <app-project-form-modal
+    [project]="editing()"
+    (saved)="onSaved()"
+    (closed)="closeForm()"
+  />
+}
