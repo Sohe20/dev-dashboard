@@ -1,0 +1,52 @@
+.task-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.task-sub {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.assignee {
+  font-size: 11px;
+  color: #a08cff;
+}
+
+.status-badge {
+  background: var(--border);
+  color: var(--text);
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+}
+
+.status-badge.done {
+  background: #1a3a20;
+  color: #40d080;
+}
+
+:host-context(body.light) .status-badge.done {
+  background: #dcf7e6;
+  color: #135530;
+}
+
+.actions {
+  display: flex;
+  gap: 6px;
+  margin-left: 8px;
+}
+
+.icon-btn {
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.icon-btn:hover {
+  color: var(--text);
+}

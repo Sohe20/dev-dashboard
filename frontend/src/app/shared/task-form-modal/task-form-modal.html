@@ -1,0 +1,59 @@
+<div class="modal-overlay open" (click)="closed.emit()">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>{{ task() ? 'Edit Task' : 'New Task' }}</h3>
+      <button class="modal-close" type="button" (click)="closed.emit()">
+        <i class="ti ti-x"></i>
+      </button>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="ttitle">Title</label>
+          <input id="ttitle" type="text" formControlName="title" placeholder="e.g. Fix login bug" />
+        </div>
+        <div class="form-group">
+          <label for="tdesc">Description</label>
+          <input id="tdesc" type="text" formControlName="description" placeholder="Short description..." />
+        </div>
+        <div class="form-group">
+          <label for="tproject">Project</label>
+          <select id="tproject" formControlName="projectId">
+            <option [ngValue]="null">-- Select Project --</option>
+            @for (p of projects(); track p.id) {
+              <option [ngValue]="p.id">{{ p.name }}</option>
+            }
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="tstatus">Status</label>
+          <select id="tstatus" formControlName="status">
+            <option value="todo">Todo</option>
+            <option value="inprogress">In Progress</option>
+            <option value="done">Done</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="tassignee">Assign To</label>
+          <select id="tassignee" formControlName="assigneeId">
+            <option [ngValue]="null">-- Select Member --</option>
+            @for (u of users(); track u.id) {
+              <option [ngValue]="u.id">{{ u.name }}</option>
+            }
+          </select>
+        </div>
+        @if (error()) {
+          <p class="form-error">{{ error() }}</p>
+        }
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-cancel" type="button" (click)="closed.emit()">Cancel</button>
+        <button class="btn-submit" type="submit" [disabled]="saving()">
+          {{ task() ? 'Update Task' : 'Create Task' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
