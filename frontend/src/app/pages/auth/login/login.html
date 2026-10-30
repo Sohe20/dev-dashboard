@@ -1,0 +1,43 @@
+<div class="login-page">
+  <div class="login-box">
+    <div class="login-logo">D</div>
+    <h1 class="login-title">Welcome 👋</h1>
+    <p class="login-sub">Sign in or create your account</p>
+
+    <div class="toggle-tabs">
+      <div class="toggle-tab" [class.active]="mode() === 'login'" (click)="setMode('login')">Sign In</div>
+      <div class="toggle-tab" [class.active]="mode() === 'register'" (click)="setMode('register')">Register</div>
+    </div>
+
+    <form class="login-form" [formGroup]="form" (ngSubmit)="submit()">
+      @if (mode() === 'register') {
+        <div class="form-field show">
+          <label for="name">Full Name</label>
+          <input id="name" type="text" formControlName="name" placeholder="Jordan Smith" />
+        </div>
+      }
+      <div>
+        <label for="email">Email</label>
+        <input id="email" type="email" formControlName="email" placeholder="you@example.com" />
+      </div>
+      <div>
+        <label for="password">Password</label>
+        <div class="password-wrap">
+          <input id="password" [type]="showPass() ? 'text' : 'password'" formControlName="password" placeholder="••••••••" />
+          <button class="eye-btn" type="button" (click)="showPass.set(!showPass())">
+            <i class="ti" [class.ti-eye]="!showPass()" [class.ti-eye-off]="showPass()"></i>
+          </button>
+        </div>
+      </div>
+
+      <p class="login-error" [class.show]="error()">{{ error() }}</p>
+      <p class="login-success" [class.show]="success()">{{ success() }}</p>
+
+      <button class="btn-login" type="submit">
+        {{ mode() === 'login' ? 'Sign In' : 'Create Account' }}
+      </button>
+    </form>
+
+    <p class="login-divider">Dev Dashboard v1.0</p>
+  </div>
+</div>
