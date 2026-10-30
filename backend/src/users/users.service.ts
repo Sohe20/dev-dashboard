@@ -19,8 +19,16 @@ export class UsersService {
 
 
   findByEmail(email: string): Promise<User | null> {
-    return this.usersRepository.findOneBy({ email });
-  }
+  return this.usersRepository.findOne({
+    where: { email },
+    select: {
+      id: true,
+      email: true,
+      name: true,
+      password: true,
+    },
+  });
+}
 
   async updatePassword(id: number, hashedPassword: string) {
   await this.usersRepository.update(id, { password: hashedPassword });
