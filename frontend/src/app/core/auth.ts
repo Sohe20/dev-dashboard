@@ -4,17 +4,24 @@ import { tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { LoginRequest, LoginResponse } from '../models/auth.model';
 import { Router } from '@angular/router';
+import { Role } from './role';
 
 @Injectable({ providedIn: 'root' })
 export class Auth {
   private http = inject(HttpClient);
   private router = inject(Router);
   private api = environment.apiBaseUrl;
+  private role = inject(Role);
 
   login(body: LoginRequest) {
     return this.http
       .post<LoginResponse>(`${this.api}/auth/login`, body)
-      .pipe(tap((res) => localStorage.setItem('token', res.access_token)));
+      .pipe(
+        tap((res) => {
+          localStorage.setItem('token', res.access_token);
+          this.role.clear();
+        }),
+      );
   }
 
   register(body: { name: string; email: string; password: string }) {
@@ -48,6 +55,7 @@ export class Auth {
 
   logout() {
     localStorage.removeItem('token');
+    this.role.clear();
     this.router.navigateByUrl('/login');
   }
 }

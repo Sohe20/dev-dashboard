@@ -8,7 +8,7 @@ export interface Task {
   title: string;
   description: string | null;
   status: TaskStatus;
-  project: Pick<Project, 'id' | 'name'> | null;
+  project: Project | null;
   assignee: User | null;
   assignedBy: User | null;
   createdAt: string;
