@@ -1,15 +1,17 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Task } from './entities/task.entity';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
+import { NotificationsService } from 'src/notifications/notifications.service';
 
 @Injectable()
 export class TasksService {
   constructor(
     @InjectRepository(Task)
     private tasksRepository: Repository<Task>,
+    private notifications: NotificationsService,
   ) {}
 
   findAll(projectId?: number, userId?: number): Promise<Task[]> {
@@ -121,5 +123,89 @@ export class TasksService {
   async remove(id: number): Promise<{ deleted: boolean }> {
     await this.tasksRepository.delete(id);
     return { deleted: true };
+  }
+
+    private async getOrFail(id: number): Promise<Task> {
+    const task = await this.findOne(id);
+    if (!task) throw new NotFoundException('Task not found');
+    return task;
+  }
+
+  private async notifyLead(task: Task, senderId: number, type: string, message: string) {
+    if (!task.assignedBy || task.assignedBy.id === senderId) return;
+    await this.notifications.create({
+      recipientId: task.assignedBy.id,
+      senderId,
+      taskId: task.id,
+      type,
+      message,
+    });
+  }
+
+  private async notifyAssignee(task: Task, senderId: number, type: string, message: string) {
+    if (!task.assignee || task.assignee.id === senderId) return;
+    await this.notifications.create({
+      recipientId: task.assignee.id,
+      senderId,
+      taskId: task.id,
+      type,
+      message,
+    });
+  }
+
+  // عضو: تیک انجام شد
+  async complete(id: number, userId: number) {
+    const task = await this.getOrFail(id);
+    if (task.assignee?.id !== userId) {
+      throw new ForbiddenException('This task is not assigned to you');
+    }
+    if (task.status === 'done' || task.status === 'review') {
+      throw new BadRequestException('Task is already completed or waiting for review');
+    }
+    await this.tasksRepository.update(id, { status: 'review' });
+    await this.notifyLead(task, userId, 'completed', `${task.assignee.name} marked "${task.title}" as done`);
+    return this.findOne(id);
+  }
+
+  // عضو: گزارش مشکل
+  async reportIssue(id: number, userId: number, message?: string) {
+    const text = message?.trim();
+    if (!text) throw new BadRequestException('Please describe the issue');
+    const task = await this.getOrFail(id);
+    if (task.assignee?.id !== userId) {
+      throw new ForbiddenException('This task is not assigned to you');
+    }
+    if (task.status === 'done') throw new BadRequestException('Task is already done');
+    await this.tasksRepository.update(id, { status: 'blocked' });
+    await this.notifyLead(task, userId, 'issue', `${task.assignee.name} reported an issue on "${task.title}": ${text}`);
+    return this.findOne(id);
+  }
+
+  // Team Lead: تأیید
+  async approve(id: number, leadId: number) {
+    const task = await this.getOrFail(id);
+    if (task.status !== 'review') {
+      throw new BadRequestException('Task is not waiting for review');
+    }
+    await this.tasksRepository.update(id, { status: 'done' });
+    await this.notifyAssignee(task, leadId, 'approved', `"${task.title}" was approved`);
+    return this.findOne(id);
+  }
+
+  // Team Lead: برگشت‌دادن (هم برای review هم برای مشکل گزارش‌شده)
+  async sendBack(id: number, leadId: number, message?: string) {
+    const task = await this.getOrFail(id);
+    if (task.status !== 'review' && task.status !== 'blocked') {
+      throw new BadRequestException('Nothing to send back');
+    }
+    await this.tasksRepository.update(id, { status: 'inprogress' });
+    const note = message?.trim();
+    await this.notifyAssignee(
+      task,
+      leadId,
+      'rejected',
+      note ? `"${task.title}" was sent back: ${note}` : `"${task.title}" was sent back`,
+    );
+    return this.findOne(id);
   }
 }
