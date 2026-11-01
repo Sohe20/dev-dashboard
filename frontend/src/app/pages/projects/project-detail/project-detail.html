@@ -1,0 +1,79 @@
+<div class="back-row">
+  <a routerLink="/projects" class="back-link"><i class="ti ti-arrow-left"></i> Back</a>
+</div>
+
+@if (loading()) {
+  <div class="loading">Loading...</div>
+} @else if (error()) {
+  <div class="loading">{{ error() }}</div>
+} @else if (project(); as p) {
+  <div class="topbar">
+    <div class="greeting">
+      <h1>{{ p.name }}</h1>
+      <p>{{ p.description }}</p>
+    </div>
+  </div>
+
+  <div class="detail-grid">
+    <div class="card">
+      <h2 class="card-title">Project Info</h2>
+      <div class="info-rows">
+        <div class="info-row">
+          <span class="info-label">Status</span>
+          <span class="info-value">{{ p.status }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Budget</span>
+          <span class="info-value budget">${{ p.budget | number }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Progress</span>
+          <span class="info-value">{{ p.progress }}%</span>
+        </div>
+        <div class="project-bar-wrap full">
+          <div class="project-bar" [style.width.%]="p.progress" style="background: #5c4fd6"></div>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Tasks done</span>
+          <span class="info-value">{{ doneCount() }} / {{ tasks().length }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2 class="card-title">Team Members</h2>
+      <div class="projects-list">
+        @if (!members().length) {
+          <div class="loading">No members.</div>
+        }
+        @for (m of members(); track m.id) {
+          <div class="project-item">
+            <div class="member-avatar">{{ m.name.charAt(0).toUpperCase() }}</div>
+            <span class="member-name">{{ m.name }}</span>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2 class="card-title">Tasks</h2>
+    <div class="projects-list">
+      @if (!tasks().length) {
+        <div class="loading">No tasks.</div>
+      }
+      @for (t of tasks(); track t.id) {
+        <div class="project-item">
+          <div class="project-dot" [style.background]="colors[t.status]"></div>
+          <div class="task-info">
+            <span class="member-name">{{ t.title }}</span>
+            @if (t.assignee) {
+              <span class="task-sub"><i class="ti ti-user"></i> {{ t.assignee.name }}</span>
+            }
+          </div>
+          <span [class]="'status-badge s-' + t.status">{{ labels[t.status] }}</span>
+        </div>
+      }
+    </div>
+  </div>
+}

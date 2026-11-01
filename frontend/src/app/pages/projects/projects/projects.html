@@ -22,7 +22,7 @@
       @for (p of projects(); track p.id; let i = $index) {
         <div class="project-item">
           <div class="project-dot" [style.background]="colors[i % colors.length]"></div>
-          <span class="project-name">{{ p.name }}</span>
+          <a class="project-name" [routerLink]="['/projects', p.id]">{{ p.name }}</a>
           <div class="project-bar-wrap">
             <div
               class="project-bar"

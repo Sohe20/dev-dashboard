@@ -15,3 +15,11 @@
   .icon-btn:hover {
     color: var(--text);
   }
+
+  a.project-name {
+  text-decoration: none;
+}
+
+a.project-name:hover {
+  color: var(--text);
+}

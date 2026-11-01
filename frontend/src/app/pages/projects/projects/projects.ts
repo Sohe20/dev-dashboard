@@ -6,10 +6,11 @@ import { Role } from '../../../core/role';
 import { ProjectService } from '../../../services/project.service';
 import { TaskService } from '../../../services/task.service';
 import { ProjectFormModal } from '../../../shared/project-form-modal/project-form-modal';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-projects',
-  imports: [ProjectFormModal],
+  imports: [ProjectFormModal , RouterLink],
   templateUrl: './projects.html',
   styleUrl: './projects.css',
 })
