@@ -37,4 +37,20 @@ export class TaskService {
   remove(id: number) {
     return this.http.delete(`${this.url}/${id}`);
   }
+
+  complete(id: number) {
+    return this.http.post<Task>(`${this.url}/${id}/complete`, {});
+  }
+
+  reportIssue(id: number, message: string) {
+    return this.http.post<Task>(`${this.url}/${id}/report-issue`, { message });
+  }
+
+  approve(id: number) {
+    return this.http.post<Task>(`${this.url}/${id}/approve`, {});
+  }
+
+  sendBack(id: number, message: string) {
+    return this.http.post<Task>(`${this.url}/${id}/send-back`, { message });
+  }
 }

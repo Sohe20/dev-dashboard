@@ -23,14 +23,43 @@
   font-size: 11px;
 }
 
-.status-badge.done {
+
+
+.done-check {
+  accent-color: var(--accent);
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.done-check:disabled {
+  cursor: default;
+}
+
+.status-badge.s-done {
   background: #1a3a20;
   color: #40d080;
 }
+.status-badge.s-review {
+  background: #2a2000;
+  color: #d0a020;
+}
+.status-badge.s-blocked {
+  background: #3a1a22;
+  color: #ff6080;
+}
 
-:host-context(body.light) .status-badge.done {
+:host-context(body.light) .status-badge.s-done {
   background: #dcf7e6;
-  color: #135530;
+  color: #1a7a45;
+}
+:host-context(body.light) .status-badge.s-review {
+  background: #fff6dc;
+  color: #8a6500;
+}
+:host-context(body.light) .status-badge.s-blocked {
+  background: #ffe3e8;
+  color: #b3203f;
 }
 
 .actions {

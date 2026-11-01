@@ -1,0 +1,28 @@
+<div class="modal-overlay open" (click)="closed.emit()">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>{{ heading() }}</h3>
+      <button class="modal-close" type="button" (click)="closed.emit()">
+        <i class="ti ti-x"></i>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <div class="form-group">
+        <textarea
+          rows="4"
+          [placeholder]="placeholder()"
+          (input)="text.set($any($event.target).value)"
+        ></textarea>
+      </div>
+      @if (error()) {
+        <p class="form-error">{{ error() }}</p>
+      }
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-cancel" type="button" (click)="closed.emit()">Cancel</button>
+      <button class="btn-submit" type="button" (click)="submit()">{{ confirmLabel() }}</button>
+    </div>
+  </div>
+</div>

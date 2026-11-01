@@ -4,9 +4,11 @@
     <p>Track your tasks.</p>
   </div>
   <div class="topbar-actions">
-    <button class="btn-new" type="button" (click)="openNew()">
-      <i class="ti ti-plus"></i> New Task
-    </button>
+    @if (roleSvc.isTeamLead()) {
+      <button class="btn-new" type="button" (click)="openNew()">
+        <i class="ti ti-plus"></i> New Task
+      </button>
+    }
   </div>
 </div>
 
@@ -21,24 +23,56 @@
     } @else {
       @for (t of tasks(); track t.id) {
         <div class="project-item">
-          <div class="project-dot" [style.background]="color(t.status)"></div>
+          <div class="project-dot" [style.background]="colors[t.status]"></div>
+
+          @if (isMine(t)) {
+            <input
+              type="checkbox"
+              class="done-check"
+              title="Mark as done"
+              [checked]="t.status === 'done' || t.status === 'review'"
+              [disabled]="!canComplete(t)"
+              (change)="complete(t)"
+            />
+          }
+
           <div class="task-info">
             <span class="project-name">{{ t.title }}</span>
             @if (t.project) {
               <span class="task-sub">{{ t.project.name }}</span>
             }
           </div>
+
           @if (t.assignee) {
             <span class="assignee"><i class="ti ti-user"></i> {{ t.assignee.name }}</span>
           }
-          <span class="status-badge" [class.done]="t.status === 'done'">{{ t.status }}</span>
+
+          <span [class]="'status-badge s-' + t.status">{{ labels[t.status] }}</span>
+
           <div class="actions">
-            <button type="button" class="icon-btn" title="Edit" (click)="openEdit(t)">
-              <i class="ti ti-pencil"></i>
-            </button>
-            <button type="button" class="icon-btn" title="Delete" (click)="remove(t)">
-              <i class="ti ti-trash"></i>
-            </button>
+            @if (canComplete(t)) {
+              <button type="button" class="icon-btn" title="Report issue" (click)="openIssue(t)">
+                <i class="ti ti-alert-triangle"></i>
+              </button>
+            }
+            @if (roleSvc.isTeamLead()) {
+              @if (t.status === 'review') {
+                <button type="button" class="icon-btn" title="Approve" (click)="approve(t)">
+                  <i class="ti ti-check"></i>
+                </button>
+              }
+              @if (t.status === 'review' || t.status === 'blocked') {
+                <button type="button" class="icon-btn" title="Send back" (click)="openSendBack(t)">
+                  <i class="ti ti-arrow-back-up"></i>
+                </button>
+              }
+              <button type="button" class="icon-btn" title="Edit" (click)="openEdit(t)">
+                <i class="ti ti-pencil"></i>
+              </button>
+              <button type="button" class="icon-btn" title="Delete" (click)="remove(t)">
+                <i class="ti ti-trash"></i>
+              </button>
+            }
           </div>
         </div>
       }
@@ -51,5 +85,16 @@
     [task]="editing()"
     (saved)="onSaved()"
     (closed)="closeForm()"
+  />
+}
+
+@if (msgAction(); as a) {
+  <app-message-modal
+    [heading]="a.kind === 'issue' ? 'Report an issue' : 'Send back'"
+    [placeholder]="a.kind === 'issue' ? 'Describe the problem...' : 'Optional note for the assignee...'"
+    [confirmLabel]="a.kind === 'issue' ? 'Report' : 'Send back'"
+    [required]="a.kind === 'issue'"
+    (confirmed)="onMessage($event)"
+    (closed)="msgAction.set(null)"
   />
 }
