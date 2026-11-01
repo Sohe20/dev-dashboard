@@ -8,6 +8,7 @@
         </a>
       }
     </nav>
+    <app-notification-bell />
     <div class="avatar">{{ initial }}</div>
     <button class="nav-item" type="button" (click)="theme.toggle()" title="Theme">
       <i [class]="theme.isLight() ? 'ti ti-sun' : 'ti ti-moon'"></i>

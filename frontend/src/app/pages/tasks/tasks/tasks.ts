@@ -36,9 +36,7 @@ export class Tasks implements OnInit {
     });
   }
 
-  color(status: TaskStatus) {
-    return status === 'done' ? '#40d080' : status === 'inprogress' ? '#40a0ff' : '#6060a0';
-  }
+ 
 
   openNew() {
     this.editing.set(null);
@@ -66,4 +64,15 @@ export class Tasks implements OnInit {
       error: () => alert('Failed to delete task.'),
     });
   }
+
+  color(status: TaskStatus) {
+  const map: Record<TaskStatus, string> = {
+    todo: '#6060a0',
+    inprogress: '#40a0ff',
+    review: '#d0a020',
+    blocked: '#ff6080',
+    done: '#40d080',
+  };
+  return map[status];
+}
 }

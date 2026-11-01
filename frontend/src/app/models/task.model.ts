@@ -1,7 +1,7 @@
 import { Project } from './project.model';
 import { User } from './user.model';
 
-export type TaskStatus = 'todo' | 'inprogress' | 'done';
+export type TaskStatus = 'todo' | 'inprogress' | 'review' | 'blocked' | 'done';
 
 export interface Task {
   id: number;
@@ -21,3 +21,4 @@ export interface TaskPayload {
   projectId: number | null;
   assigneeId: number | null;
 }
+

@@ -1,0 +1,33 @@
+<button class="nav-item bell" type="button" title="Notifications" (click)="toggle()">
+  <i class="ti ti-bell"></i>
+  @if (unread() > 0) {
+    <span class="badge">{{ unread() > 9 ? '9+' : unread() }}</span>
+  }
+</button>
+
+@if (open()) {
+  <div class="backdrop" (click)="open.set(false)"></div>
+  <div class="panel">
+    <div class="panel-head">
+      <span>Notifications</span>
+      @if (unread() > 0) {
+        <button type="button" class="link-btn" (click)="readAll()">Mark all as read</button>
+      }
+    </div>
+
+    <div class="panel-body">
+      @if (!items().length) {
+        <div class="empty">No notifications.</div>
+      }
+      @for (n of items(); track n.id) {
+        <div class="item" [class.unread]="!n.isRead" (click)="openItem(n)">
+          <i [style.color]="icons[n.type].color"></i>
+          <div class="text">
+            <div class="msg">{{ n.message }}</div>
+            <div class="time">{{ n.createdAt | date: 'MMM d, HH:mm' }}</div>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+}
