@@ -32,26 +32,17 @@ export class Projects implements OnInit {
   }
 
   load() {
-    this.roleSvc
-      .ensure()
-      .pipe(
-        switchMap((role) =>
-          !role || role === 'Team Lead'
-            ? this.api.getAll()
-            : this.taskApi.getMine().pipe(map((tasks) => this.uniqueProjects(tasks))),
-        ),
-      )
-      .subscribe({
-        next: (data) => {
-          this.projects.set(data);
-          this.loading.set(false);
-        },
-        error: () => {
-          this.error.set('Could not load projects.');
-          this.loading.set(false);
-        },
-      });
-  }
+  this.api.visible().subscribe({
+    next: (data) => {
+      this.projects.set(data);
+      this.loading.set(false);
+    },
+    error: () => {
+      this.error.set('Could not load projects.');
+      this.loading.set(false);
+    },
+  });
+}
 
   private uniqueProjects(tasks: Task[]): Project[] {
     const byId = new Map<number, Project>();

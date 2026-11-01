@@ -1,1 +1,71 @@
-<h1>Dashboard</h1>
+<div class="topbar">
+  <div class="greeting">
+    <h1>{{ greeting }}, {{ name }} 👋</h1>
+    <p>Here's what's happening with your projects today.</p>
+  </div>
+</div>
+
+<div class="stats">
+  <div class="stat-card">
+    <div class="stat-icon blue"><i class="ti ti-folders"></i></div>
+    <div class="stat-info">
+      <span class="stat-value">{{ projects()?.length ?? '—' }}</span>
+      <span class="stat-label">Projects</span>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon green"><i class="ti ti-circle-check"></i></div>
+    <div class="stat-info">
+      <span class="stat-value">{{ taskCount() ?? '—' }}</span>
+      <span class="stat-label">Tasks</span>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon cyan"><i class="ti ti-users"></i></div>
+    <div class="stat-info">
+      <span class="stat-value">{{ teamCount() ?? '—' }}</span>
+      <span class="stat-label">Team Members</span>
+    </div>
+  </div>
+  @if (roleSvc.isTeamLead()) {
+    <div class="stat-card">
+      <div class="stat-icon yellow"><i class="ti ti-currency-dollar"></i></div>
+      <div class="stat-info">
+        <span class="stat-value">{{ revenueText() }}</span>
+        <span class="stat-label">Revenue</span>
+      </div>
+    </div>
+  }
+</div>
+
+<div class="bottom">
+  <div class="card">
+    <h2 class="card-title">Activity Overview</h2>
+    <app-activity-chart [labels]="chart().labels" [data]="chart().data" />
+  </div>
+
+  <div class="card">
+    <h2 class="card-title">Recent Projects</h2>
+    <div class="projects-list">
+      @if (projects() === null) {
+        <div class="loading">Loading...</div>
+      } @else if (!recent().length) {
+        <div class="loading">No projects yet.</div>
+      } @else {
+        @for (p of recent(); track p.id; let i = $index) {
+          <div class="project-item">
+            <div class="project-dot" [style.background]="colors[i % colors.length]"></div>
+            <span class="project-name">{{ p.name }}</span>
+            <div class="project-bar-wrap">
+              <div class="project-bar" [style.width.%]="p.progress" [style.background]="colors[i % colors.length]"></div>
+            </div>
+            <span class="project-pct">{{ p.progress }}%</span>
+          </div>
+        }
+      }
+    </div>
+    <a routerLink="/projects" class="view-all">
+      View all projects <i class="ti ti-arrow-right"></i>
+    </a>
+  </div>
+</div>
