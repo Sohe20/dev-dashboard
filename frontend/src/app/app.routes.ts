@@ -7,6 +7,7 @@ import { Projects } from './pages/projects/projects/projects';
 import { Tasks } from './pages/tasks/tasks/tasks';
 import { Team } from './pages/team/team/team';
 import { ProjectDetail } from './pages/projects/project-detail/project-detail';
+import { Profile } from './pages/profile/profile/profile';
 
 export const routes: Routes = [
   { path: 'login', component: Login },
@@ -20,6 +21,7 @@ export const routes: Routes = [
       { path: 'projects/:id', component: ProjectDetail },
       { path: 'tasks', component: Tasks },
       { path: 'team', component: Team },
+      { path: 'profile', component: Profile },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
     ],
   },

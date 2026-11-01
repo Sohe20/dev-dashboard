@@ -1,0 +1,60 @@
+<div class="topbar">
+  <div class="greeting">
+    <h1>My Profile</h1>
+    <p>Your tasks and information.</p>
+  </div>
+</div>
+
+<div class="profile-grid">
+  <div class="card">
+    <h2 class="card-title">Profile Info</h2>
+    <div class="profile-head">
+      <div class="big-avatar">{{ initial }}</div>
+      <div>
+        <div class="p-name">{{ user?.name }}</div>
+        <div class="p-email">{{ user?.email }}</div>
+        <div class="p-role">{{ roleSvc.role() ?? 'No role assigned' }}</div>
+      </div>
+    </div>
+
+    <div class="mini-stats">
+      <div class="mini">
+        <span class="mini-value">{{ tasks().length }}</span>
+        <span class="mini-label">Assigned</span>
+      </div>
+      <div class="mini">
+        <span class="mini-value">{{ doneCount() }}</span>
+        <span class="mini-label">Done</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2 class="card-title">My Tasks</h2>
+    <div class="projects-list">
+      @if (loading()) {
+        <div class="loading">Loading...</div>
+      } @else if (error()) {
+        <div class="loading">{{ error() }}</div>
+      } @else if (!tasks().length) {
+        <div class="loading">No tasks assigned to you.</div>
+      } @else {
+        @for (t of tasks(); track t.id) {
+          <div class="project-item">
+            <div class="project-dot" [style.background]="colors[t.status]"></div>
+            <div class="task-info">
+              <span class="t-title">{{ t.title }}</span>
+              @if (t.project) {
+                <span class="t-sub">Project: {{ t.project.name }}</span>
+              }
+              @if (t.assignedBy) {
+                <span class="t-sub">Assigned by: {{ t.assignedBy.name }}</span>
+              }
+            </div>
+            <span [class]="'status-badge s-' + t.status">{{ labels[t.status] }}</span>
+          </div>
+        }
+      }
+    </div>
+  </div>
+</div>
