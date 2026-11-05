@@ -8,10 +8,11 @@ import { ProjectService } from '../../../services/project.service';
 import { TaskService } from '../../../services/task.service';
 import { TeamService } from '../../../services/team.service';
 import { ActivityChart } from '../../../shared/activity-chart/activity-chart';
+import { GlobalSearch } from '../../../shared/global-search/global-search';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [RouterLink, ActivityChart],
+  imports: [RouterLink, ActivityChart , GlobalSearch],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })

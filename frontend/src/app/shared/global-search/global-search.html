@@ -1,0 +1,61 @@
+<div class="wrap">
+  <div class="search">
+    <i class="ti ti-search"></i>
+    <input
+      type="text"
+      placeholder="Search..."
+      [value]="query()"
+      (focus)="load()"
+      (input)="onInput($any($event.target).value)"
+      (keydown.escape)="close()"
+    />
+  </div>
+
+  @if (open() && results(); as r) {
+    <div class="backdrop" (click)="close()"></div>
+    <div class="results">
+      @if (empty()) {
+        <div class="none">No results found.</div>
+      }
+
+      @if (r.projects.length) {
+        <div class="group">Projects</div>
+        @for (p of r.projects; track p.id) {
+          <div class="row" (click)="go(['/projects', '' + p.id])">
+            <i class="ti ti-folders ic-project"></i>
+            <div>
+              <div class="title">{{ p.name }}</div>
+              <div class="sub">{{ p.status }} · {{ p.progress }}%</div>
+            </div>
+          </div>
+        }
+      }
+
+      @if (r.tasks.length) {
+        <div class="group">Tasks</div>
+        @for (t of r.tasks; track t.id) {
+          <div class="row" (click)="go('/tasks')">
+            <i class="ti ti-circle-check ic-task"></i>
+            <div>
+              <div class="title">{{ t.title }}</div>
+              <div class="sub">{{ t.status }}{{ t.assignee ? ' · ' + t.assignee.name : '' }}</div>
+            </div>
+          </div>
+        }
+      }
+
+      @if (r.team.length) {
+        <div class="group">Team</div>
+        @for (m of r.team; track m.id) {
+          <div class="row" (click)="go('/team')">
+            <i class="ti ti-user ic-team"></i>
+            <div>
+              <div class="title">{{ m.name }}</div>
+              <div class="sub">{{ m.role }}</div>
+            </div>
+          </div>
+        }
+      }
+    </div>
+  }
+</div>
