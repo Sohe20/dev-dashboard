@@ -9,10 +9,12 @@ import { TaskService } from '../../../services/task.service';
 import { TeamService } from '../../../services/team.service';
 import { ActivityChart } from '../../../shared/activity-chart/activity-chart';
 import { GlobalSearch } from '../../../shared/global-search/global-search';
+import { TPipe } from '../../../core/t.pipe';
+import { I18n } from '../../../core/i18n';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [RouterLink, ActivityChart , GlobalSearch],
+  imports: [RouterLink, ActivityChart , GlobalSearch , TPipe],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })
@@ -22,12 +24,18 @@ export class Dashboard implements OnInit {
   private taskApi = inject(TaskService);
   private teamApi = inject(TeamService);
   roleSvc = inject(Role);
+  private i18n = inject(I18n);
+  
 
   name = this.auth.user()?.name ?? '';
-  greeting = (() => {
-    const h = new Date().getHours();
-    return h < 12 ? 'Good morning' : h < 18 ? 'Good afternoon' : 'Good evening';
-  })();
+ private greetKey = (() => {
+  const h = new Date().getHours();
+  return h < 12 ? 'dash.morning' : h < 18 ? 'dash.afternoon' : 'dash.evening';
+})();
+
+hello = computed(() =>
+  this.i18n.t('dash.hello', { greet: this.i18n.t(this.greetKey), name: this.name }),
+);
 
   projects = signal<Project[] | null>(null);
   taskCount = signal<number | null>(null);

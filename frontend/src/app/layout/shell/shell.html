@@ -10,6 +10,9 @@
     </nav>
     <app-notification-bell />
     <div class="avatar">{{ initial }}</div>
+    <button class="nav-item" type="button" (click)="i18n.toggle()" [title]="'nav.language' | t">
+      {{ i18n.lang() === 'en' ? 'FA' : 'EN' }}
+    </button>
     <button class="nav-item" type="button" (click)="theme.toggle()" title="Theme">
       <i [class]="theme.isLight() ? 'ti ti-sun' : 'ti ti-moon'"></i>
     </button>

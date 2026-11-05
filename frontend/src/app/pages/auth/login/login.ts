@@ -2,10 +2,11 @@ import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Auth } from '../../../core/auth';
+import { TPipe } from '../../../core/t.pipe';
 
 @Component({
   selector: 'app-login',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule , TPipe],
   templateUrl: './login.html',
   styleUrls: ['../auth-shared.css', './login.css'],
 })
@@ -38,7 +39,7 @@ export class Login {
   submit() {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
-      this.error.set('Please fill all fields correctly (password: at least 6 characters).');
+      this.error.set('auth.fillAll');
       return;
     }
     this.error.set('');
@@ -47,15 +48,15 @@ export class Login {
     if (this.mode() === 'login') {
       this.auth.login({ email, password }).subscribe({
         next: () => this.router.navigateByUrl('/dashboard'),
-        error: () => this.error.set('Invalid email or password.'),
+        error: () => this.error.set('auth.invalid'),
       });
     } else {
       this.auth.register({ name, email, password }).subscribe({
         next: () => {
           this.setMode('login');
-          this.success.set('Account created! You can now sign in.');
+          this.success.set('auth.created');
         },
-        error: () => this.error.set('Registration failed. Email may already exist.'),
+        error: () => this.error.set('auth.regFailed'),
       });
     }
   }

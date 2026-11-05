@@ -39,7 +39,7 @@ body {
 .sidebar {
   width: 64px;
   background: #12122a;
-  border-right: 1px solid var(--border);
+  border-inline-end: 1px solid var(--border);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -47,7 +47,7 @@ body {
   gap: 8px;
   position: fixed;
   top: 0;
-  left: 0;
+  inset-inline-start: 0;
   height: 100vh;
   z-index: 10;
 }
@@ -109,7 +109,7 @@ body {
 
 /* Main */
 .main {
-  margin-left: 64px;
+  margin-inline-start: 64px;
   flex: 1;
   padding: 28px 32px;
 }
@@ -328,7 +328,7 @@ canvas#activityChart {
   font-size: 12px;
   color: var(--muted);
   min-width: 32px;
-  text-align: right;
+  text-align: end;
 }
 
 .loading {
@@ -463,6 +463,9 @@ canvas#activityChart {
 .btn-submit:hover {
   background: var(--accent-hover);
 }
+[dir='rtl'] body {
+  font-family: 'Vazirmatn', 'Inter', sans-serif;
+}
 
 /* Pages */
 .page {
@@ -588,6 +591,7 @@ body.light .project-item.clickable:hover * {
     margin-left: 0;
     margin-bottom: 56px;
     padding: 16px;
+    margin-inline-start: 0;
   }
 
   .stats {
