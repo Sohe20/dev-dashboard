@@ -1,0 +1,3 @@
+:host-context([dir='rtl']) .view-all i {
+  transform: scaleX(-1);
+}

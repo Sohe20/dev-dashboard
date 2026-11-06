@@ -7,10 +7,12 @@ import { ProjectService } from '../../../services/project.service';
 import { TaskService } from '../../../services/task.service';
 import { ProjectFormModal } from '../../../shared/project-form-modal/project-form-modal';
 import { RouterLink } from '@angular/router';
+import { I18n } from '../../../core/i18n';
+import { TPipe } from '../../../core/t.pipe';
 
 @Component({
   selector: 'app-projects',
-  imports: [ProjectFormModal , RouterLink],
+  imports: [ProjectFormModal , RouterLink  , TPipe],
   templateUrl: './projects.html',
   styleUrl: './projects.css',
 })
@@ -18,7 +20,7 @@ export class Projects implements OnInit {
   private api = inject(ProjectService);
   private taskApi = inject(TaskService);
   roleSvc = inject(Role);
-
+private i18n = inject(I18n);
   projects = signal<Project[]>([]);
   loading = signal(true);
   error = signal('');
@@ -39,7 +41,7 @@ export class Projects implements OnInit {
       this.loading.set(false);
     },
     error: () => {
-      this.error.set('Could not load projects.');
+      this.error.set('proj.loadErr');
       this.loading.set(false);
     },
   });
@@ -71,10 +73,10 @@ export class Projects implements OnInit {
   }
 
   remove(p: Project) {
-    if (!confirm(`Delete "${p.name}"?`)) return;
+    if (confirm(this.i18n.t(`proj.deleteConfirm`, { name: p.name }))) return;
     this.api.remove(p.id).subscribe({
       next: () => this.load(),
-      error: () => alert('Failed to delete project.'),
+      error: () => alert(this.i18n.t('proj.deleteErr')),
     });
   }
 }

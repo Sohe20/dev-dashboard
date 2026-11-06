@@ -1,7 +1,7 @@
 <div class="modal-overlay open" (click)="closed.emit()">
   <div class="modal" (click)="$event.stopPropagation()">
     <div class="modal-header">
-      <h3>{{ project() ? 'Edit Project' : 'New Project' }}</h3>
+      <h3>{{ (project() ? 'proj.edit' : 'proj.new') | t }}</h3>
       <button class="modal-close" type="button" (click)="closed.emit()">
         <i class="ti ti-x"></i>
       </button>
@@ -10,38 +10,38 @@
     <form [formGroup]="form" (ngSubmit)="submit()">
       <div class="modal-body">
         <div class="form-group">
-          <label for="pname">Project Name</label>
-          <input id="pname" type="text" formControlName="name" placeholder="e.g. Design System" />
+          <label for="pname">{{ 'proj.name' | t }}</label>
+          <input id="pname" type="text" formControlName="name" [placeholder]="'proj.namePh' | t" />
         </div>
         <div class="form-group">
-          <label for="pdesc">Description</label>
-          <input id="pdesc" type="text" formControlName="description" placeholder="Short description..." />
+          <label for="pdesc">{{ 'common.description' | t }}</label>
+          <input id="pdesc" type="text" formControlName="description" [placeholder]="'common.descriptionPh' | t" />
         </div>
         <div class="form-group">
-          <label for="pprogress">Progress (%)</label>
+          <label for="pprogress">{{ 'proj.progress' | t }}</label>
           <input id="pprogress" type="number" formControlName="progress" min="0" max="100" />
         </div>
         <div class="form-group">
-          <label for="pbudget">Budget ($)</label>
+          <label for="pbudget">{{ 'proj.budget' | t }}</label>
           <input id="pbudget" type="number" formControlName="budget" min="0" />
         </div>
         <div class="form-group">
-          <label for="pstatus">Status</label>
+          <label for="pstatus">	{{ 'common.status' | t }}</label>
           <select id="pstatus" formControlName="status">
-            <option value="active">Active</option>
-            <option value="completed">Completed</option>
-            <option value="paused">Paused</option>
+            <option value="active">{{ 'pstatus.active' | t }}</option>
+            <option value="completed">{{ 'pstatus.completed' | t }}</option>
+            <option value="paused">{{ 'pstatus.paused' | t }}</option>
           </select>
         </div>
         @if (error()) {
-          <p class="form-error">{{ error() }}</p>
+          <p class="form-error">	{{ error() | t }} </p>
         }
       </div>
 
       <div class="modal-footer">
-        <button class="btn-cancel" type="button" (click)="closed.emit()">Cancel</button>
+        <button class="btn-cancel" type="button" (click)="closed.emit()">{{ 'common.cancel' | t }}</button>
         <button class="btn-submit" type="submit" [disabled]="saving()">
-          {{ project() ? 'Update Project' : 'Create Project' }}
+        {{ (project() ? 'proj.update' : 'proj.create') | t }}
         </button>
       </div>
     </form>

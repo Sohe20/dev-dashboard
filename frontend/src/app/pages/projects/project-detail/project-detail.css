@@ -113,6 +113,10 @@
   color: #b3203f;
 }
 
+:host-context([dir='rtl']) .back-link i {
+  transform: scaleX(-1);
+}
+
 @media (max-width: 900px) {
   .detail-grid {
     grid-template-columns: 1fr;

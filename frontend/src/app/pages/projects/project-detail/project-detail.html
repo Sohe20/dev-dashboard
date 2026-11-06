@@ -1,11 +1,11 @@
 <div class="back-row">
-  <a routerLink="/projects" class="back-link"><i class="ti ti-arrow-left"></i> Back</a>
+  <a routerLink="/projects" class="back-link"><i class="ti ti-arrow-left"></i>{{ 'common.back' | t }}</a>
 </div>
 
 @if (loading()) {
-  <div class="loading">Loading...</div>
+  <div class="loading">{{ 'common.loading' | t }}</div>
 } @else if (error()) {
-  <div class="loading">{{ error() }}</div>
+  <div class="loading">{{ error() | t}}</div>
 } @else if (project(); as p) {
   <div class="topbar">
     <div class="greeting">
@@ -16,32 +16,32 @@
 
   <div class="detail-grid">
     <div class="card">
-      <h2 class="card-title">Project Info</h2>
+      <h2 class="card-title">{{ 'det.info' | t }}</h2>
       <div class="info-rows">
         <div class="info-row">
-          <span class="info-label">Status</span>
-          <span class="info-value">{{ p.status }}</span>
+          <span class="info-label">	{{ 'common.status' | t }}</span>
+          <span class="info-value">{{ ('pstatus.' + p.status) | t }}</span>
         </div>
         <div class="info-row">
-          <span class="info-label">Budget</span>
+          <span class="info-label">	{{ 'det.budget' | t }}</span>
           <span class="info-value budget">${{ p.budget | number }}</span>
         </div>
         <div class="info-row">
-          <span class="info-label">Progress</span>
+          <span class="info-label">{{ 'det.progress' | t }}</span>
           <span class="info-value">{{ p.progress }}%</span>
         </div>
         <div class="project-bar-wrap full">
           <div class="project-bar" [style.width.%]="p.progress" style="background: #5c4fd6"></div>
         </div>
         <div class="info-row">
-          <span class="info-label">Tasks done</span>
+          <span class="info-label">{{ 'det.tasksDone' | t }}</span>
           <span class="info-value">{{ doneCount() }} / {{ tasks().length }}</span>
         </div>
       </div>
     </div>
 
     <div class="card">
-      <h2 class="card-title">Team Members</h2>
+      <h2 class="card-title">{{ 'dash.teamMembers' | t }}</h2>
       <div class="projects-list">
         @if (!members().length) {
           <div class="loading">No members.</div>
@@ -57,21 +57,21 @@
   </div>
 
   <div class="card">
-    <h2 class="card-title">Tasks</h2>
+    <h2 class="card-title">{{ 'nav.tasks' | t }}</h2>
     <div class="projects-list">
       @if (!tasks().length) {
-        <div class="loading">No tasks.</div>
+        <div class="loading">{{ 'det.noTasks' | t }}</div>
       }
       @for (t of tasks(); track t.id) {
         <div class="project-item">
           <div class="project-dot" [style.background]="colors[t.status]"></div>
           <div class="task-info">
-            <span class="member-name">{{ t.title }}</span>
+            <span class="member-name">{{ 'det.noMembers' | t }}</span>
             @if (t.assignee) {
               <span class="task-sub"><i class="ti ti-user"></i> {{ t.assignee.name }}</span>
             }
           </div>
-          <span [class]="'status-badge s-' + t.status">{{ labels[t.status] }}</span>
+          <span [class]="'status-badge s-' + t.status">	{{ labels[t.status] | t }}</span>
         </div>
       }
     </div>

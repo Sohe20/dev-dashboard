@@ -1,11 +1,11 @@
 <div class="topbar">
   <div class="greeting">
-    <h1>Projects</h1>
-    <p>Manage all your projects.</p>
+    <h1>{{ 'nav.projects' | t }}</h1>
+    <p>{{ 'proj.subtitle' | t }}</p>
   </div>
   <div class="topbar-actions">
     <button class="btn-new" type="button" (click)="openNew()">
-      <i class="ti ti-plus"></i> New Project
+      <i class="ti ti-plus"></i> {{ 'proj.new' | t }}
     </button>
   </div>
 </div>
@@ -13,11 +13,11 @@
 <div class="card">
   <div class="projects-list">
     @if (loading()) {
-      <div class="loading">Loading...</div>
+      <div class="loading">{{ 'common.loading' | t }}</div>
     } @else if (error()) {
-      <div class="loading">{{ error() }}</div>
+      <div class="loading">{{ error() | t }}</div>
     } @else if (!projects().length) {
-      <div class="loading">No projects yet.</div>
+      <div class="loading">{{ 'proj.none' | t }}</div>
     } @else {
       @for (p of projects(); track p.id; let i = $index) {
         <div class="project-item">
@@ -33,10 +33,20 @@
           <span class="project-pct">{{ p.progress }}%</span>
           @if (roleSvc.isTeamLead()) {
             <div class="actions">
-              <button type="button" class="icon-btn" title="Edit" (click)="openEdit(p)">
+              <button
+                type="button"
+                class="icon-btn"
+                [title]="'common.edit' | t"
+                (click)="openEdit(p)"
+              >
                 <i class="ti ti-pencil"></i>
               </button>
-              <button type="button" class="icon-btn" title="Delete" (click)="remove(p)">
+              <button
+                type="button"
+                class="icon-btn"
+                [title]="'common.delete' | t"
+                (click)="remove(p)"
+              >
                 <i class="ti ti-trash"></i>
               </button>
             </div>

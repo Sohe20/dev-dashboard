@@ -7,10 +7,11 @@ import { User } from '../../../models/user.model';
 import { ProjectService } from '../../../services/project.service';
 import { TaskService } from '../../../services/task.service';
 import { DecimalPipe } from '@angular/common';
+import { TPipe } from '../../../core/t.pipe';
 
 @Component({
   selector: 'app-project-detail',
-  imports: [RouterLink , DecimalPipe],
+  imports: [RouterLink , DecimalPipe , TPipe],
   templateUrl: './project-detail.html',
   styleUrl: './project-detail.css',
 })
@@ -32,13 +33,13 @@ export class ProjectDetail implements OnInit {
 
   doneCount = computed(() => this.tasks().filter((t) => t.status === 'done').length);
 
-  labels: Record<TaskStatus, string> = {
-    todo: 'Todo',
-    inprogress: 'In Progress',
-    review: 'Waiting for review',
-    blocked: 'Blocked',
-    done: 'Done',
-  };
+ labels: Record<TaskStatus, string> = {
+  todo: 'status.todo',
+  inprogress: 'status.inprogress',
+  review: 'status.review',
+  blocked: 'status.blocked',
+  done: 'status.done',
+};
 
   colors: Record<TaskStatus, string> = {
     todo: '#6060a0',
@@ -57,7 +58,7 @@ export class ProjectDetail implements OnInit {
     }).subscribe({
       next: ({ project, tasks }) => {
         if (!project) {
-          this.error.set('Project not found.');
+          this.error.set('det.notFound');
         } else {
           this.project.set(project);
           this.tasks.set(tasks.filter((t) => t.project?.id === id));
@@ -65,7 +66,7 @@ export class ProjectDetail implements OnInit {
         this.loading.set(false);
       },
       error: () => {
-        this.error.set('Could not load project.');
+        this.error.set('det.loadErr');
         this.loading.set(false);
       },
     });

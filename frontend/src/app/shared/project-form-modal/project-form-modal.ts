@@ -2,17 +2,18 @@ import { Component, inject, input, OnInit, output, signal } from '@angular/core'
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Project, ProjectStatus } from '../../models/project.model';
 import { ProjectService } from '../../services/project.service';
+import { TPipe } from '../../core/t.pipe';
+import { I18n } from '../../core/i18n';
 
 @Component({
   selector: 'app-project-form-modal',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule , TPipe],
   templateUrl: './project-form-modal.html',
   styleUrl: './project-form-modal.css',
 })
 export class ProjectFormModal implements OnInit {
   private fb = inject(FormBuilder);
   private api = inject(ProjectService);
-
   project = input<Project | null>(null);
   saved = output<void>();
   closed = output<void>();
@@ -36,7 +37,7 @@ export class ProjectFormModal implements OnInit {
   submit() {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
-      this.error.set('Name and description are required. Progress must be 0–100.');
+      this.error.set('proj.formErr')
       return;
     }
     this.error.set('');
@@ -53,7 +54,7 @@ export class ProjectFormModal implements OnInit {
       },
       error: () => {
         this.saving.set(false);
-        this.error.set('Failed to save project.');
+        this.error.set('proj.saveErr');
       },
     });
   }
