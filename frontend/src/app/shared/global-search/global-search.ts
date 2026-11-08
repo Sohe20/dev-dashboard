@@ -1,6 +1,7 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { forkJoin } from 'rxjs';
+import { catchError, forkJoin, of } from 'rxjs';
+import { TPipe } from '../../core/t.pipe';
 import { Project } from '../../models/project.model';
 import { Task } from '../../models/task.model';
 import { TeamMember } from '../../models/team.model';
@@ -10,7 +11,7 @@ import { TeamService } from '../../services/team.service';
 
 @Component({
   selector: 'app-global-search',
-  imports: [],
+  imports: [TPipe],
   templateUrl: './global-search.html',
   styleUrl: './global-search.css',
 })
@@ -50,16 +51,13 @@ export class GlobalSearch {
     if (this.loaded) return;
     this.loaded = true;
     forkJoin({
-      projects: this.projectApi.visible(),
-      tasks: this.taskApi.getAll(),
-      team: this.teamApi.getAll(),
-    }).subscribe({
-      next: (d) => {
-        this.projects.set(d.projects);
-        this.tasks.set(d.tasks);
-        this.team.set(d.team);
-      },
-      error: () => (this.loaded = false),
+      projects: this.projectApi.visible().pipe(catchError(() => of([] as Project[]))),
+      tasks: this.taskApi.getAll().pipe(catchError(() => of([] as Task[]))),
+      team: this.teamApi.getAll().pipe(catchError(() => of([] as TeamMember[]))),
+    }).subscribe((d) => {
+      this.projects.set(d.projects);
+      this.tasks.set(d.tasks);
+      this.team.set(d.team);
     });
   }
 
