@@ -5,6 +5,8 @@ import { Task, TaskStatus } from '../../../models/task.model';
 import { TaskService } from '../../../services/task.service';
 import { MessageModal } from '../../../shared/message-modal/message-modal';
 import { TaskFormModal } from '../../../shared/task-form-modal/task-form-modal';
+import { TPipe } from '../../../core/t.pipe';
+import { I18n } from '../../../core/i18n';
 
 interface MessageAction {
   kind: 'issue' | 'sendBack';
@@ -13,7 +15,7 @@ interface MessageAction {
 
 @Component({
   selector: 'app-tasks',
-  imports: [TaskFormModal, MessageModal],
+  imports: [TaskFormModal, MessageModal, TPipe],
   templateUrl: './tasks.html',
   styleUrl: './tasks.css',
 })
@@ -21,7 +23,7 @@ export class Tasks implements OnInit {
   private api = inject(TaskService);
   private auth = inject(Auth);
   roleSvc = inject(Role);
-
+  private i18n = inject(I18n);
   tasks = signal<Task[]>([]);
   loading = signal(true);
   error = signal('');
@@ -33,11 +35,11 @@ export class Tasks implements OnInit {
   myId: number | undefined = this.auth.user()?.sub;
 
   labels: Record<TaskStatus, string> = {
-    todo: 'Todo',
-    inprogress: 'In Progress',
-    review: 'Waiting for review',
-    blocked: 'Blocked',
-    done: 'Done',
+    todo: 'status.todo',
+    inprogress: 'status.inprogress',
+    review: 'status.review',
+    blocked: 'status.blocked',
+    done: 'status.done',
   };
 
   colors: Record<TaskStatus, string> = {
@@ -60,7 +62,7 @@ export class Tasks implements OnInit {
         this.loading.set(false);
       },
       error: () => {
-        this.error.set('Could not load tasks.');
+        this.error.set('task.loadErr')
         this.loading.set(false);
       },
     });
@@ -79,7 +81,7 @@ export class Tasks implements OnInit {
     this.api.complete(t.id).subscribe({
       next: () => this.load(),
       error: () => {
-        alert('Could not mark the task as done.');
+        alert(this.i18n.t('task.completeErr'));
         this.load();
       },
     });
@@ -93,7 +95,7 @@ export class Tasks implements OnInit {
   approve(t: Task) {
     this.api.approve(t.id).subscribe({
       next: () => this.load(),
-      error: () => alert('Could not approve the task.'),
+      error: () => alert(this.i18n.t('task.approveErr')),
     });
   }
 
@@ -114,7 +116,7 @@ export class Tasks implements OnInit {
         this.msgAction.set(null);
         this.load();
       },
-      error: () => alert('Action failed.'),
+      error: () => alert(this.i18n.t('task.actionErr')),
     });
   }
 
@@ -138,11 +140,11 @@ export class Tasks implements OnInit {
     this.load();
   }
 
-  remove(t: Task) {
-    if (!confirm(`Delete "${t.title}"?`)) return;
-    this.api.remove(t.id).subscribe({
-      next: () => this.load(),
-      error: () => alert('Failed to delete task.'),
-    });
-  }
+ remove(t: Task) {
+  if (!confirm(this.i18n.t('task.deleteConfirm', { name: t.title }))) return;
+  this.api.remove(t.id).subscribe({
+    next: () => this.load(),
+    error: () => alert(this.i18n.t('task.deleteErr')),
+  });
+}
 }

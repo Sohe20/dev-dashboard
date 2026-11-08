@@ -3,10 +3,11 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { User } from '../../models/user.model';
 import { TeamService } from '../../services/team.service';
 import { UserService } from '../../services/user.service';
+import { TPipe } from '../../core/t.pipe';
 
 @Component({
   selector: 'app-member-form-modal',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule , TPipe],
   templateUrl: './member-form-modal.html',
   styleUrl: './member-form-modal.css',
 })
@@ -39,7 +40,7 @@ export class MemberFormModal implements OnInit {
 
     if (this.form.invalid || !user || !role) {
       this.form.markAllAsTouched();
-      this.error.set('Please select a user and enter a role.');
+      this.error.set('team.formErr')
       return;
     }
     this.error.set('');
@@ -54,7 +55,7 @@ export class MemberFormModal implements OnInit {
         },
         error: () => {
           this.saving.set(false);
-          this.error.set('Failed to add member.');
+          this.error.set('team.addErr')
         },
       });
   }

@@ -680,3 +680,10 @@ body.light .project-item.clickable:hover * {
     color: var(--text);
   }
 }
+
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
+}

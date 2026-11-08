@@ -1,8 +1,9 @@
 import { Component, input, output, signal } from '@angular/core';
+import { TPipe } from '../../core/t.pipe';
 
 @Component({
   selector: 'app-message-modal',
-  imports: [],
+  imports: [TPipe],
   templateUrl: './message-modal.html',
   styleUrl: './message-modal.css',
 })
@@ -21,7 +22,7 @@ export class MessageModal {
   submit() {
     const value = this.text().trim();
     if (this.required() && !value) {
-      this.error.set('Please write a message.');
+      this.error.set('msg.empty');
       return;
     }
     this.confirmed.emit(value);

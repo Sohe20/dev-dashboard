@@ -2,16 +2,18 @@ import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { TeamMember } from '../../../models/team.model';
 import { TeamService } from '../../../services/team.service';
 import { MemberFormModal } from '../../../shared/member-form-modal/member-form-modal';
+import { TPipe } from '../../../core/t.pipe';
+import { I18n } from '../../../core/i18n';
 
 @Component({
   selector: 'app-team',
-  imports: [MemberFormModal],
+  imports: [MemberFormModal , TPipe],
   templateUrl: './team.html',
   styleUrl: './team.css',
 })
 export class Team implements OnInit {
   private api = inject(TeamService);
-
+  private i18n = inject(I18n)
   members = signal<TeamMember[]>([]);
   loading = signal(true);
   error = signal('');
@@ -34,7 +36,7 @@ export class Team implements OnInit {
         this.loading.set(false);
       },
       error: () => {
-        this.error.set('Could not load team.');
+        this.error.set('team.loadErr');
         this.loading.set(false);
       },
     });
@@ -45,11 +47,11 @@ export class Team implements OnInit {
     this.load();
   }
 
-  remove(m: TeamMember) {
-    if (!confirm(`Remove ${m.name}?`)) return;
-    this.api.remove(m.id).subscribe({
-      next: () => this.load(),
-      error: () => alert('Failed to remove member.'),
-    });
-  }
+ remove(m: TeamMember) {
+  if (!confirm(this.i18n.t('team.removeConfirm', { name: m.name }))) return;
+  this.api.remove(m.id).subscribe({
+    next: () => this.load(),
+    error: () => alert(this.i18n.t('team.removeErr')),
+  });
+}
 }

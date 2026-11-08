@@ -16,12 +16,12 @@
         ></textarea>
       </div>
       @if (error()) {
-        <p class="form-error">{{ error() }}</p>
+        <p class="form-error">{{ error() |t}}</p>
       }
     </div>
 
     <div class="modal-footer">
-      <button class="btn-cancel" type="button" (click)="closed.emit()">Cancel</button>
+      <button class="btn-cancel" type="button" (click)="closed.emit()">{{ 'common.cancel' | t }}</button>
       <button class="btn-submit" type="button" (click)="submit()">{{ confirmLabel() }}</button>
     </div>
   </div>

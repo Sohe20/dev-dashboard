@@ -1,7 +1,7 @@
 <div class="modal-overlay open" (click)="closed.emit()">
   <div class="modal" (click)="$event.stopPropagation()">
     <div class="modal-header">
-      <h3>New Member</h3>
+      <h3>{{ 'team.new' | t }}</h3>
       <button class="modal-close" type="button" (click)="closed.emit()">
         <i class="ti ti-x"></i>
       </button>
@@ -10,26 +10,26 @@
     <form [formGroup]="form" (ngSubmit)="submit()">
       <div class="modal-body">
         <div class="form-group">
-          <label for="muser">Select User</label>
+          <label for="muser">{{ 'team.selectUser' | t }}</label>
           <select id="muser" formControlName="userId">
-            <option [ngValue]="null">-- Select User --</option>
+            <option [ngValue]="null">{{ 'team.selectUserOpt' | t }}</option>
             @for (u of users(); track u.id) {
               <option [ngValue]="u.id">{{ u.name }} ({{ u.email }})</option>
             }
           </select>
         </div>
         <div class="form-group">
-          <label for="mrole">Role</label>
-          <input id="mrole" type="text" formControlName="role" placeholder="e.g. Frontend Developer" />
+          <label for="mrole">{{ 'team.role' | t }}</label>
+          <input id="mrole" type="text" formControlName="role" [placeholder]="'team.rolePh' | t" />
         </div>
         @if (error()) {
-          <p class="form-error">{{ error() }}</p>
+          <p class="form-error">{{ error() |t}}</p>
         }
       </div>
 
       <div class="modal-footer">
-        <button class="btn-cancel" type="button" (click)="closed.emit()">Cancel</button>
-        <button class="btn-submit" type="submit" [disabled]="saving()">Add Member</button>
+        <button class="btn-cancel" type="button" (click)="closed.emit()">{{ 'common.cancel' | t }}</button>
+        <button class="btn-submit" type="submit" [disabled]="saving()">{{ 'team.add' | t }}</button>
       </div>
     </form>
   </div>

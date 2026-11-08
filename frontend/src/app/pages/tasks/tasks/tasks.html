@@ -1,12 +1,12 @@
 <div class="topbar">
   <div class="greeting">
-    <h1>Tasks</h1>
-    <p>Track your tasks.</p>
+    <h1>{{ 'nav.tasks' | t }}</h1>
+    <p>{{ 'task.subtitle' | t }}</p>
   </div>
   <div class="topbar-actions">
     @if (roleSvc.isTeamLead()) {
       <button class="btn-new" type="button" (click)="openNew()">
-        <i class="ti ti-plus"></i> New Task
+        <i class="ti ti-plus"></i> {{ 'task.new' | t }}
       </button>
     }
   </div>
@@ -15,11 +15,11 @@
 <div class="card">
   <div class="projects-list">
     @if (loading()) {
-      <div class="loading">Loading...</div>
+      <div class="loading">{{ 'common.loading' | t }}</div>
     } @else if (error()) {
-      <div class="loading">{{ error() }}</div>
+      <div class="loading">{{ error() | t }}</div>
     } @else if (!tasks().length) {
-      <div class="loading">No tasks yet.</div>
+      <div class="loading">{{ 'task.none' | t }}</div>
     } @else {
       @for (t of tasks(); track t.id) {
         <div class="project-item">
@@ -29,7 +29,7 @@
             <input
               type="checkbox"
               class="done-check"
-              title="Mark as done"
+              [title]="'task.markDone' | t"
               [checked]="t.status === 'done' || t.status === 'review'"
               [disabled]="!canComplete(t)"
               (change)="complete(t)"
@@ -47,29 +47,29 @@
             <span class="assignee"><i class="ti ti-user"></i> {{ t.assignee.name }}</span>
           }
 
-          <span [class]="'status-badge s-' + t.status">{{ labels[t.status] }}</span>
+          <span [class]="'status-badge s-' + t.status">{{ labels[t.status] | t }}</span>
 
           <div class="actions">
             @if (canComplete(t)) {
-              <button type="button" class="icon-btn" title="Report issue" (click)="openIssue(t)">
+              <button type="button" class="icon-btn" [title]="'task.reportIssue' | t"  (click)="openIssue(t)">
                 <i class="ti ti-alert-triangle"></i>
               </button>
             }
             @if (roleSvc.isTeamLead()) {
               @if (t.status === 'review') {
-                <button type="button" class="icon-btn" title="Approve" (click)="approve(t)">
+                <button type="button" class="icon-btn" [title]="'task.approve' | t" (click)="approve(t)">
                   <i class="ti ti-check"></i>
                 </button>
               }
               @if (t.status === 'review' || t.status === 'blocked') {
-                <button type="button" class="icon-btn" title="Send back" (click)="openSendBack(t)">
+                <button type="button" class="icon-btn" [title]="'task.sendBack' | t" (click)="openSendBack(t)">
                   <i class="ti ti-arrow-back-up"></i>
                 </button>
               }
-              <button type="button" class="icon-btn" title="Edit" (click)="openEdit(t)">
+              <button type="button" class="icon-btn" [title]="'common.edit' | t" (click)="openEdit(t)">
                 <i class="ti ti-pencil"></i>
               </button>
-              <button type="button" class="icon-btn" title="Delete" (click)="remove(t)">
+              <button type="button" class="icon-btn" [title]="'common.delete' | t" (click)="remove(t)">
                 <i class="ti ti-trash"></i>
               </button>
             }
@@ -90,9 +90,9 @@
 
 @if (msgAction(); as a) {
   <app-message-modal
-    [heading]="a.kind === 'issue' ? 'Report an issue' : 'Send back'"
-    [placeholder]="a.kind === 'issue' ? 'Describe the problem...' : 'Optional note for the assignee...'"
-    [confirmLabel]="a.kind === 'issue' ? 'Report' : 'Send back'"
+    [heading]="(a.kind === 'issue' ? 'msg.issueTitle' : 'msg.sendBackTitle') | t"
+    [placeholder]="(a.kind === 'issue' ? 'msg.issuePh' : 'msg.sendBackPh') | t"
+    [confirmLabel]="(a.kind === 'issue' ? 'msg.report' : 'task.sendBack') | t"
     [required]="a.kind === 'issue'"
     (confirmed)="onMessage($event)"
     (closed)="msgAction.set(null)"

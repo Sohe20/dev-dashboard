@@ -6,10 +6,11 @@ import { User } from '../../models/user.model';
 import { ProjectService } from '../../services/project.service';
 import { TaskService } from '../../services/task.service';
 import { UserService } from '../../services/user.service';
+import { TPipe } from '../../core/t.pipe';
 
 @Component({
   selector: 'app-task-form-modal',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule , TPipe],
   templateUrl: './task-form-modal.html',
   styleUrl: './task-form-modal.css',
 })
@@ -55,7 +56,7 @@ export class TaskFormModal implements OnInit {
   submit() {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
-      this.error.set('Title is required.');
+      this.error.set('task.formErr')
       return;
     }
     this.error.set('');
@@ -72,7 +73,7 @@ export class TaskFormModal implements OnInit {
       },
       error: () => {
         this.saving.set(false);
-        this.error.set('Failed to save task.');
+        this.error.set('task.saveErr')
       },
     });
   }

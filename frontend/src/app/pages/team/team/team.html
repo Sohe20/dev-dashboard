@@ -1,11 +1,11 @@
 <div class="topbar">
   <div class="greeting">
-    <h1>Team</h1>
-    <p>Your team members.</p>
+    <h1>{{ 'nav.team' | t }}</h1>
+    <p>{{ 'team.subtitle' | t }}</p>
   </div>
   <div class="topbar-actions">
     <button class="btn-new" type="button" (click)="showForm.set(true)">
-      <i class="ti ti-plus"></i> New Member
+      <i class="ti ti-plus"></i> {{ 'team.new' | t }}
     </button>
   </div>
 </div>
@@ -13,11 +13,11 @@
 <div class="card">
   <div class="projects-list">
     @if (loading()) {
-      <div class="loading">Loading...</div>
+      <div class="loading">{{ 'common.loading' | t }}</div>
     } @else if (error()) {
-      <div class="loading">{{ error() }}</div>
+      <div class="loading">{{ error() |t}}</div>
     } @else if (!members().length) {
-      <div class="loading">No team members yet.</div>
+      <div class="loading">{{ 'team.none' | t }}</div>
     } @else {
       @for (m of members(); track m.id) {
         <div class="project-item">
@@ -28,7 +28,7 @@
           </div>
           <span class="member-email">{{ m.email }}</span>
           <div class="actions">
-            <button type="button" class="icon-btn" title="Remove" (click)="remove(m)">
+            <button type="button" class="icon-btn" [title]="'common.remove' | t" (click)="remove(m)">
               <i class="ti ti-trash"></i>
             </button>
           </div>
