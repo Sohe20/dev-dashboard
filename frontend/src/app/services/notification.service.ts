@@ -19,4 +19,8 @@ export class NotificationService {
   markAllRead() {
     return this.http.put(`${this.url}/read-all`, {});
   }
+
+  clearAll() {
+  return this.http.delete(this.url);
+}
 }

@@ -20,10 +20,15 @@
   >
     <div class="panel-head">
       <span>{{ 'nav.notifications' | t }}</span>
-      @if (unread() > 0) {
-        <button type="button" class="link-btn" (click)="readAll()">
-          {{ 'notif.markAll' | t }}
-        </button>
+      @if (items().length) {
+        <div class="head-actions">
+          <button type="button" class="link-btn" [disabled]="unread() === 0" (click)="readAll()">
+            {{ 'notif.markAll' | t }}
+          </button>
+          <button type="button" class="link-btn danger" (click)="clearAll()">
+            {{ 'notif.clearAll' | t }}
+          </button>
+        </div>
       }
     </div>
 

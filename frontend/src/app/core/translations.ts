@@ -144,6 +144,7 @@ export const en: Record<string, string> = {
   'notif.rejected': '"{title}" was sent back',
   'notif.note': 'Note: {note}',
   'notif.someone': 'Someone',
+  'notif.clearAll': 'Clear all',
 };
 
 export const fa: Record<string, string> = {
@@ -274,7 +275,7 @@ export const fa: Record<string, string> = {
   'team.formErr': 'لطفاً یک کاربر انتخاب و نقش را وارد کنید.',
   'team.addErr': 'افزودن عضو ناموفق بود.',
 
-  'notif.markAll': 'علامت‌گذاری همه به‌عنوان خوانده‌شده',
+  'notif.markAll': 'خوانده‌شدن همه',
   'notif.none': 'اعلانی وجود ندارد.',
   'notif.completed': '{name} وظیفه «{title}» را انجام‌شده علامت زد',
   'notif.issue': '{name} برای «{title}» مشکلی گزارش کرد',
@@ -282,6 +283,8 @@ export const fa: Record<string, string> = {
   'notif.rejected': 'وظیفه «{title}» بازگردانده شد',
   'notif.note': 'یادداشت: {note}',
   'notif.someone': 'یک نفر',
+  'notif.clearAll': 'پاک کردن همه',
+  
 
   'prof.title': 'پروفایل من',
   'prof.subtitle': 'وظایف و اطلاعات شما.',

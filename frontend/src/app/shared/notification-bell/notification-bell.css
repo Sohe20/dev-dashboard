@@ -113,6 +113,20 @@
   margin-top: 2px;
 }
 
+.head-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.link-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.link-btn.danger {
+  color: #ff6080;
+}
+
 @media (max-width: 600px) {
   .panel {
     inset-inline-start: 12px !important;

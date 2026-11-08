@@ -63,6 +63,11 @@ export class NotificationBell {
     this.api.markAllRead().subscribe();
   }
 
+  clearAll() {
+    this.items.set([]);
+    this.api.clearAll().subscribe();
+  }
+
   openItem(n: AppNotification) {
     if (!n.isRead) {
       this.items.update((l) => l.map((x) => (x.id === n.id ? { ...x, isRead: true } : x)));
