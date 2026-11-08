@@ -60,4 +60,12 @@ export class NotificationsService {
     await this.repo.save(list);
     return { ok: true };
   }
+
+  async clearAll(userId: number) {
+  const list = await this.repo.find({
+    where: { recipient: { id: userId } },
+  });
+  await this.repo.remove(list);
+  return { ok: true };
+}
 }

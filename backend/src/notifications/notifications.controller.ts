@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Put, Request, UseGuards } from '@nestjs/common';
+import { Controller, Delete, Get, Param, Put, Request, UseGuards } from '@nestjs/common';
 import { NotificationsService } from './notifications.service';
 import { AuthGuard } from '../auth/auth.guard';
 
@@ -26,4 +26,9 @@ export class NotificationsController {
   read(@Param('id') id: string, @Request() req: any) {
     return this.service.markRead(+id, req.user.sub);
   }
+
+@Delete()
+clearAll(@Request() req: any) {
+  return this.service.clearAll(req.user.sub);
+}
 }
