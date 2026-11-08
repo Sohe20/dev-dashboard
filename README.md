@@ -1,96 +1,96 @@
-# dev-dashboard 📊
+<div dir="rtl">
 
-A full-stack project management dashboard built with **NestJS**, **MySQL**, and vanilla **HTML/CSS/JS**.
+# Dev Dashboard (داشبورد مدیریت پروژه)
 
-![Dashboard Preview](./preview.png)
+یک داشبورد مدیریت پروژه با دسترسی مبتنی بر نقش، فلو بررسی وظایف، مرکز اعلان‌ها، نمودار، جستجوی سراسری، تم تاریک/روشن و پشتیبانی از زبان فارسی (راست‌به‌چپ) و انگلیسی.
 
-## ✨ Features
+## قابلیت‌ها
+- احراز هویت با JWT (ورود و ثبت‌نام)
+- دو نقش: **Team Lead** (دسترسی کامل) و **عضو** (فقط پروژه‌ها و وظایف خودش را می‌بیند)
+- مدیریت پروژه‌ها، وظایف و تیم (ساخت، ویرایش، حذف)
+- فلو بررسی وظیفه: عضو وظیفه را «انجام‌شده» علامت می‌زند یا مشکل را گزارش می‌دهد؛ Team Lead اعلان می‌گیرد و آن را تأیید یا برمی‌گرداند
+- مرکز اعلان‌ها با شمارنده خوانده‌نشده، «خوانده‌شدن همه» و «پاک کردن همه»
+- داشبورد با آمار، نمودار فعالیت و پروژه‌های اخیر
+- جستجوی سراسری در پروژه‌ها، وظایف و تیم
+- تم تاریک/روشن و رابط فارسی/انگلیسی با چیدمان راست‌به‌چپ
 
-- 📁 Project management with progress tracking
-- ✅ Task management
-- 👥 Team member overview
-- 💰 Revenue stats
-- 📈 Activity chart
-- 🔐 JWT Authentication
+## فناوری‌ها
+- **فرانت‌اند:** Angular (کامپوننت‌های standalone و signals)، TypeScript، Reactive Forms
+- **بک‌اند:** NestJS، TypeORM، JWT
+- **دیتابیس:** PostgreSQL (Supabase)
 
-## 🛠 Tech Stack
+## پیش‌نیازها
+- Node.js (نسخه LTS) و npm
+- Angular CLI: `npm i -g @angular/cli`
+- یک دیتابیس PostgreSQL (یک پروژه رایگان Supabase کافی است؛ از رشته اتصال **Session pooler** استفاده کنید)
 
-| Layer | Technology |
-|-------|-----------|
-| Backend | NestJS + TypeScript |
-| Database | MySQL + TypeORM |
-| Frontend | HTML / CSS / JavaScript |
-| Auth | JWT |
+## نصب و اجرا
 
-## 📁 Project Structure
-
-```
-dev-dashboard/
-├── backend/                # NestJS API
-│   └── src/
-│       ├── projects/
-│       ├── tasks/
-│       ├── team/
-│       ├── stats/
-│       └── auth/
-└── frontend/               # Static frontend
-    ├── index.html
-    ├── dashboard.js
-    └── style.css
-```
-
-## 🚀 Getting Started
-
-### Prerequisites
-
-- Node.js >= 18
-- MySQL >= 8
-- npm
-
-### Backend Setup
-
+### ۱. بک‌اند
 ```bash
 cd backend
 npm install
+cp .env.example .env
 ```
-
-Create a `.env` file in `/backend`:
-
-```env
-DB_HOST=localhost
-DB_PORT=3306
-DB_USERNAME=root
-DB_PASSWORD=yourpassword
-DB_NAME=dev_dashboard
-JWT_SECRET=your_jwt_secret
+فایل `.env` را ویرایش کنید:
 ```
+DATABASE_URL=رشته اتصال PostgreSQL
+JWT_SECRET=یک رشته تصادفی بلند
+```
+برای ساخت `JWT_SECRET`:
+```bash
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+```
+اگر رمز دیتابیس کاراکتر خاص (مثل `@` یا `#` یا ویرگول) دارد، آن را در آدرس encode کنید یا رمز ساده‌تری بگذارید.
 
+اجرای سرور (جدول‌ها در اولین اجرا خودکار ساخته می‌شوند):
 ```bash
 npm run start:dev
 ```
+API روی http://localhost:3000 اجرا می‌شود.
 
-API runs on `http://localhost:3000`
-
-### Frontend Setup
-
-Just open `frontend/index.html` with Live Server or any static server.
-
-## 📡 API Endpoints
-
+### ۲. اولین Team Lead
+در برنامه یک کاربر ثبت‌نام کنید، سپس این دستور را در SQL Editor سوپابیس اجرا کنید (ایمیل را عوض کنید):
+```sql
+INSERT INTO team_member (name, email, role, "userId")
+SELECT name, email, 'Team Lead', id FROM "user" WHERE email = 'you@example.com';
 ```
-GET    /api/stats         → Dashboard stats (projects, tasks, team, revenue)
-GET    /api/projects      → List all projects
-POST   /api/projects      → Create new project
-GET    /api/tasks         → List all tasks
-POST   /api/tasks         → Create new task
-POST   /api/auth/login    → Login
-POST   /api/auth/register → Register
+نام نقش باید دقیقاً `Team Lead` باشد. بعد از آن Team Lead می‌تواند بقیه اعضا را از صفحه Team اضافه کند.
+
+### ۳. فرانت‌اند
+```bash
+cd frontend
+npm install
+ng serve
+```
+آدرس http://localhost:4200 را باز کنید. آدرس API در فایل `src/environments/environment.development.ts` (کلید `apiBaseUrl`) تنظیم شده است.
+
+## ساختار پروژه
+```
+backend/src            auth, users, projects, tasks, team, notifications
+frontend/src/app
+  core                 سرویس‌های auth، role، theme، i18n، گارد و interceptor
+  pages                login, dashboard, projects, tasks, team, profile
+  shared               مودال‌ها، زنگ اعلان، جستجوی سراسری، نمودار
+  models, services
 ```
 
-## 🤝 Contributing
+## نقش‌ها و دسترسی‌ها
+| قابلیت | Team Lead | عضو |
+|---|---|---|
+| ساخت، ویرایش و حذف پروژه | ✓ | ✗ |
+| ساخت، ویرایش و حذف وظیفه | ✓ | ✗ |
+| مدیریت اعضای تیم | ✓ | ✗ |
+| تأیید یا برگرداندن وظیفه | ✓ | ✗ |
+| علامت «انجام‌شده» و گزارش مشکل روی وظیفه خود | ✗ | ✓ |
+| مشاهده پروژه‌ها و وظایف | همه | فقط مربوط به خودش |
 
-Pull requests are welcome!
+دسترسی‌ها در بک‌اند هم اعمال می‌شوند (کد `403`) و فقط در رابط کاربری مخفی نشده‌اند.
 
-## 📄 License
+## نکات
+- گزینه `synchronize: true` در TypeORM برای راحتی توسعه روشن است؛ در محیط واقعی باید از migration استفاده شود.
+- Row Level Security روی همه جدول‌ها فعال است و policy ندارد، پس API عمومی Supabase چیزی نمی‌بیند و فقط بک‌اند (با اتصال مستقیم) به داده‌ها دسترسی دارد.
+- قابلیت «فراموشی رمز عبور» پیاده‌سازی نشده است.
+- توکن ورود حدود یک ساعت اعتبار دارد و بعد از آن باید دوباره وارد شد.
 
-MIT
+</div>
