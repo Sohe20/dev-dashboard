@@ -1,4 +1,10 @@
-<button class="nav-item bell" type="button" title="Notifications" (click)="toggle()">
+<button
+  #bellBtn
+  class="nav-item bell"
+  type="button"
+  [title]="'nav.notifications' | t"
+  (click)="toggle()"
+>
   <i class="ti ti-bell"></i>
   @if (unread() > 0) {
     <span class="badge">{{ unread() > 9 ? '9+' : unread() }}</span>
@@ -7,23 +13,32 @@
 
 @if (open()) {
   <div class="backdrop" (click)="open.set(false)"></div>
-  <div class="panel">
+  <div
+    class="panel"
+    [style.bottom.px]="panelPos().bottom"
+    [style.inset-inline-start.px]="panelPos().start"
+  >
     <div class="panel-head">
-      <span>Notifications</span>
+      <span>{{ 'nav.notifications' | t }}</span>
       @if (unread() > 0) {
-        <button type="button" class="link-btn" (click)="readAll()">Mark all as read</button>
+        <button type="button" class="link-btn" (click)="readAll()">
+          {{ 'notif.markAll' | t }}
+        </button>
       }
     </div>
 
     <div class="panel-body">
       @if (!items().length) {
-        <div class="empty">No notifications.</div>
+        <div class="empty">{{ 'notif.none' | t }}</div>
       }
       @for (n of items(); track n.id) {
         <div class="item" [class.unread]="!n.isRead" (click)="openItem(n)">
-          <i [style.color]="icons[n.type].color"></i>
+          <i [class]="'ti ' + icons[n.type].icon" [style.color]="icons[n.type].color"></i>
           <div class="text">
-            <div class="msg">{{ n.message }}</div>
+            <div class="msg">{{ text(n) }}</div>
+            @if (note(n)) {
+              <div class="note">{{ 'notif.note' | t: { note: note(n) } }}</div>
+            }
             <div class="time">{{ n.createdAt | date: 'MMM d, HH:mm' }}</div>
           </div>
         </div>

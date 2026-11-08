@@ -137,6 +137,13 @@ export const en: Record<string, string> = {
   'prof.done': 'Done',
   'prof.noRole': 'No role assigned',
   'prof.noTasks': 'No tasks assigned to you.',
+
+  'notif.completed': '{name} marked "{title}" as done',
+  'notif.issue': '{name} reported an issue on "{title}"',
+  'notif.approved': '"{title}" was approved',
+  'notif.rejected': '"{title}" was sent back',
+  'notif.note': 'Note: {note}',
+  'notif.someone': 'Someone',
 };
 
 export const fa: Record<string, string> = {
@@ -269,6 +276,12 @@ export const fa: Record<string, string> = {
 
   'notif.markAll': 'علامت‌گذاری همه به‌عنوان خوانده‌شده',
   'notif.none': 'اعلانی وجود ندارد.',
+  'notif.completed': '{name} وظیفه «{title}» را انجام‌شده علامت زد',
+  'notif.issue': '{name} برای «{title}» مشکلی گزارش کرد',
+  'notif.approved': 'وظیفه «{title}» تأیید شد',
+  'notif.rejected': 'وظیفه «{title}» بازگردانده شد',
+  'notif.note': 'یادداشت: {note}',
+  'notif.someone': 'یک نفر',
 
   'prof.title': 'پروفایل من',
   'prof.subtitle': 'وظایف و اطلاعات شما.',

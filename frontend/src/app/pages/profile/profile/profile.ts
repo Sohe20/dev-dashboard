@@ -3,10 +3,11 @@ import { Auth } from '../../../core/auth';
 import { Role } from '../../../core/role';
 import { Task, TaskStatus } from '../../../models/task.model';
 import { TaskService } from '../../../services/task.service';
+import { TPipe } from '../../../core/t.pipe';
 
 @Component({
   selector: 'app-profile',
-  imports: [],
+  imports: [TPipe],
   templateUrl: './profile.html',
   styleUrl: './profile.css',
 })
@@ -25,12 +26,12 @@ export class Profile implements OnInit {
   doneCount = computed(() => this.tasks().filter((t) => t.status === 'done').length);
 
   labels: Record<TaskStatus, string> = {
-    todo: 'Todo',
-    inprogress: 'In Progress',
-    review: 'Waiting for review',
-    blocked: 'Blocked',
-    done: 'Done',
-  };
+  todo: 'status.todo',
+  inprogress: 'status.inprogress',
+  review: 'status.review',
+  blocked: 'status.blocked',
+  done: 'status.done',
+};
 
   colors: Record<TaskStatus, string> = {
     todo: '#6060a0',
@@ -48,7 +49,7 @@ export class Profile implements OnInit {
         this.loading.set(false);
       },
       error: () => {
-        this.error.set('Could not load tasks.');
+        this.error.set('task.loadErr');
         this.loading.set(false);
       },
     });
