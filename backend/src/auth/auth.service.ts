@@ -27,11 +27,5 @@ export class AuthService {
     return { access_token: await this.jwtService.signAsync(payload) };
   }
 
-  async resetPassword(email: string, newPassword: string) {
-  const user = await this.usersService.findByEmail(email);
-  if (!user) throw new UnauthorizedException('Email not found');
-  const hashed = await bcrypt.hash(newPassword, 10);
-  await this.usersService.updatePassword(user.id, hashed);
-  return { message: 'Password updated' };
-}
+ 
 }
