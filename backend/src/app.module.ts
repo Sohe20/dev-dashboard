@@ -15,10 +15,19 @@ import { NotificationsModule } from './notifications/notifications.module';
     ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRoot({
       type: 'postgres',
-      url : process.env.DATABASE_URL ,
-      ssl : {
-        rejectUnauthorized : false,
+      url: process.env.DATABASE_URL,
+      ssl: {
+        rejectUnauthorized: false,
       },
+      extra: {
+        max: 5,
+        idleTimeoutMillis: 20000,
+        connectionTimeoutMillis: 30000,
+        keepAlive: true,
+        keepAliveInitialDelayMillis: 10000,
+      },
+      retryAttempts: 5,
+      retryDelay: 3000,
       entities: [__dirname + '/**/entities/*.entity{.ts,.js}'],
       synchronize: true,
     }),
@@ -32,4 +41,4 @@ import { NotificationsModule } from './notifications/notifications.module';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }
