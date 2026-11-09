@@ -4,6 +4,7 @@ import { TeamService } from '../../../services/team.service';
 import { MemberFormModal } from '../../../shared/member-form-modal/member-form-modal';
 import { TPipe } from '../../../core/t.pipe';
 import { I18n } from '../../../core/i18n';
+import { Role } from '../../../core/role';
 
 @Component({
   selector: 'app-team',
@@ -14,6 +15,7 @@ import { I18n } from '../../../core/i18n';
 export class Team implements OnInit {
   private api = inject(TeamService);
   private i18n = inject(I18n)
+  roleSvc = inject(Role);
   members = signal<TeamMember[]>([]);
   loading = signal(true);
   error = signal('');
@@ -26,8 +28,11 @@ export class Team implements OnInit {
   );
 
   ngOnInit() {
-    this.load();
-  }
+  this.roleSvc.ensure().subscribe(() => {
+    if (this.roleSvc.role()) this.load();
+    else this.loading.set(false);
+  });
+}
 
   load() {
     this.api.getAll().subscribe({

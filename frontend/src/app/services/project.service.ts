@@ -40,7 +40,7 @@ export class ProjectService {
   visible() {
     return this.role.ensure().pipe(
       switchMap((r) =>
-        !r || r === 'Team Lead'
+         r === 'Team Lead'
           ? this.getAll()
           : this.tasks.getMine().pipe(
               map((ts) => {

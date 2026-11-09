@@ -4,9 +4,11 @@
     <p>{{ 'team.subtitle' | t }}</p>
   </div>
   <div class="topbar-actions">
-    <button class="btn-new" type="button" (click)="showForm.set(true)">
-      <i class="ti ti-plus"></i> {{ 'team.new' | t }}
-    </button>
+    @if (roleSvc.isTeamLead()) {
+      <button class="btn-new" type="button" (click)="showForm.set(true)">
+        <i class="ti ti-plus"></i> {{ 'team.new' | t }}
+      </button>
+    }
   </div>
 </div>
 
@@ -15,7 +17,9 @@
     @if (loading()) {
       <div class="loading">{{ 'common.loading' | t }}</div>
     } @else if (error()) {
-      <div class="loading">{{ error() |t}}</div>
+      <div class="loading">{{ error() | t }}</div>
+    } @else if (!roleSvc.role()) {
+      <div class="loading">{{ 'team.noAccess' | t }}</div>
     } @else if (!members().length) {
       <div class="loading">{{ 'team.none' | t }}</div>
     } @else {
@@ -27,11 +31,13 @@
             <span class="member-role">{{ m.role }}</span>
           </div>
           <span class="member-email">{{ m.email }}</span>
-          <div class="actions">
-            <button type="button" class="icon-btn" [title]="'common.remove' | t" (click)="remove(m)">
-              <i class="ti ti-trash"></i>
-            </button>
-          </div>
+          @if (roleSvc.isTeamLead()) {
+            <div class="actions">
+              <button type="button" class="icon-btn" [title]="'common.remove' | t" (click)="remove(m)">
+                <i class="ti ti-trash"></i>
+              </button>
+            </div>
+          }
         </div>
       }
     }

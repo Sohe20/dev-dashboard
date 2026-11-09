@@ -125,6 +125,7 @@ export const en: Record<string, string> = {
   'team.removeErr': 'Failed to remove member.',
   'team.formErr': 'Please select a user and enter a role.',
   'team.addErr': 'Failed to add member.',
+  'team.noAccess': 'You are not a member of the team yet.',
 
   'notif.markAll': 'Mark all as read',
   'notif.none': 'No notifications.',
@@ -274,6 +275,8 @@ export const fa: Record<string, string> = {
   'team.removeErr': 'حذف عضو ناموفق بود.',
   'team.formErr': 'لطفاً یک کاربر انتخاب و نقش را وارد کنید.',
   'team.addErr': 'افزودن عضو ناموفق بود.',
+  'team.noAccess': 'شما هنوز عضو تیم نیستید.',
+  
 
   'notif.markAll': 'خوانده‌شدن همه',
   'notif.none': 'اعلانی وجود ندارد.',
