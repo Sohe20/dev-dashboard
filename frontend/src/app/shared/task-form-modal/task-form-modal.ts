@@ -21,6 +21,7 @@ export class TaskFormModal implements OnInit {
   private userApi = inject(UserService);
 
   task = input<Task | null>(null);
+  presetProjectId = input<number | null>(null);
   saved = output<void>();
   closed = output<void>();
 
@@ -38,20 +39,26 @@ export class TaskFormModal implements OnInit {
   });
 
   ngOnInit() {
-    this.projectApi.getAll().subscribe((p) => this.projects.set(p));
-    this.userApi.getAll().subscribe((u) => this.users.set(u));
+  this.projectApi.getAll().subscribe((p) => this.projects.set(p));
+  this.userApi.getAll().subscribe((u) => this.users.set(u));
 
-    const t = this.task();
-    if (t) {
-      this.form.patchValue({
-        title: t.title,
-        description: t.description ?? '',
-        status: t.status,
-        projectId: t.project?.id ?? null,
-        assigneeId: t.assignee?.id ?? null,
-      });
+  const t = this.task();
+  if (t) {
+    this.form.patchValue({
+      title: t.title,
+      description: t.description ?? '',
+      status: t.status,
+      projectId: t.project?.id ?? null,
+      assigneeId: t.assignee?.id ?? null,
+    });
+  } else {
+    const pid = this.presetProjectId();
+    if (pid) {
+      this.form.patchValue({ projectId: pid });
+      this.form.controls.projectId.disable();
     }
   }
+}
 
   submit() {
     if (this.form.invalid) {

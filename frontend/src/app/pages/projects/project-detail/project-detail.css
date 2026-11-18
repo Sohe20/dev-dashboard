@@ -64,53 +64,19 @@
   color: var(--text);
 }
 
-.task-info {
-  flex: 1;
+.card-head {
   display: flex;
-  flex-direction: column;
-  gap: 2px;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
 }
 
-.task-sub {
-  font-size: 11px;
-  color: var(--muted);
-}
-
-.status-badge {
-  background: var(--border);
-  color: var(--text);
-  padding: 2px 8px;
-  border-radius: 6px;
-  font-size: 11px;
-}
-
-.status-badge.s-done {
-  background: #1a3a20;
-  color: #40d080;
-}
-.status-badge.s-review {
-  background: #2a2000;
-  color: #d0a020;
-}
-.status-badge.s-blocked {
-  background: #3a1a22;
-  color: #ff6080;
+.card-head .card-title {
+  margin-bottom: 0;
 }
 
 :host-context(body.light) .member-avatar {
   background: #e0e6ff;
-}
-:host-context(body.light) .status-badge.s-done {
-  background: #dcf7e6;
-  color: #1a7a45;
-}
-:host-context(body.light) .status-badge.s-review {
-  background: #fff6dc;
-  color: #8a6500;
-}
-:host-context(body.light) .status-badge.s-blocked {
-  background: #ffe3e8;
-  color: #b3203f;
 }
 
 :host-context([dir='rtl']) .back-link i {

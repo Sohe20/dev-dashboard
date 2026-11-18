@@ -57,23 +57,14 @@
   </div>
 
   <div class="card">
+  <div class="card-head">
     <h2 class="card-title">{{ 'nav.tasks' | t }}</h2>
-    <div class="projects-list">
-      @if (!tasks().length) {
-        <div class="loading">{{ 'det.noTasks' | t }}</div>
-      }
-      @for (t of tasks(); track t.id) {
-        <div class="project-item">
-          <div class="project-dot" [style.background]="colors[t.status]"></div>
-          <div class="task-info">
-            <span class="member-name">{{ 'det.noMembers' | t }}</span>
-            @if (t.assignee) {
-              <span class="task-sub"><i class="ti ti-user"></i> {{ t.assignee.name }}</span>
-            }
-          </div>
-          <span [class]="'status-badge s-' + t.status">	{{ labels[t.status] | t }}</span>
-        </div>
-      }
-    </div>
+    @if (roleSvc.isTeamLead()) {
+      <button class="btn-new" type="button" (click)="openNew()">
+        <i class="ti ti-plus"></i> {{ 'task.new' | t }}
+      </button>
+    }
   </div>
+  <app-task-list [tasks]="tasks()" [presetProjectId]="p.id" (changed)="load()" />
+</div>
 }
