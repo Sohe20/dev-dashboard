@@ -2,6 +2,7 @@ import { BadRequestException, ForbiddenException, Injectable, NotFoundException 
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Task } from './entities/task.entity';
+import { Project } from '../projects/entities/project.entity';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { NotificationsService } from 'src/notifications/notifications.service';
@@ -12,31 +13,42 @@ export class TasksService {
     @InjectRepository(Task)
     private tasksRepository: Repository<Task>,
     private notifications: NotificationsService,
-  ) {}
+  ) { }
+  private async recalcProgress(projectId?: number | null) {
+    if (!projectId) return;
+    const total = await this.tasksRepository.count({
+      where: { project: { id: projectId } },
+    });
+    const done = await this.tasksRepository.count({
+      where: { project: { id: projectId }, status: 'done' },
+    });
+    const progress = total ? Math.round((done / total) * 100) : 0;
+    await this.tasksRepository.manager.update(Project, projectId, { progress });
+  }
 
   findAll(projectId?: number, userId?: number): Promise<Task[]> {
-  if (projectId) {
+    if (projectId) {
+      return this.tasksRepository.find({
+        where: {
+          project: { id: projectId },
+          assignedBy: userId ? { id: userId } : undefined,
+        },
+        relations: { project: true, assignee: true, assignedBy: true },
+      });
+    }
+    if (userId) {
+      return this.tasksRepository.find({
+        where: [
+          { assignedBy: { id: userId } },
+          { assignee: { id: userId } },
+        ],
+        relations: { project: true, assignee: true, assignedBy: true },
+      });
+    }
     return this.tasksRepository.find({
-      where: { 
-        project: { id: projectId },
-        assignedBy: userId ? { id: userId } : undefined,
-      },
       relations: { project: true, assignee: true, assignedBy: true },
     });
   }
-  if (userId) {
-    return this.tasksRepository.find({
-      where: [
-        { assignedBy: { id: userId } },
-        { assignee: { id: userId } },
-      ],
-      relations: { project: true, assignee: true, assignedBy: true },
-    });
-  }
-  return this.tasksRepository.find({
-    relations: { project: true, assignee: true, assignedBy: true },
-  });
-}
 
   findOne(id: number): Promise<Task | null> {
     return this.tasksRepository.findOne({
@@ -88,7 +100,7 @@ export class TasksService {
     };
   }
 
-  create(data: CreateTaskDto): Promise<Task> {
+  async create(data: CreateTaskDto): Promise<Task> {
     const task = this.tasksRepository.create({
       title: data.title,
       description: data.description,
@@ -97,10 +109,13 @@ export class TasksService {
       assignee: data.assigneeId ? { id: data.assigneeId } : undefined,
       assignedBy: data.assignedById ? { id: data.assignedById } : undefined,
     });
-    return this.tasksRepository.save(task);
+    const saved = await this.tasksRepository.save(task);
+    await this.recalcProgress(data.projectId);
+    return saved;
   }
 
   async update(id: number, data: UpdateTaskDto): Promise<Task | null> {
+    const before = await this.findOne(id);
     const { projectId, assigneeId, ...rest } = data as any;
     await this.tasksRepository.update(id, rest);
     if (projectId) {
@@ -117,15 +132,22 @@ export class TasksService {
         .of(id)
         .set(assigneeId || null);
     }
-    return this.findOne(id);
+    const after = await this.findOne(id);
+    await this.recalcProgress(after?.project?.id);
+    if (before?.project?.id && before.project.id !== after?.project?.id) {
+      await this.recalcProgress(before.project.id);
+    }
+    return after;
   }
 
   async remove(id: number): Promise<{ deleted: boolean }> {
+    const task = await this.findOne(id);
     await this.tasksRepository.delete(id);
+    await this.recalcProgress(task?.project?.id);
     return { deleted: true };
   }
 
-    private async getOrFail(id: number): Promise<Task> {
+  private async getOrFail(id: number): Promise<Task> {
     const task = await this.findOne(id);
     if (!task) throw new NotFoundException('Task not found');
     return task;
@@ -188,6 +210,7 @@ export class TasksService {
       throw new BadRequestException('Task is not waiting for review');
     }
     await this.tasksRepository.update(id, { status: 'done' });
+    await this.recalcProgress(task.project?.id);
     await this.notifyAssignee(task, leadId, 'approved', `"${task.title}" was approved`);
     return this.findOne(id);
   }

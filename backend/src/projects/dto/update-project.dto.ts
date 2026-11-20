@@ -1,7 +1,7 @@
 export class UpdateProjectDto {
   name!: string;
   description!: string;
-  progress!: number;
+  progress?: number;
   status!: string;
   budget?: number;
 }
