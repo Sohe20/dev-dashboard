@@ -24,7 +24,6 @@ export class ProjectFormModal implements OnInit {
   form = this.fb.nonNullable.group({
     name: ['', Validators.required],
     description: ['', Validators.required],
-    progress: [0, [Validators.min(0), Validators.max(100)]],
     budget: [0, Validators.min(0)],
     status: ['active' as ProjectStatus],
   });

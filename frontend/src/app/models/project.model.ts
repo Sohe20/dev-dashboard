@@ -10,4 +10,4 @@ export interface Project {
   createdAt?: string;
 }
 
-export type ProjectPayload = Omit<Project, 'id' | 'createdAt'>;
+export type ProjectPayload = Omit<Project, 'id' | 'createdAt' | 'progress'>;
