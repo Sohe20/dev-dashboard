@@ -1,0 +1,33 @@
+<div class="modal-overlay open" (click)="closed.emit()">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>{{ (deadline() ? 'dl.edit' : 'dl.new') | t }}</h3>
+      <button class="modal-close" type="button" (click)="closed.emit()">
+        <i class="ti ti-x"></i>
+      </button>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="dtitle">{{ 'dl.name' | t }}</label>
+          <input id="dtitle" type="text" formControlName="title" [placeholder]="'dl.namePh' | t" />
+        </div>
+        <div class="form-group">
+          <label for="ddate">{{ 'dl.date' | t }}</label>
+          <input id="ddate" type="datetime-local" formControlName="dueDate" />
+        </div>
+        @if (error()) {
+          <p class="form-error">{{ error() | t }}</p>
+        }
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-cancel" type="button" (click)="closed.emit()">{{ 'common.cancel' | t }}</button>
+        <button class="btn-submit" type="submit" [disabled]="saving()">
+          {{ (deadline() ? 'dl.update' : 'dl.create') | t }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

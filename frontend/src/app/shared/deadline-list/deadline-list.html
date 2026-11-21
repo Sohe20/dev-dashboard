@@ -1,0 +1,66 @@
+<div class="card">
+  <div class="card-head">
+    <h2 class="card-title">
+      {{ 'dl.title' | t }}
+      <span class="count">{{ deadlines().length }} / {{ max }}</span>
+    </h2>
+    @if (roleSvc.isTeamLead()) {
+      <button
+        class="btn-new"
+        type="button"
+        [disabled]="!canAdd()"
+        [title]="canAdd() ? '' : ('dl.maxReached' | t)"
+        (click)="openNew()"
+      >
+        <i class="ti ti-plus"></i> {{ 'dl.new' | t }}
+      </button>
+    }
+  </div>
+
+  @if (loading()) {
+    <div class="loading">{{ 'common.loading' | t }}</div>
+  } @else if (error()) {
+    <div class="loading">{{ error() | t }}</div>
+  } @else if (!deadlines().length) {
+    <div class="loading">{{ 'dl.none' | t }}</div>
+  } @else {
+    @for (d of deadlines(); track d.id) {
+      <div [class]="'dl-row dl-' + status(d)">
+        <i [class]="'ti ' + icon(d)"></i>
+        <div class="dl-info">
+          <span class="dl-title" [class.struck]="d.isDone">{{ d.title }}</span>
+          <span class="dl-date">{{ d.dueDate | date: 'MMM d, y, HH:mm' }}</span>
+        </div>
+        <span class="dl-badge">{{ remaining(d) }}</span>
+
+        @if (roleSvc.isTeamLead()) {
+          <div class="actions">
+            <button
+              type="button"
+              class="icon-btn"
+              [title]="(d.isDone ? 'dl.markUndone' : 'dl.markDone') | t"
+              (click)="toggleDone(d)"
+            >
+              <i class="ti ti-check"></i>
+            </button>
+            <button type="button" class="icon-btn" [title]="'common.edit' | t" (click)="openEdit(d)">
+              <i class="ti ti-pencil"></i>
+            </button>
+            <button type="button" class="icon-btn" [title]="'common.delete' | t" (click)="remove(d)">
+              <i class="ti ti-trash"></i>
+            </button>
+          </div>
+        }
+      </div>
+    }
+  }
+</div>
+
+@if (showForm()) {
+  <app-deadline-form-modal
+    [projectId]="projectId()"
+    [deadline]="editing()"
+    (saved)="onSaved()"
+    (closed)="showForm.set(false)"
+  />
+}

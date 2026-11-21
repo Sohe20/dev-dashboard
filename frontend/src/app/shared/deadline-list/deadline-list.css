@@ -1,0 +1,137 @@
+:host {
+  display: block;
+  margin-bottom: 20px;
+}
+
+.card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.card-head .card-title {
+  margin-bottom: 0;
+}
+
+.count {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--muted);
+  margin-inline-start: 8px;
+}
+
+.btn-new:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.dl-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  margin-bottom: 10px;
+}
+
+.dl-row > i {
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.dl-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.dl-title {
+  font-size: 13px;
+  color: var(--text);
+}
+
+.dl-title.struck {
+  text-decoration: line-through;
+  opacity: 0.6;
+}
+
+.dl-date {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.dl-badge {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: var(--border);
+  color: var(--text);
+}
+
+.dl-normal > i {
+  color: #40a0ff;
+}
+
+.dl-soon > i {
+  color: #d0a020;
+}
+.dl-soon .dl-badge {
+  background: #2a2000;
+  color: #d0a020;
+}
+
+.dl-overdue > i {
+  color: #ff6080;
+}
+.dl-overdue .dl-badge {
+  background: #3a1a22;
+  color: #ff6080;
+}
+
+.dl-done > i {
+  color: #40d080;
+}
+.dl-done .dl-badge {
+  background: #1a3a20;
+  color: #40d080;
+}
+
+:host-context(body.light) .dl-soon .dl-badge {
+  background: #fff6dc;
+  color: #8a6500;
+}
+:host-context(body.light) .dl-overdue .dl-badge {
+  background: #ffe3e8;
+  color: #b3203f;
+}
+:host-context(body.light) .dl-done .dl-badge {
+  background: #dcf7e6;
+  color: #1a7a45;
+}
+
+.actions {
+  display: flex;
+  gap: 6px;
+  margin-inline-start: 8px;
+}
+
+.icon-btn {
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 16px;
+  padding: 4px;
+  border-radius: 6px;
+  transition:
+    color 0.15s,
+    background 0.15s;
+}
+
+.icon-btn:hover {
+  color: var(--text);
+  background: var(--border);
+}

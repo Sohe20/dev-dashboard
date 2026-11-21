@@ -10,10 +10,11 @@ import { User } from '../../../models/user.model';
 import { ProjectService } from '../../../services/project.service';
 import { TaskService } from '../../../services/task.service';
 import { TaskList } from '../../../shared/task-list/task-list';
+import { DeadlineList } from '../../../shared/deadline-list/deadline-list';
 
 @Component({
   selector: 'app-project-detail',
-  imports: [RouterLink, DecimalPipe, TPipe, TaskList],
+  imports: [RouterLink, DecimalPipe, TPipe, TaskList , DeadlineList],
   templateUrl: './project-detail.html',
   styleUrl: './project-detail.css',
 })
