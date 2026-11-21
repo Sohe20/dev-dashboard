@@ -30,4 +30,21 @@ export class I18n {
     }
     return text;
   }
+
+  formatDate(value: string | Date, withTime = true): string {
+  const d = typeof value === 'string' ? new Date(value) : value;
+  if (isNaN(d.getTime())) return '';
+  const fa = this.lang() === 'fa';
+  const opts: Intl.DateTimeFormatOptions = {
+    year: 'numeric',
+    month: fa ? 'long' : 'short',
+    day: 'numeric',
+  };
+  if (withTime) {
+    opts.hour = '2-digit';
+    opts.minute = '2-digit';
+    opts.hourCycle = 'h23';
+  }
+  return new Intl.DateTimeFormat(fa ? 'fa-IR-u-ca-persian' : 'en-US', opts).format(d);
+}
 }

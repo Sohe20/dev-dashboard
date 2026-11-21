@@ -2,3 +2,8 @@
   color: #ff6080;
   font-size: 12px;
 }
+
+.date-preview {
+  font-size: 12px;
+  color: var(--muted);
+}

@@ -29,7 +29,7 @@
         <i [class]="'ti ' + icon(d)"></i>
         <div class="dl-info">
           <span class="dl-title" [class.struck]="d.isDone">{{ d.title }}</span>
-          <span class="dl-date">{{ d.dueDate | date: 'MMM d, y, HH:mm' }}</span>
+          <span class="dl-date">{{ d.dueDate | fdate }}</span>
         </div>
         <span class="dl-badge">{{ remaining(d) }}</span>
 
@@ -43,10 +43,20 @@
             >
               <i class="ti ti-check"></i>
             </button>
-            <button type="button" class="icon-btn" [title]="'common.edit' | t" (click)="openEdit(d)">
+            <button
+              type="button"
+              class="icon-btn"
+              [title]="'common.edit' | t"
+              (click)="openEdit(d)"
+            >
               <i class="ti ti-pencil"></i>
             </button>
-            <button type="button" class="icon-btn" [title]="'common.delete' | t" (click)="remove(d)">
+            <button
+              type="button"
+              class="icon-btn"
+              [title]="'common.delete' | t"
+              (click)="remove(d)"
+            >
               <i class="ti ti-trash"></i>
             </button>
           </div>

@@ -7,10 +7,11 @@ import { AppNotification, NotificationType } from '../../models/notification.mod
 import { NotificationService } from '../../services/notification.service';
 import { TPipe } from '../../core/t.pipe';
 import { I18n } from '../../core/i18n';
+import { FDatePipe } from '../../core/fdate.pipe';
 
 @Component({
   selector: 'app-notification-bell',
-  imports: [DatePipe, TPipe],
+  imports: [FDatePipe, TPipe],
   templateUrl: './notification-bell.html',
   styleUrl: './notification-bell.css',
 })

@@ -1,8 +1,10 @@
-import { Component, inject, input, OnInit, output, signal } from '@angular/core';
+import { Component, inject, input, OnInit, output, signal, computed } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TPipe } from '../../core/t.pipe';
 import { Deadline } from '../../models/deadline.model';
 import { DeadlineService } from '../../services/deadline.service';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { I18n } from '../../core/i18n';
 
 @Component({
   selector: 'app-deadline-form-modal',
@@ -13,7 +15,7 @@ import { DeadlineService } from '../../services/deadline.service';
 export class DeadlineFormModal implements OnInit {
   private fb = inject(FormBuilder);
   private api = inject(DeadlineService);
-
+  private i18n = inject(I18n);
   projectId = input.required<number>();
   deadline = input<Deadline | null>(null);
   saved = output<void>();
@@ -25,6 +27,19 @@ export class DeadlineFormModal implements OnInit {
   form = this.fb.nonNullable.group({
     title: ['', Validators.required],
     dueDate: ['', Validators.required],
+  });
+
+
+
+
+  private dueValue = toSignal(this.form.controls.dueDate.valueChanges, {
+    initialValue: '',
+  });
+
+  preview = computed(() => {
+    const v = this.dueValue();
+    if (!v || this.i18n.lang() !== 'fa') return '';
+    return this.i18n.formatDate(new Date(v));
   });
 
   ngOnInit() {

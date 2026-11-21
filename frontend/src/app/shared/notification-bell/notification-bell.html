@@ -44,7 +44,7 @@
             @if (note(n)) {
               <div class="note">{{ 'notif.note' | t: { note: note(n) } }}</div>
             }
-            <div class="time">{{ n.createdAt | date: 'MMM d, HH:mm' }}</div>
+            <div class="time">{{ n.createdAt | fdate }}</div>
           </div>
         </div>
       }

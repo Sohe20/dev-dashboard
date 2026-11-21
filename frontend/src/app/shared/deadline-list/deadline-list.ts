@@ -6,12 +6,13 @@ import { TPipe } from '../../core/t.pipe';
 import { Deadline, MAX_DEADLINES } from '../../models/deadline.model';
 import { DeadlineService } from '../../services/deadline.service';
 import { DeadlineFormModal } from '../deadline-form-modal/deadline-form-modal';
+import { FDatePipe } from '../../core/fdate.pipe';
 
 type DlStatus = 'done' | 'overdue' | 'soon' | 'normal';
 
 @Component({
   selector: 'app-deadline-list',
-  imports: [DatePipe, TPipe, DeadlineFormModal],
+  imports: [FDatePipe, TPipe, DeadlineFormModal],
   templateUrl: './deadline-list.html',
   styleUrl: './deadline-list.css',
 })

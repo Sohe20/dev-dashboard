@@ -17,13 +17,20 @@
           <label for="ddate">{{ 'dl.date' | t }}</label>
           <input id="ddate" type="datetime-local" formControlName="dueDate" />
         </div>
+        @if (preview()) {
+          <div class="date-preview">
+            <i class="ti ti-calendar"></i> {{ 'dl.jalali' | t }} {{ preview() }}
+          </div>
+        }
         @if (error()) {
           <p class="form-error">{{ error() | t }}</p>
         }
       </div>
 
       <div class="modal-footer">
-        <button class="btn-cancel" type="button" (click)="closed.emit()">{{ 'common.cancel' | t }}</button>
+        <button class="btn-cancel" type="button" (click)="closed.emit()">
+          {{ 'common.cancel' | t }}
+        </button>
         <button class="btn-submit" type="submit" [disabled]="saving()">
           {{ (deadline() ? 'dl.update' : 'dl.create') | t }}
         </button>
