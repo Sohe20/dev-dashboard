@@ -152,6 +152,13 @@ export const en: Record<string, string> = {
   'dl.overdue': 'Overdue',
   'dl.overdueDays': '{n} days overdue',
   'dl.jalali': 'Jalali date:',
+  'dl.day': 'Day',
+  'dl.month': 'Month',
+  'dl.year': 'Year',
+
+
+
+
 
   'notif.markAll': 'Mark all as read',
   'notif.none': 'No notifications.',
@@ -173,7 +180,7 @@ export const en: Record<string, string> = {
   'notif.someone': 'Someone',
   'notif.clearAll': 'Clear all',
 
-  
+
 };
 
 export const fa: Record<string, string> = {
@@ -331,6 +338,9 @@ export const fa: Record<string, string> = {
   'dl.overdue': 'گذشته',
   'dl.overdueDays': '{n} روز از موعد گذشته',
   'dl.jalali': 'تاریخ شمسی:',
+  'dl.day': 'روز',
+  'dl.month': 'ماه',
+  'dl.year': 'سال',
 
 
   'notif.markAll': 'خوانده‌شدن همه',
@@ -354,5 +364,5 @@ export const fa: Record<string, string> = {
   'prof.noTasks': 'وظیفه‌ای به شما واگذار نشده.',
 
 
-  
+
 };

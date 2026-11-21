@@ -1,21 +1,22 @@
-import { Component, inject, input, OnInit, output, signal, computed } from '@angular/core';
+import { Component, inject, input, OnInit, output, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { I18n } from '../../core/i18n';
 import { TPipe } from '../../core/t.pipe';
 import { Deadline } from '../../models/deadline.model';
 import { DeadlineService } from '../../services/deadline.service';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { I18n } from '../../core/i18n';
+import { JalaliDatetime } from '../jalali-datetime/jalali-datetime';
 
 @Component({
   selector: 'app-deadline-form-modal',
-  imports: [ReactiveFormsModule, TPipe],
+  imports: [ReactiveFormsModule, TPipe, JalaliDatetime],
   templateUrl: './deadline-form-modal.html',
   styleUrl: './deadline-form-modal.css',
 })
 export class DeadlineFormModal implements OnInit {
   private fb = inject(FormBuilder);
   private api = inject(DeadlineService);
-  private i18n = inject(I18n);
+  i18n = inject(I18n);
+
   projectId = input.required<number>();
   deadline = input<Deadline | null>(null);
   saved = output<void>();
@@ -29,19 +30,6 @@ export class DeadlineFormModal implements OnInit {
     dueDate: ['', Validators.required],
   });
 
-
-
-
-  private dueValue = toSignal(this.form.controls.dueDate.valueChanges, {
-    initialValue: '',
-  });
-
-  preview = computed(() => {
-    const v = this.dueValue();
-    if (!v || this.i18n.lang() !== 'fa') return '';
-    return this.i18n.formatDate(new Date(v));
-  });
-
   ngOnInit() {
     const d = this.deadline();
     if (d) {
@@ -49,11 +37,16 @@ export class DeadlineFormModal implements OnInit {
     }
   }
 
-
+  // ISO (UTC) -> مقدار datetime-local (ساعت محلی)
   private toLocalInput(iso: string) {
     const d = new Date(iso);
     const p = (n: number) => String(n).padStart(2, '0');
     return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`;
+  }
+
+  // مقدار انتخاب‌گر شمسی رو توی فرم می‌ریزه
+  setDue(v: string) {
+    this.form.controls.dueDate.setValue(v);
   }
 
   submit() {

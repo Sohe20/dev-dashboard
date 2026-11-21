@@ -25,26 +25,32 @@ export class I18n {
     let text = dict[key] ?? en[key] ?? key;
     if (params) {
       for (const [k, v] of Object.entries(params)) {
-        text = text.replaceAll(`{${k}}`, String(v));
+        text = text.replaceAll(`{${k}}`, typeof v === 'number' ? this.num(v) : String(v));
       }
     }
     return text;
   }
 
   formatDate(value: string | Date, withTime = true): string {
-  const d = typeof value === 'string' ? new Date(value) : value;
-  if (isNaN(d.getTime())) return '';
-  const fa = this.lang() === 'fa';
-  const opts: Intl.DateTimeFormatOptions = {
-    year: 'numeric',
-    month: fa ? 'long' : 'short',
-    day: 'numeric',
-  };
-  if (withTime) {
-    opts.hour = '2-digit';
-    opts.minute = '2-digit';
-    opts.hourCycle = 'h23';
+    const d = typeof value === 'string' ? new Date(value) : value;
+    if (isNaN(d.getTime())) return '';
+    const fa = this.lang() === 'fa';
+    const opts: Intl.DateTimeFormatOptions = {
+      year: 'numeric',
+      month: fa ? 'long' : 'short',
+      day: 'numeric',
+    };
+    if (withTime) {
+      opts.hour = '2-digit';
+      opts.minute = '2-digit';
+      opts.hourCycle = 'h23';
+    }
+    return new Intl.DateTimeFormat(fa ? 'fa-IR-u-ca-persian' : 'en-US', opts).format(d);
   }
-  return new Intl.DateTimeFormat(fa ? 'fa-IR-u-ca-persian' : 'en-US', opts).format(d);
-}
+
+  num(n: number): string {
+    return this.lang() === 'fa'
+      ? n.toLocaleString('fa-IR', { useGrouping: false })
+      : String(n);
+  }
 }

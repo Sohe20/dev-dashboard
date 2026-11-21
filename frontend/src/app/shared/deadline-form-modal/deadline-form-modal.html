@@ -15,13 +15,16 @@
         </div>
         <div class="form-group">
           <label for="ddate">{{ 'dl.date' | t }}</label>
-          <input id="ddate" type="datetime-local" formControlName="dueDate" />
+          @if (i18n.lang() === 'fa') {
+            <app-jalali-datetime
+              [value]="form.controls.dueDate.value"
+              (valueChange)="setDue($event)"
+            />
+          } @else {
+            <input id="ddate" type="datetime-local" formControlName="dueDate" />
+          }
         </div>
-        @if (preview()) {
-          <div class="date-preview">
-            <i class="ti ti-calendar"></i> {{ 'dl.jalali' | t }} {{ preview() }}
-          </div>
-        }
+
         @if (error()) {
           <p class="form-error">{{ error() | t }}</p>
         }

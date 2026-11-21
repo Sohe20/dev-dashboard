@@ -1,0 +1,24 @@
+<div class="jdt">
+  <select (change)="setDay($any($event.target).value)">
+    <option value="">{{ 'dl.day' | t }}</option>
+    @for (n of days(); track n) {
+      <option [value]="n" [selected]="d() === n">{{ fa(n) }}</option>
+    }
+  </select>
+
+  <select (change)="setMonth($any($event.target).value)">
+    <option value="">{{ 'dl.month' | t }}</option>
+    @for (name of months; track $index) {
+      <option [value]="$index + 1" [selected]="m() === $index + 1">{{ name }}</option>
+    }
+  </select>
+
+  <select (change)="setYear($any($event.target).value)">
+    <option value="">{{ 'dl.year' | t }}</option>
+    @for (n of years(); track n) {
+      <option [value]="n" [selected]="y() === n">{{ fa(n) }}</option>
+    }
+  </select>
+
+  <input type="time" [value]="time()" (input)="setTime($any($event.target).value)" />
+</div>

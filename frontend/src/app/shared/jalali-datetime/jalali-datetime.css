@@ -1,0 +1,27 @@
+.jdt {
+  display: flex;
+  gap: 8px;
+}
+
+.jdt select,
+.jdt input {
+  flex: 1;
+  min-width: 0;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 9px 8px;
+  color: var(--text);
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.jdt select:focus,
+.jdt input:focus {
+  border-color: var(--accent);
+}
+
+.jdt select option {
+  background: var(--surface);
+}

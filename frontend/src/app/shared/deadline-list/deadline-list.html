@@ -2,7 +2,7 @@
   <div class="card-head">
     <h2 class="card-title">
       {{ 'dl.title' | t }}
-      <span class="count">{{ deadlines().length }} / {{ max }}</span>
+      <span class="count">{{ i18n.num(deadlines().length) }} / {{ i18n.num(max) }}</span>
     </h2>
     @if (roleSvc.isTeamLead()) {
       <button
