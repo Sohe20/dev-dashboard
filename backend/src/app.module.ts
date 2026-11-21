@@ -9,6 +9,7 @@ import { UsersModule } from './users/users.module';
 import { TeamModule } from './team/team.module';
 import { ConfigModule } from '@nestjs/config';
 import { NotificationsModule } from './notifications/notifications.module';
+import { DeadlinesModule } from './deadlines/deadlines.module';
 
 @Module({
   imports: [
@@ -37,7 +38,8 @@ import { NotificationsModule } from './notifications/notifications.module';
     AuthModule,
     UsersModule,
     TeamModule,
-    NotificationsModule
+    NotificationsModule,
+    DeadlinesModule
   ],
   controllers: [AppController],
   providers: [AppService],
