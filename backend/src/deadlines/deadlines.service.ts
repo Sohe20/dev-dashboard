@@ -9,17 +9,20 @@ import { Project } from '../projects/entities/project.entity';
 import { CreateDeadlineDto } from './dto/create-deadline.dto';
 import { UpdateDeadlineDto } from './dto/update-deadline.dto';
 import { Deadline } from './entities/deadline.entity';
+export const MAX_DEADLINES_PER_PROJECT = 3;
+
 
 @Injectable()
 export class DeadlinesService {
 
+
   constructor(
     @InjectRepository(Deadline)
-    private readonly repo: Repository<Deadline>,
-  ) {}
+    private readonly deadlineRepository: Repository<Deadline>,
+  ) { }
 
   findByProject(projectId: number): Promise<Deadline[]> {
-    return this.repo.find({
+    return this.deadlineRepository.find({
       where: { project: { id: projectId } },
       order: { dueDate: 'ASC' },
     });
@@ -37,18 +40,25 @@ export class DeadlinesService {
     if (!data.projectId) throw new BadRequestException('Project is required');
     const dueDate = this.parseDate(data.dueDate);
 
-    const project = await this.repo.manager.findOneBy(Project, {
+    const project = await this.deadlineRepository.manager.findOneBy(Project, {
       id: data.projectId,
     });
     if (!project) throw new NotFoundException('Project not found');
 
-    return this.repo.save(
-      this.repo.create({ title, dueDate, project: { id: data.projectId } }),
+    const count = await this.deadlineRepository.count({
+      where: { project: { id: data.projectId } },
+    });
+    if (count >= MAX_DEADLINES_PER_PROJECT) {
+      throw new BadRequestException('A project can have at most 3 deadlines');
+    }
+
+    return this.deadlineRepository.save(
+      this.deadlineRepository.create({ title, dueDate, project: { id: data.projectId } }),
     );
   }
 
   async update(id: number, data: UpdateDeadlineDto): Promise<Deadline> {
-    const deadline = await this.repo.findOne({ where: { id } });
+    const deadline = await this.deadlineRepository.findOne({ where: { id } });
     if (!deadline) throw new NotFoundException('Deadline not found');
 
     if (data.title !== undefined) {
@@ -64,11 +74,11 @@ export class DeadlinesService {
     }
     if (data.isDone !== undefined) deadline.isDone = data.isDone;
 
-    return this.repo.save(deadline);
+    return this.deadlineRepository.save(deadline);
   }
 
   async remove(id: number): Promise<{ deleted: boolean }> {
-    await this.repo.delete(id);
+    await this.deadlineRepository.delete(id);
     return { deleted: true };
   }
 }
