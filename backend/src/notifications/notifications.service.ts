@@ -11,27 +11,29 @@ export class NotificationsService {
   ) {}
 
   create(data: {
-    recipientId: number;
-    senderId?: number;
-    taskId?: number;
-    type: string;
-    message: string;
-  }) {
-    return this.repo.save(
-      this.repo.create({
-        recipient: { id: data.recipientId },
-        ...(data.senderId ? { sender: { id: data.senderId } } : {}),
-        ...(data.taskId ? { task: { id: data.taskId } } : {}),
-        type: data.type,
-        message: data.message,
-      }),
-    );
-  }
+  recipientId: number;
+  senderId?: number;
+  taskId?: number;
+  deadlineId?: number;
+  type: string;
+  message: string;
+}) {
+  return this.repo.save(
+    this.repo.create({
+      recipient: { id: data.recipientId },
+      ...(data.senderId ? { sender: { id: data.senderId } } : {}),
+      ...(data.taskId ? { task: { id: data.taskId } } : {}),
+      ...(data.deadlineId ? { deadline: { id: data.deadlineId } } : {}),
+      type: data.type,
+      message: data.message,
+    }),
+  );
+}
 
   findMine(userId: number) {
     return this.repo.find({
       where: { recipient: { id: userId } },
-      relations: { task: true, sender: true },
+      relations: { task: true, sender: true, deadline: { project: true } },
       order: { createdAt: 'DESC' },
       take: 50,
     });

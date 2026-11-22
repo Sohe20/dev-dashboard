@@ -7,6 +7,7 @@ import {
 } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
 import { Task } from '../../tasks/entities/task.entity';
+import { Deadline } from '../../deadlines/entities/deadline.entity';
 
 @Entity()
 export class Notification {
@@ -21,6 +22,9 @@ export class Notification {
 
   @ManyToOne(() => Task, { nullable: true, onDelete: 'CASCADE' })
   task!: Task;
+
+  @ManyToOne(() => Deadline, { nullable: true, onDelete: 'CASCADE' })
+  deadline!: Deadline;
 
   // completed | issue | approved | rejected
   @Column()

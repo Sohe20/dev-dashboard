@@ -10,9 +10,12 @@ import { TeamModule } from './team/team.module';
 import { ConfigModule } from '@nestjs/config';
 import { NotificationsModule } from './notifications/notifications.module';
 import { DeadlinesModule } from './deadlines/deadlines.module';
+import { ScheduleModule } from '@nestjs/schedule';
+
 
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
     ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRoot({
       type: 'postgres',
