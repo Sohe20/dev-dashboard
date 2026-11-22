@@ -33,6 +33,8 @@ export class NotificationBell {
     issue: { icon: 'ti-alert-triangle', color: '#ff6080' },
     approved: { icon: 'ti-check', color: '#40d080' },
     rejected: { icon: 'ti-arrow-back-up', color: '#d0a020' },
+    deadline_soon: { icon: 'ti-clock', color: '#d0a020' },
+    deadline_overdue: { icon: 'ti-alert-circle', color: '#ff6080' },
   };
 
   constructor() {
@@ -69,26 +71,30 @@ export class NotificationBell {
     this.api.clearAll().subscribe();
   }
 
+  text(n: AppNotification) {
+    return this.i18n.t('notif.' + n.type, {
+      name: n.sender?.name ?? this.i18n.t('notif.someone'),
+      title: n.task?.title ?? n.deadline?.title ?? '',
+      project: n.deadline?.project?.name ?? '',
+    });
+  }
+
+  note(n: AppNotification) {
+    if (n.type.startsWith('deadline')) return '';
+    const m = n.message.match(/(?:": |sent back: )([\s\S]*)$/);
+    return m ? m[1] : '';
+  }
+
   openItem(n: AppNotification) {
     if (!n.isRead) {
       this.items.update((l) => l.map((x) => (x.id === n.id ? { ...x, isRead: true } : x)));
       this.api.markRead(n.id).subscribe();
     }
     this.open.set(false);
-    this.router.navigateByUrl('/tasks');
-  }
-
-
-  text(n: AppNotification) {
-    return this.i18n.t('notif.' + n.type, {
-      name: n.sender?.name ?? this.i18n.t('notif.someone'),
-      title: n.task?.title ?? '',
-    });
-  }
-
-  note(n: AppNotification) {
-    const m = n.message.match(/(?:": |sent back: )([\s\S]*)$/);
-    return m ? m[1] : '';
+    const projectId = n.deadline?.project?.id;
+    this.router.navigateByUrl(
+      n.type.startsWith('deadline') && projectId ? `/projects/${projectId}` : '/tasks',
+    );
   }
 
 

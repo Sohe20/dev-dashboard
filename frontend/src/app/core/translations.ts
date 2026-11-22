@@ -160,8 +160,8 @@ export const en: Record<string, string> = {
 
 
 
-  'notif.markAll': 'Mark all as read',
-  'notif.none': 'No notifications.',
+
+
 
   'prof.title': 'My Profile',
   'prof.subtitle': 'Your tasks and information.',
@@ -179,6 +179,10 @@ export const en: Record<string, string> = {
   'notif.note': 'Note: {note}',
   'notif.someone': 'Someone',
   'notif.clearAll': 'Clear all',
+  'notif.markAll': 'Mark all as read',
+  'notif.none': 'No notifications.',
+  'notif.deadline_soon': 'Deadline "{title}" of project "{project}" is due within 24 hours',
+  'notif.deadline_overdue': 'Deadline "{title}" of project "{project}" has passed',
 
 
 };
@@ -352,6 +356,8 @@ export const fa: Record<string, string> = {
   'notif.note': 'یادداشت: {note}',
   'notif.someone': 'یک نفر',
   'notif.clearAll': 'پاک کردن همه',
+  'notif.deadline_soon': 'ددلاین «{title}» پروژه «{project}» کمتر از ۲۴ ساعت دیگر سررسید می‌شود',
+  'notif.deadline_overdue': 'ددلاین «{title}» پروژه «{project}» گذشته است',
 
 
   'prof.title': 'پروفایل من',
