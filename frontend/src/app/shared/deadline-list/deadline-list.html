@@ -1,8 +1,38 @@
+<ng-template #row let-d>
+  <div [class]="'dl-row dl-' + status(d)">
+    <i [class]="'ti ' + icon(d)"></i>
+    <div class="dl-info">
+      <span class="dl-title" [class.struck]="d.isDone">{{ d.title }}</span>
+      <span class="dl-date">{{ d.dueDate | fdate }}</span>
+    </div>
+    <span class="dl-badge">{{ remaining(d) }}</span>
+
+    @if (roleSvc.isTeamLead()) {
+      <div class="actions">
+        <button
+          type="button"
+          class="icon-btn"
+          [title]="(d.isDone ? 'dl.markUndone' : 'dl.markDone') | t"
+          (click)="toggleDone(d)"
+        >
+          <i class="ti ti-check"></i>
+        </button>
+        <button type="button" class="icon-btn" [title]="'common.edit' | t" (click)="openEdit(d)">
+          <i class="ti ti-pencil"></i>
+        </button>
+        <button type="button" class="icon-btn" [title]="'common.delete' | t" (click)="remove(d)">
+          <i class="ti ti-trash"></i>
+        </button>
+      </div>
+    }
+  </div>
+</ng-template>
+
 <div class="card">
   <div class="card-head">
     <h2 class="card-title">
       {{ 'dl.title' | t }}
-      <span class="count">{{ i18n.num(deadlines().length) }} / {{ i18n.num(max) }}</span>
+      <span class="count">{{ i18n.num(active().length) }} / {{ i18n.num(max) }}</span>
     </h2>
     @if (roleSvc.isTeamLead()) {
       <button
@@ -21,47 +51,31 @@
     <div class="loading">{{ 'common.loading' | t }}</div>
   } @else if (error()) {
     <div class="loading">{{ error() | t }}</div>
-  } @else if (!deadlines().length) {
-    <div class="loading">{{ 'dl.none' | t }}</div>
   } @else {
-    @for (d of deadlines(); track d.id) {
-      <div [class]="'dl-row dl-' + status(d)">
-        <i [class]="'ti ' + icon(d)"></i>
-        <div class="dl-info">
-          <span class="dl-title" [class.struck]="d.isDone">{{ d.title }}</span>
-          <span class="dl-date">{{ d.dueDate | fdate }}</span>
-        </div>
-        <span class="dl-badge">{{ remaining(d) }}</span>
+    @if (!active().length) {
+      <div class="loading">{{ 'dl.none' | t }}</div>
+    }
+    @for (d of active(); track d.id) {
+      <ng-container *ngTemplateOutlet="row; context: { $implicit: d }"></ng-container>
+    }
 
+    @if (past().length) {
+      <div class="past-head">
+        <button type="button" class="past-toggle" (click)="showPast.set(!showPast())">
+          <i class="ti" [class.ti-chevron-down]="showPast()" [class.ti-chevron-right]="!showPast()"></i>
+          {{ 'common.past' | t }} ({{ i18n.num(past().length) }})
+        </button>
         @if (roleSvc.isTeamLead()) {
-          <div class="actions">
-            <button
-              type="button"
-              class="icon-btn"
-              [title]="(d.isDone ? 'dl.markUndone' : 'dl.markDone') | t"
-              (click)="toggleDone(d)"
-            >
-              <i class="ti ti-check"></i>
-            </button>
-            <button
-              type="button"
-              class="icon-btn"
-              [title]="'common.edit' | t"
-              (click)="openEdit(d)"
-            >
-              <i class="ti ti-pencil"></i>
-            </button>
-            <button
-              type="button"
-              class="icon-btn"
-              [title]="'common.delete' | t"
-              (click)="remove(d)"
-            >
-              <i class="ti ti-trash"></i>
-            </button>
-          </div>
+          <button type="button" class="link-btn danger" (click)="clearPast()">
+            {{ 'common.clearAll' | t }}
+          </button>
         }
       </div>
+      @if (showPast()) {
+        @for (d of past(); track d.id) {
+          <ng-container *ngTemplateOutlet="row; context: { $implicit: d }"></ng-container>
+        }
+      }
     }
   }
 </div>

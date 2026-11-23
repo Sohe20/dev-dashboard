@@ -1,4 +1,4 @@
-import { DatePipe } from '@angular/common';
+import { DatePipe, NgTemplateOutlet } from '@angular/common';
 import { Component, computed, inject, input, OnInit, signal } from '@angular/core';
 import { I18n } from '../../core/i18n';
 import { Role } from '../../core/role';
@@ -12,7 +12,7 @@ type DlStatus = 'done' | 'overdue' | 'soon' | 'normal';
 
 @Component({
   selector: 'app-deadline-list',
-  imports: [FDatePipe, TPipe, DeadlineFormModal],
+  imports: [FDatePipe, TPipe, DeadlineFormModal, NgTemplateOutlet],
   templateUrl: './deadline-list.html',
   styleUrl: './deadline-list.css',
 })
@@ -20,23 +20,32 @@ export class DeadlineList implements OnInit {
   private api = inject(DeadlineService);
   private i18n = inject(I18n);
   roleSvc = inject(Role);
-
   projectId = input.required<number>();
-
   max = MAX_DEADLINES;
   deadlines = signal<Deadline[]>([]);
   loading = signal(true);
   error = signal('');
-
   showForm = signal(false);
   editing = signal<Deadline | null>(null);
+  showPast = signal(false);
+  active = computed(() => this.deadlines().filter((d) => !d.isDone));
+  past = computed(() => this.deadlines().filter((d) => d.isDone));
+  canAdd = computed(() => this.active().length < this.max);
 
-  canAdd = computed(() => this.deadlines().length < this.max);
+
 
   ngOnInit() {
     this.roleSvc.ensure().subscribe();
     this.load();
   }
+
+  clearPast() {
+  if (!confirm(this.i18n.t('dl.clearConfirm'))) return;
+  this.api.removeCompleted(this.projectId()).subscribe({
+    next: () => this.load(),
+    error: () => alert(this.i18n.t('dl.clearErr')),
+  });
+}
 
   load() {
     this.api.list(this.projectId()).subscribe({
@@ -95,13 +104,13 @@ export class DeadlineList implements OnInit {
     this.load();
   }
 
-  toggleDone(d: Deadline) {
-    this.api.update(d.id, { isDone: !d.isDone }).subscribe({
-      next: () => this.load(),
-      error: () => alert(this.i18n.t('dl.toggleErr')),
-    });
-  }
-
+ toggleDone(d: Deadline) {
+  this.api.update(d.id, { isDone: !d.isDone }).subscribe({
+    next: () => this.load(),
+    error: (err) =>
+      alert(this.i18n.t(err.status === 400 ? 'dl.maxReached' : 'dl.toggleErr')),
+  });
+}
   remove(d: Deadline) {
     if (!confirm(this.i18n.t('dl.deleteConfirm', { name: d.title }))) return;
     this.api.remove(d.id).subscribe({

@@ -25,4 +25,10 @@ export class DeadlineService {
   remove(id: number) {
     return this.http.delete(`${this.url}/${id}`);
   }
+
+  removeCompleted(projectId: number) {
+  return this.http.delete(`${this.url}/completed`, {
+    params: new HttpParams().set('projectId', projectId),
+  });
+}
 }

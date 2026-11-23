@@ -53,4 +53,10 @@ export class TaskService {
   sendBack(id: number, message: string) {
     return this.http.post<Task>(`${this.url}/${id}/send-back`, { message });
   }
+
+  removeCompleted(projectId?: number) {
+  let params = new HttpParams();
+  if (projectId) params = params.set('projectId', projectId);
+  return this.http.delete(`${this.url}/completed`, { params });
+}
 }

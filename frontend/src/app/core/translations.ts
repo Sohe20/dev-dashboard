@@ -20,6 +20,8 @@ export const en: Record<string, string> = {
   'common.description': 'Description',
   'common.descriptionPh': 'Short description...',
   'common.status': 'Status',
+  'common.past': 'Past',
+  'common.clearAll': 'Delete all',
 
   'auth.welcome': 'Welcome 👋',
   'auth.subtitle': 'Sign in or create your account',
@@ -104,6 +106,11 @@ export const en: Record<string, string> = {
   'status.review': 'Waiting for review',
   'status.blocked': 'Blocked',
   'status.done': 'Done',
+  'task.clearConfirm': 'Delete all completed tasks permanently? The project progress will be recalculated.',
+  'task.clearErr': 'Failed to delete completed tasks.',
+  'task.noActive': 'No active tasks.',
+
+
 
   'msg.issueTitle': 'Report an issue',
   'msg.sendBackTitle': 'Send back',
@@ -139,7 +146,7 @@ export const en: Record<string, string> = {
   'dl.loadErr': 'Could not load deadlines.',
   'dl.formErr': 'Title and date are required.',
   'dl.saveErr': 'Failed to save deadline.',
-  'dl.maxReached': 'A project can have at most 3 deadlines.',
+  'dl.maxReached': 'A project can have at most 3 active deadlines. Delete or finish one first.',
   'dl.deleteConfirm': 'Delete "{name}"?',
   'dl.deleteErr': 'Failed to delete deadline.',
   'dl.toggleErr': 'Could not update the deadline.',
@@ -155,6 +162,8 @@ export const en: Record<string, string> = {
   'dl.day': 'Day',
   'dl.month': 'Month',
   'dl.year': 'Year',
+  'dl.clearConfirm': 'Delete all completed deadlines of this project?',
+  'dl.clearErr': 'Failed to delete completed deadlines.',
 
 
 
@@ -209,6 +218,8 @@ export const fa: Record<string, string> = {
   'common.description': 'توضیحات',
   'common.descriptionPh': 'توضیح کوتاه...',
   'common.status': 'وضعیت',
+  'common.past': 'گذشته',
+  'common.clearAll': 'حذف همه',
 
   'auth.welcome': 'خوش آمدید 👋',
   'auth.subtitle': 'وارد شوید یا حساب جدید بسازید',
@@ -288,6 +299,11 @@ export const fa: Record<string, string> = {
   'task.approveErr': 'تأیید وظیفه ممکن نشد.',
   'task.actionErr': 'عملیات ناموفق بود.',
   'task.assignedBy': 'واگذارکننده',
+  'task.clearConfirm': 'همه وظایف انجام‌شده برای همیشه حذف شوند؟ درصد پیشرفت پروژه دوباره حساب می‌شود.',
+  'task.clearErr': 'حذف وظایف انجام‌شده ناموفق بود.',
+  'task.noActive': 'وظیفه فعالی نیست.',
+
+
   'status.todo': 'برای انجام',
   'status.inprogress': 'در حال انجام',
   'status.review': 'در انتظار بررسی',
@@ -329,7 +345,7 @@ export const fa: Record<string, string> = {
   'dl.loadErr': 'بارگذاری ددلاین‌ها ممکن نشد.',
   'dl.formErr': 'عنوان و تاریخ الزامی است.',
   'dl.saveErr': 'ذخیره ددلاین ناموفق بود.',
-  'dl.maxReached': 'هر پروژه حداکثر ۳ ددلاین می‌تواند داشته باشد.',
+  'dl.maxReached': 'هر پروژه حداکثر ۳ ددلاین فعال می‌تواند داشته باشد. اول یکی را تمام یا حذف کنید.',
   'dl.deleteConfirm': 'ددلاین «{name}» حذف شود؟',
   'dl.deleteErr': 'حذف ددلاین ناموفق بود.',
   'dl.toggleErr': 'به‌روزرسانی ددلاین ممکن نشد.',
@@ -345,6 +361,8 @@ export const fa: Record<string, string> = {
   'dl.day': 'روز',
   'dl.month': 'ماه',
   'dl.year': 'سال',
+  'dl.clearConfirm': 'همه ددلاین‌های انجام‌شده این پروژه حذف شوند؟',
+  'dl.clearErr': 'حذف ددلاین‌های انجام‌شده ناموفق بود.',
 
 
   'notif.markAll': 'خوانده‌شدن همه',

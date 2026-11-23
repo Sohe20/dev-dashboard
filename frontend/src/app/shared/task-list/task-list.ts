@@ -1,4 +1,4 @@
-import { Component, inject, input, OnInit, output, signal } from '@angular/core';
+import { Component, computed, inject, input, OnInit, output, signal } from '@angular/core';
 import { Auth } from '../../core/auth';
 import { I18n } from '../../core/i18n';
 import { Role } from '../../core/role';
@@ -7,6 +7,7 @@ import { Task, TaskStatus } from '../../models/task.model';
 import { TaskService } from '../../services/task.service';
 import { MessageModal } from '../message-modal/message-modal';
 import { TaskFormModal } from '../task-form-modal/task-form-modal';
+import { NgTemplateOutlet } from '@angular/common';
 
 interface MessageAction {
   kind: 'issue' | 'sendBack';
@@ -15,14 +16,14 @@ interface MessageAction {
 
 @Component({
   selector: 'app-task-list',
-  imports: [TaskFormModal, MessageModal, TPipe],
+  imports: [TaskFormModal, MessageModal, TPipe, NgTemplateOutlet],
   templateUrl: './task-list.html',
   styleUrl: './task-list.css',
 })
 export class TaskList implements OnInit {
   private api = inject(TaskService);
   private auth = inject(Auth);
-  private i18n = inject(I18n);
+  i18n = inject(I18n);
   roleSvc = inject(Role);
 
   tasks = input<Task[]>([]);
@@ -34,6 +35,10 @@ export class TaskList implements OnInit {
   showForm = signal(false);
   editing = signal<Task | null>(null);
   msgAction = signal<MessageAction | null>(null);
+
+  showPast = signal(false);
+  active = computed(() => this.tasks().filter((t) => t.status !== 'done'));
+  past = computed(() => this.tasks().filter((t) => t.status === 'done'));
 
   myId: number | undefined = this.auth.user()?.sub;
 
@@ -53,9 +58,25 @@ export class TaskList implements OnInit {
     done: '#40d080',
   };
 
+  color(status: TaskStatus) {
+  return this.colors[status];
+}
+
+label(status: TaskStatus) {
+  return this.labels[status];
+}
+
   ngOnInit() {
     this.roleSvc.ensure().subscribe();
   }
+
+  clearPast() {
+  if (!confirm(this.i18n.t('task.clearConfirm'))) return;
+  this.api.removeCompleted(this.presetProjectId() ?? undefined).subscribe({
+    next: () => this.changed.emit(),
+    error: () => alert(this.i18n.t('task.clearErr')),
+  });
+}
 
   isMine(t: Task) {
     return t.assignee?.id === this.myId;

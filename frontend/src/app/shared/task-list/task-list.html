@@ -1,3 +1,59 @@
+<ng-template #row let-t>
+  <div class="project-item">
+    <div class="project-dot" [style.background]="color(t.status)"></div>
+
+    @if (isMine(t)) {
+      <input
+        type="checkbox"
+        class="done-check"
+        [title]="'task.markDone' | t"
+        [checked]="t.status === 'done' || t.status === 'review'"
+        [disabled]="!canComplete(t)"
+        (change)="complete(t)"
+      />
+    }
+
+    <div class="task-info">
+      <span class="project-name">{{ t.title }}</span>
+      @if (t.project && !presetProjectId()) {
+        <span class="task-sub">{{ t.project.name }}</span>
+      }
+    </div>
+
+    @if (t.assignee) {
+      <span class="assignee"><i class="ti ti-user"></i> {{ t.assignee.name }}</span>
+    }
+
+    <span [class]="'status-badge s-' + t.status">{{ label(t.status) | t }}</span>
+
+    <div class="actions">
+      @if (canComplete(t)) {
+        <button type="button" class="icon-btn" [title]="'task.reportIssue' | t" (click)="openIssue(t)">
+          <i class="ti ti-alert-triangle"></i>
+        </button>
+      }
+      @if (roleSvc.isTeamLead()) {
+        @if (t.status === 'review') {
+          <button type="button" class="icon-btn" [title]="'task.approve' | t" (click)="approve(t)">
+            <i class="ti ti-check"></i>
+          </button>
+        }
+        @if (t.status === 'review' || t.status === 'blocked') {
+          <button type="button" class="icon-btn" [title]="'task.sendBack' | t" (click)="openSendBack(t)">
+            <i class="ti ti-arrow-back-up"></i>
+          </button>
+        }
+        <button type="button" class="icon-btn" [title]="'common.edit' | t" (click)="openEdit(t)">
+          <i class="ti ti-pencil"></i>
+        </button>
+        <button type="button" class="icon-btn" [title]="'common.delete' | t" (click)="remove(t)">
+          <i class="ti ti-trash"></i>
+        </button>
+      }
+    </div>
+  </div>
+</ng-template>
+
 <div class="projects-list">
   @if (loading()) {
     <div class="loading">{{ 'common.loading' | t }}</div>
@@ -6,63 +62,35 @@
   } @else if (!tasks().length) {
     <div class="loading">{{ 'task.none' | t }}</div>
   } @else {
-    @for (t of tasks(); track t.id) {
-      <div class="project-item">
-        <div class="project-dot" [style.background]="colors[t.status]"></div>
-
-        @if (isMine(t)) {
-          <input
-            type="checkbox"
-            class="done-check"
-            [title]="'task.markDone' | t"
-            [checked]="t.status === 'done' || t.status === 'review'"
-            [disabled]="!canComplete(t)"
-            (change)="complete(t)"
-          />
-        }
-
-        <div class="task-info">
-          <span class="project-name">{{ t.title }}</span>
-          @if (t.project && !presetProjectId()) {
-            <span class="task-sub">{{ t.project.name }}</span>
-          }
-        </div>
-
-        @if (t.assignee) {
-          <span class="assignee"><i class="ti ti-user"></i> {{ t.assignee.name }}</span>
-        }
-
-        <span [class]="'status-badge s-' + t.status">{{ labels[t.status] | t }}</span>
-
-        <div class="actions">
-          @if (canComplete(t)) {
-            <button type="button" class="icon-btn" [title]="'task.reportIssue' | t" (click)="openIssue(t)">
-              <i class="ti ti-alert-triangle"></i>
-            </button>
-          }
-          @if (roleSvc.isTeamLead()) {
-            @if (t.status === 'review') {
-              <button type="button" class="icon-btn" [title]="'task.approve' | t" (click)="approve(t)">
-                <i class="ti ti-check"></i>
-              </button>
-            }
-            @if (t.status === 'review' || t.status === 'blocked') {
-              <button type="button" class="icon-btn" [title]="'task.sendBack' | t" (click)="openSendBack(t)">
-                <i class="ti ti-arrow-back-up"></i>
-              </button>
-            }
-            <button type="button" class="icon-btn" [title]="'common.edit' | t" (click)="openEdit(t)">
-              <i class="ti ti-pencil"></i>
-            </button>
-            <button type="button" class="icon-btn" [title]="'common.delete' | t" (click)="remove(t)">
-              <i class="ti ti-trash"></i>
-            </button>
-          }
-        </div>
-      </div>
+    @if (!active().length) {
+      <div class="loading">{{ 'task.noActive' | t }}</div>
+    }
+    @for (t of active(); track t.id) {
+      <ng-container *ngTemplateOutlet="row; context: { $implicit: t }"></ng-container>
     }
   }
 </div>
+
+@if (past().length) {
+  <div class="past-head">
+    <button type="button" class="past-toggle" (click)="showPast.set(!showPast())">
+      <i class="ti" [class.ti-chevron-down]="showPast()" [class.ti-chevron-right]="!showPast()"></i>
+      {{ 'common.past' | t }} ({{ i18n.num(past().length) }})
+    </button>
+    @if (roleSvc.isTeamLead()) {
+      <button type="button" class="link-btn danger" (click)="clearPast()">
+        {{ 'common.clearAll' | t }}
+      </button>
+    }
+  </div>
+  @if (showPast()) {
+    <div class="projects-list">
+      @for (t of past(); track t.id) {
+        <ng-container *ngTemplateOutlet="row; context: { $implicit: t }"></ng-container>
+      }
+    </div>
+  }
+}
 
 @if (showForm()) {
   <app-task-form-modal

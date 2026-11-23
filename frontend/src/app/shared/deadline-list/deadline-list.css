@@ -138,3 +138,38 @@
   color: var(--text);
   background: var(--border);
 }
+
+.past-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 16px 0 10px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
+.past-toggle {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.past-toggle:hover {
+  color: var(--text);
+}
+
+.link-btn {
+  background: none;
+  border: none;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.link-btn.danger {
+  color: #ff6080;
+}
