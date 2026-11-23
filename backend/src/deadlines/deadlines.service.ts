@@ -45,11 +45,8 @@ export class DeadlinesService {
     });
     if (!project) throw new NotFoundException('Project not found');
 
-    const count = await this.deadlineRepository.count({
-      where: { project: { id: data.projectId } },
-    });
-    if (count >= MAX_DEADLINES_PER_PROJECT) {
-      throw new BadRequestException('A project can have at most 3 deadlines');
+    if ((await this.activeCount(data.projectId)) >= MAX_DEADLINES_PER_PROJECT) {
+      throw new BadRequestException('A project can have at most 3 active deadlines');
     }
 
     return this.deadlineRepository.save(
@@ -57,9 +54,27 @@ export class DeadlinesService {
     );
   }
 
+  private activeCount(projectId: number) {
+    return this.deadlineRepository.count({
+      where: { project: { id: projectId }, isDone: false },
+    });
+  }
+
   async update(id: number, data: UpdateDeadlineDto): Promise<Deadline> {
-    const deadline = await this.deadlineRepository.findOne({ where: { id } });
+    const deadline = await this.deadlineRepository.findOne({
+      where: { id },
+      relations: { project: true }
+    });
     if (!deadline) throw new NotFoundException('Deadline not found');
+
+
+    if (
+      data.isDone === false &&
+      deadline.isDone &&
+      (await this.activeCount(deadline.project.id)) >= MAX_DEADLINES_PER_PROJECT
+    ) {
+      throw new BadRequestException('A project can have at most 3 active deadlines');
+    }
 
     if (data.title !== undefined) {
       const title = data.title.trim();
@@ -81,4 +96,12 @@ export class DeadlinesService {
     await this.deadlineRepository.delete(id);
     return { deleted: true };
   }
+
+  async removeCompleted(projectId: number) {
+  const list = await this.deadlineRepository.find({
+    where: { project: { id: projectId }, isDone: true },
+  });
+  await this.deadlineRepository.remove(list);
+  return { deleted: list.length };
+}
 }

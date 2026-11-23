@@ -14,19 +14,19 @@ import { TasksService } from './tasks.service';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { AuthGuard } from '../auth/auth.guard';
-import {TeamLeadGuard} from "../auth/team-lead.guard"
+import { TeamLeadGuard } from "../auth/team-lead.guard"
 
 @UseGuards(AuthGuard)
 @Controller('tasks')
 export class TasksController {
-  constructor(private readonly tasksService: TasksService) {}
+  constructor(private readonly tasksService: TasksService) { }
 
-@Get()
-findAll(@Request() req: any, @Query('projectId') projectId?: string) {
-  return this.tasksService.findAll(projectId ? +projectId : undefined, req.user.sub);
-}
+  @Get()
+  findAll(@Request() req: any, @Query('projectId') projectId?: string) {
+    return this.tasksService.findAll(projectId ? +projectId : undefined, req.user.sub);
+  }
 
-  
+
 
   @Get('my-tasks')
   myTasks(@Request() req: any) {
@@ -39,7 +39,7 @@ findAll(@Request() req: any, @Query('projectId') projectId?: string) {
   }
 
   @Get('activity')
-  getActivity(){
+  getActivity() {
     return this.tasksService.getActivityData();
   }
 
@@ -62,13 +62,20 @@ findAll(@Request() req: any, @Query('projectId') projectId?: string) {
   }
 
   @UseGuards(TeamLeadGuard)
+  @Delete('completed')
+  removeCompleted(@Query('projectId') projectId?: string) {
+    return this.tasksService.removeCompleted(projectId ? +projectId : undefined);
+  }
+
+
+  @UseGuards(TeamLeadGuard)
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.tasksService.remove(+id);
   }
 
 
-    @Post(':id/complete')
+  @Post(':id/complete')
   complete(@Param('id') id: string, @Request() req: any) {
     return this.tasksService.complete(+id, req.user.sub);
   }

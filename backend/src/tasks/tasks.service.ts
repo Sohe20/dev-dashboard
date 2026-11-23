@@ -231,4 +231,21 @@ export class TasksService {
     );
     return this.findOne(id);
   }
+
+
+  async removeCompleted(projectId?: number) {
+  const list = await this.tasksRepository.find({
+    where: {
+      status: 'done',
+      ...(projectId ? { project: { id: projectId } } : {}),
+    },
+    relations: { project: true },
+  });
+  const projectIds = new Set(
+    list.map((t) => t.project?.id).filter((id): id is number => !!id),
+  );
+  await this.tasksRepository.remove(list);
+  for (const id of projectIds) await this.recalcProgress(id);
+  return { deleted: list.length };
+}
 }

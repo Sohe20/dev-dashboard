@@ -19,7 +19,7 @@ import { UpdateDeadlineDto } from './dto/update-deadline.dto';
 @UseGuards(AuthGuard)
 @Controller('deadlines')
 export class DeadlinesController {
-  constructor(private readonly service: DeadlinesService) {}
+  constructor(private readonly service: DeadlinesService) { }
 
   @Get()
   findByProject(@Query('projectId') projectId?: string) {
@@ -37,6 +37,13 @@ export class DeadlinesController {
   @Put(':id')
   update(@Param('id') id: string, @Body() data: UpdateDeadlineDto) {
     return this.service.update(+id, data);
+  }
+
+  @UseGuards(TeamLeadGuard)
+  @Delete('completed')
+  removeCompleted(@Query('projectId') projectId?: string) {
+    if (!projectId) throw new BadRequestException('projectId is required');
+    return this.service.removeCompleted(+projectId);
   }
 
   @UseGuards(TeamLeadGuard)
